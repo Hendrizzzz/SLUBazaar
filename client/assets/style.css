@@ -146,7 +146,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    height: 50px;
+    gap: 1rem;
 }
 .form-box button.google img {
     width: 18px;

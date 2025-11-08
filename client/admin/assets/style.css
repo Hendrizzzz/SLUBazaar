@@ -1,0 +1,139 @@
+html,body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.bg-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("/client/assets/img/triangles2.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+}
+
+.title-tagline-box, .login-box {
+    flex: 1;
+}
+
+.title-tagline {
+    font-family: "Lalezar", sans-serif;
+    margin: 0;
+    padding: 2.25rem;
+    color: white;
+    top: 0;
+    left: 0;
+    display: flex; 
+    gap: 1rem;
+}
+
+.title-tagline img {
+    height: 8rem;
+}
+
+.title-tagline > * {
+    margin: 0;
+}
+
+.title-tagline h1 {
+    margin: 0;
+    font-size: 3rem;
+}
+
+.title-tagline p {
+    font-family: "Khula", sans-serif;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+[data-tab-content] {
+  display: none;
+}
+
+.active[data-tab-content] {
+  display: block;
+}
+
+#tabs {
+    display: flex;
+    margin-bottom: 0px;
+    padding-left: 1.25%;
+}
+
+#tabs li {
+    font-family: "Khula", sans-serif;
+    color: var(--muted-text-color);
+    font-weight: bold;
+    list-style-type: none;
+    font-size: 1.5rem;
+    padding: .5rem 2rem 0rem 2rem;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    background-color: var(--muted-color);
+}
+
+#tabs li:hover {
+    cursor: pointer;
+}
+
+#tabs li.active-tab {
+    background-color: var(--primary-bg-color);
+    color: black;
+}
+
+.tab-contents {
+    background-color: var(--primary-bg-color);
+    margin-left: 1.25%;
+    width: 97.5%;
+    height: 70.5vh;
+    border-radius: 20px;
+    border-top-left-radius: 0px;
+}
+
+.tab-contents h1 {
+    margin: 0px;
+}
+
+#today {
+    padding: 2rem 0rem 0rem 2rem ;
+    font-family: "Lalezar", sans-serif;
+    font-size: 3rem;
+}
+
+.values {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    row-gap: 5rem;
+    padding-top: 5rem;
+    margin: 0px;
+}
+
+.values li {
+    list-style-type: none;
+}
+
+.values > * {
+    text-align: center;
+}
+
+
+.values p {
+    font-size: 1.5rem;
+    font-family: "Khula", sans-serif;
+}
+
+.values h1 {
+    font-size: 3rem;
+    font-family: "Lalezar", sans-serif;
+}
