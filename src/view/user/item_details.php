@@ -138,7 +138,8 @@ if (!isset($itemDetails)) {
                 <h3>Bid History <span class="count-badge"><?php echo $itemDetails->bidCount; ?></span></h3>
                 <div class="history-list">
                     <?php if (empty($itemDetails->bidHistory)): ?>
-                        <div class="empty-history">No bids yet. Be the first!</div>
+                        <div class="empty-history"><?php if ($itemDetails->isOwner): ?> No bids yet.
+                            <?php else: ?> No bids yet. Be the first <?php endif; ?></div>
                     <?php else: ?>
                         <?php foreach($itemDetails->bidHistory as $bid): ?>
                             <div class="history-row">

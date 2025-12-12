@@ -8,4 +8,6 @@ $dbConfig = require_once __DIR__ . '/../config/database.php';
 
 $container = new Container($dbConfig);
 
+date_default_timezone_set('Asia/Manila');
+
 return $container;
