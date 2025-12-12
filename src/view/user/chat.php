@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User - Messages</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/assets/css/user/chat.css">
 </head>
+
 <body>
 
     <div class="app-main-content">
@@ -32,7 +34,8 @@
                 </div>
                 <div class="conversation-list" id="conversationList">
                     <div class="conversation" data-user-id="1">
-                        <div class="conversation-avatar" style="background-image: url('https://i.pravatar.cc/50?img=50');"></div>
+                        <div class="conversation-avatar"
+                            style="background-image: url('https://i.pravatar.cc/50?img=50');"></div>
                         <div class="conversation-details">
                             <div class="conversation-name">Christian Kyle Ramirez</div>
                             <div class="conversation-message">hi</div>
@@ -40,14 +43,16 @@
                         <div class="conversation-status new"></div>
                     </div>
                     <div class="conversation active" data-user-id="2">
-                        <div class="conversation-avatar" style="background-image: url('https://i.pravatar.cc/50?img=15');"></div>
+                        <div class="conversation-avatar"
+                            style="background-image: url('https://i.pravatar.cc/50?img=15');"></div>
                         <div class="conversation-details">
                             <div class="conversation-name">Jim Hendrix Bag-eo</div>
                             <div class="conversation-message last-message">Let me know.</div>
                         </div>
                     </div>
                     <div class="conversation" data-user-id="3">
-                        <div class="conversation-avatar" style="background-image: url('https://i.pravatar.cc/50?img=42');"></div>
+                        <div class="conversation-avatar"
+                            style="background-image: url('https://i.pravatar.cc/50?img=42');"></div>
                         <div class="conversation-details">
                             <div class="conversation-name">Joeffrey Edrian Carani</div>
                             <div class="conversation-message">Sounds good, thanks!</div>
@@ -55,14 +60,16 @@
                         <div class="conversation-status new"></div>
                     </div>
                     <div class="conversation" data-user-id="4">
-                        <div class="conversation-avatar" style="background-image: url('https://i.pravatar.cc/50?img=1');"></div>
+                        <div class="conversation-avatar"
+                            style="background-image: url('https://i.pravatar.cc/50?img=1');"></div>
                         <div class="conversation-details">
                             <div class="conversation-name">Gavrelle Garcia</div>
                             <div class="conversation-message">When can I see it?</div>
                         </div>
                     </div>
                     <div class="conversation" data-user-id="5">
-                        <div class="conversation-avatar" style="background-image: url('https://i.pravatar.cc/50?img=22');"></div>
+                        <div class="conversation-avatar"
+                            style="background-image: url('https://i.pravatar.cc/50?img=22');"></div>
                         <div class="conversation-details">
                             <div class="conversation-name">Anya Smith</div>
                             <div class="conversation-message">I'll be there at 5.</div>
@@ -102,6 +109,7 @@
         </div>
     </div>
 
-    <script src="\assets\js\chat.js"></script>
+    <script src="/assets/js/chat.js"></script>
 </body>
+
 </html>
