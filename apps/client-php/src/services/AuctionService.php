@@ -185,8 +185,17 @@ class AuctionService
      */
     private function processImageUploads(int $itemId, array $files): array
     {
-        $targetDir = __DIR__ . '/../../../../shared/uploads/items/'; // Adjust path as needed
+        // 1. Try to find the "Shared" directory (Local Development)
+        $sharedDir = __DIR__ . '/../../../../shared/uploads/items/';
 
+        // 2. Fallback for render 
+        $publicDir = __DIR__ . '/../../public/assets/uploads/items/';
+
+        if (is_dir(realpath(__DIR__ . '/../../../../') . '/shared')) {
+            $targetDir = $sharedDir;
+        } else {
+            $targetDir = $publicDir;
+        }
 
         if (!is_dir($targetDir))
             mkdir($targetDir, 0777, true);
