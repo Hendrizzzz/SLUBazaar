@@ -186,40 +186,45 @@ class AuctionService
     private function processImageUploads(int $itemId, array $files): array
     {
         $projectRoot = dirname(__DIR__, 2);
-        $sharedLocalPath = realpath($projectRoot . '/../../shared/uploads/items');
+        $webPath = 'assets/uploads/items/';
+        $targetDir = $projectRoot . '/public/' . $webPath;
 
-        if ($sharedLocalPath && is_dir($sharedLocalPath)) {
-            $targetDir = $sharedLocalPath . '/';
-        } else {
-            $targetDir = $projectRoot . '/public/assets/uploads/items/';
+        $uploadsRoot = $projectRoot . '/public/assets/uploads';
+
+        if (is_link($uploadsRoot) || (file_exists($uploadsRoot) && !is_dir($uploadsRoot))) {
+            unlink($uploadsRoot);
         }
 
-        if (!is_dir($targetDir))
-            mkdir($targetDir, 0777, true);
+        if (!is_dir($targetDir)) {
+            if (!mkdir($targetDir, 0775, true)) {
+                error_log("CRITICAL: Failed to create upload directory at " . $targetDir);
+                throw new Exception("Server Error: Cannot create upload directory.");
+            }
+        }
 
         $savedPaths = [];
-
-        // Normalize $_FILES array structure if needed, or assume Controller normalized it.
-        // Assuming $files is an array of ['tmp_name' => ..., 'name' => ...] objects
-
-        // If passing raw $_FILES['images'], it's structured awkwardly (name[0], name[1]).
-        // Let's assume the Controller passed a clean array of files.
 
         foreach ($files as $file) {
             if ($file['error'] !== UPLOAD_ERR_OK)
                 continue;
 
-            $fileType = mime_content_type($file['tmp_name']);
-            if (!in_array($fileType, ['image/jpeg', 'image/png', 'image/webp']))
-                continue; // Skip invalid files, THE BETTER WAY IS TO BLOCK IT FROM UPLOADING IN THE FIRST PLACE INSTEAD OF IGNORING IT 
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($file['tmp_name']);
+            if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp']))
+                continue;
 
-            // Generate Unique Name
             $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            if (!$extension)
+                $extension = 'jpg';
+
             $newFileName = "item_{$itemId}_" . uniqid() . "." . $extension;
             $targetPath = $targetDir . $newFileName;
 
-            if (move_uploaded_file($file['tmp_name'], $targetPath))
-                $savedPaths[] = 'assets/uploads/items/' . $newFileName;
+            if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+                $savedPaths[] = $webPath . $newFileName;
+            } else {
+                error_log("Failed to move uploaded file to: " . $targetPath);
+            }
         }
 
         return $savedPaths;
