@@ -20,7 +20,7 @@ class ChatController extends BaseController
     {
         $userId = $this->requireLogin();
         $conversations = $this->chatService->getUserConversations($userId);
-        require __DIR__ . '/../view/chat.php'; // PLACEHOLDER ######################################
+        require __DIR__ . '/../view/user/chat.php'; // PLACEHOLDER ######################################
     }
 
 
@@ -32,13 +32,13 @@ class ChatController extends BaseController
     public function getMessages(): void
     {
         $userId = $this->requireLogin();
-        $convoId = isset($_GET['conversation_id']) ? (int)$_GET['conversation_id'] : 0;
-        
+        $convoId = isset($_GET['conversation_id']) ? (int) $_GET['conversation_id'] : 0;
+
         try {
             $messages = $this->chatService->getChatHistory($convoId, $userId);
 
             $this->jsonResponse([
-                'success'  => true,
+                'success' => true,
                 'messages' => $messages
             ]);
         } catch (Exception $e) {
@@ -58,8 +58,8 @@ class ChatController extends BaseController
 
         try {
             $this->chatService->sendMessage(
-                $userId, 
-                (int)($input['conversation_id'] ?? 0), 
+                $userId,
+                (int) ($input['conversation_id'] ?? 0),
                 $input['message'] ?? ''
             );
 
