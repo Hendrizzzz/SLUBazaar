@@ -1,166 +1,241 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const conversationList = document.getElementById('conversationList');
-    const chatMessages = document.getElementById('chatMessages');
+    const conversationListEl = document.getElementById('conversationList');
+    const chatMessagesEl = document.getElementById('chatMessages');
     const messageInput = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
+    const chatHeader = document.getElementById('chatHeader');
     const chatTitle = document.getElementById('chatTitle');
     const chatSubtitle = document.getElementById('chatSubtitle');
+    const activeConversationIdInput = document.getElementById('activeConversationId');
+    const emptyState = document.getElementById('emptyState');
+    const chatInputArea = document.getElementById('chatInputArea');
+    const searchInput = document.getElementById('searchInput');
 
-    // --- 1. Dummy Data for Conversations and Messages ---
-    const conversations = [
-        {
-            id: 1,
-            name: "Christian Kyle Ramirez",
-            item: "Vintage Vinyl Player",
-            avatar: "https://i.pravatar.cc/50?img=50",
-            messages: [
-                { text: "Hello, is this still available?", type: "incoming" },
-                { text: "I can pick it up tomorrow.", type: "incoming" },
-                { text: "Hi! Yes, it is. Tomorrow works for me.", type: "outgoing" }
-            ]
-        },
-        {
-            id: 2,
-            name: "Jim Hendrix Bag-eo",
-            item: "title of the item for sale",
-            avatar: "https://i.pravatar.cc/50?img=15",
-            messages: [
-                { text: "Hey! Is this still available?", type: "incoming" },
-                { text: "I'm interested in buying it.", type: "incoming" },
-                { text: "Hi there! Yes, it's still available.", type: "outgoing" },
-                { text: "Are you available to pick it up this week?", type: "outgoing" },
-                { text: "Let me know.", type: "outgoing" }
-            ]
-        },
-        {
-            id: 3,
-            name: "Joeffrey Edrian Carani",
-            item: "Gaming Laptop",
-            avatar: "https://i.pravatar.cc/50?img=42",
-            messages: [
-                { text: "Is the price negotiable?", type: "incoming" },
-                { text: "The price is firm, sorry!", type: "outgoing" },
-                { text: "Sounds good, thanks!", type: "incoming" }
-            ]
-        },
-        {
-            id: 4,
-            name: "Gavrelle Garcia",
-            item: "Handmade Ceramic Mug",
-            avatar: "https://i.pravatar.cc/50?img=1",
-            messages: [
-                { text: "Do you have other colors?", type: "incoming" },
-                { text: "Only the one shown in the picture.", type: "outgoing" },
-                { text: "When can I see it?", type: "incoming" }
-            ]
-        },
-        {
-            id: 5,
-            name: "Anya Smith",
-            item: "Mountain Bike",
-            avatar: "https://i.pravatar.cc/50?img=22",
-            messages: [
-                { text: "Is it good for trails?", type: "incoming" },
-                { text: "Yes, excellent condition!", type: "outgoing" },
-                { text: "I'll be there at 5.", type: "incoming" }
-            ]
+    let allConversations = window.initialConversations || [];
+    let activeConversationId = null;
+    let pollingInterval = null; // Store the interval ID
+
+    // --- 1. Render Sidebar ---
+    function renderConversationList(conversations) {
+        conversationListEl.innerHTML = '';
+
+        if (conversations.length === 0) {
+            conversationListEl.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.6">No conversations yet</div>';
+            return;
         }
-    ];
 
-    let activeConversationId = 2; // Default to the active conversation in the HTML
+        conversations.forEach(conv => {
+            const div = document.createElement('div');
+            div.className = `conversation ${activeConversationId === conv.conversation_id ? 'active' : ''}`;
+            div.dataset.id = conv.conversation_id;
 
-    // --- 2. Message Rendering Function ---
-    const renderMessages = (messages) => {
-        chatMessages.innerHTML = ''; // Clear existing messages
-        messages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message', msg.type);
-            messageElement.textContent = msg.text;
-            chatMessages.appendChild(messageElement);
+            div.innerHTML = `
+                <div class="conversation-avatar" style="background-image: url('${conv.user_avatar}');"></div>
+                <div class="conversation-details">
+                    <div class="conversation-name">${conv.user_name}</div>
+                    <div class="conversation-message last-message">${conv.last_message}</div>
+                </div>
+            `;
+
+            div.addEventListener('click', () => loadConversation(conv));
+            conversationListEl.appendChild(div);
         });
-        // Scroll to the latest message
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    };
+    }
 
-    // --- 3. Conversation Switching Logic ---
-    const switchConversation = (newId) => {
-        const conversationData = conversations.find(c => c.id === newId);
-        if (!conversationData) return;
+    // --- 2. Load Specific Conversation ---
+    function loadConversation(conv) {
+        if (activeConversationId === conv.conversation_id) return;
 
-        // Update the active conversation in the list
-        document.querySelectorAll('.conversation').forEach(conv => {
-            conv.classList.remove('active');
-            if (parseInt(conv.dataset.userId) === newId) {
-                conv.classList.add('active');
-                // Remove the 'new' status dot when switching to it
-                const statusDot = conv.querySelector('.conversation-status.new');
-                if (statusDot) statusDot.remove();
+        activeConversationId = conv.conversation_id;
+        activeConversationIdInput.value = conv.conversation_id;
+
+        // Update UI State
+        emptyState.style.display = 'none';
+        chatHeader.style.display = 'flex';
+        chatMessagesEl.style.display = 'flex';
+        chatInputArea.style.display = 'flex';
+
+        // Update Header
+        chatTitle.textContent = conv.user_name;
+        chatSubtitle.textContent = conv.item_title;
+
+        // Highlight Active Item
+        document.querySelectorAll('.conversation').forEach(el => {
+            el.classList.toggle('active', parseInt(el.dataset.id) === activeConversationId);
+        });
+
+        // Fetch Messages immediately
+        fetchMessages(activeConversationId, true);
+
+        // Start Auto-Update
+        startMessagePolling(activeConversationId);
+    }
+
+    // --- 3. Polling Logic (Auto Update) ---
+    function startMessagePolling(convoId) {
+        // Clear any existing timer first
+        stopMessagePolling();
+
+        // Set a new timer to fetch every 3 seconds
+        pollingInterval = setInterval(() => {
+            if (activeConversationId === convoId) {
+                // Pass 'false' so we don't show the loading spinner every 3 seconds
+                fetchMessages(convoId, false);
             }
+        }, 3000);
+    }
+
+    function stopMessagePolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+    }
+
+    async function fetchMessages(convoId, showLoading = true) {
+        // Only show spinner on initial load, not during background polling
+        if (showLoading) {
+            chatMessagesEl.classList.add('loading');
+            chatMessagesEl.innerHTML = '<div class="spinner-wrapper"><i class="fas fa-spinner fa-spin"></i></div>';
+        }
+
+        try {
+            const response = await fetch(`index.php?action=get_messages&conversation_id=${convoId}`);
+
+            if (!response.ok) {
+                // If polling failed silently (e.g. network blip), just ignore it to avoid UI disruption
+                if (!showLoading) return;
+                throw new Error(`Server Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success) {
+                // If showing loading, clear it now
+                if (showLoading) {
+                    chatMessagesEl.classList.remove('loading');
+                    chatMessagesEl.innerHTML = '';
+                }
+
+                // Render messages.
+                // Optimization: In a real app, you'd only append NEW messages.
+                // For now, we replace the list but keep scroll position if user is reading up.
+                updateMessageList(data.messages);
+
+            } else {
+                console.error("Failed to load messages:", data.error);
+                if (showLoading) {
+                    chatMessagesEl.innerHTML = `<div class="error-state">Error: ${data.error}</div>`;
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            if (showLoading) {
+                chatMessagesEl.classList.remove('loading');
+                chatMessagesEl.innerHTML = '<div class="error-state">Failed to load messages.</div>';
+            }
+        }
+    }
+
+    function updateMessageList(messages) {
+        // 1. Check if we need to scroll to bottom (if user was already at bottom)
+        const isAtBottom = (chatMessagesEl.scrollHeight - chatMessagesEl.scrollTop) <= (chatMessagesEl.clientHeight + 100);
+
+        // 2. Clear and Rebuild (Simplest approach for reliability)
+        // Note: For a smoother experience, you could diff the lists, but this is sufficient for now.
+        chatMessagesEl.innerHTML = '';
+
+        if (messages.length === 0) {
+            chatMessagesEl.innerHTML = '<div class="empty-chat-state">No messages yet. Say hi!</div>';
+            return;
+        }
+
+        messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${msg.type}`;
+            msgDiv.textContent = msg.text;
+            msgDiv.title = msg.created_at;
+            chatMessagesEl.appendChild(msgDiv);
         });
 
-        // Update the chat header
-        chatTitle.innerHTML = `${conversationData.name} <i class="fas fa-external-link-alt" title="View Profile"></i>`;
-        
-        // FIX APPLIED HERE: Ensure correct property access (using 'item') and fallback
-        chatSubtitle.textContent = conversationData.item || 'No Item Title Available';
+        // 3. Scroll to bottom if this was a new load OR user was already at bottom
+        if (isAtBottom) {
+            scrollToBottom();
+        }
+    }
 
-        // Render the new messages
-        renderMessages(conversationData.messages);
+    // --- 4. Send Message ---
+    async function sendMessage(e) {
+        if(e) e.preventDefault();
 
-        activeConversationId = newId;
-        messageInput.focus();
-    };
-
-    // --- 4. Send Message Functionality ---
-    const sendMessage = () => {
         const text = messageInput.value.trim();
-        if (text === '') return;
+        if (!text || !activeConversationId) return;
 
-        // 1. Add message to dummy data
-        const activeConv = conversations.find(c => c.id === activeConversationId);
-        const newMessage = { text: text, type: 'outgoing' };
-        activeConv.messages.push(newMessage);
-
-        // 2. Add message to the DOM
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', 'outgoing');
-        messageElement.textContent = text;
-        chatMessages.appendChild(messageElement);
-
-        // 3. Clear input and scroll
+        // Optimistic UI Update
+        const tempMsg = document.createElement('div');
+        tempMsg.className = 'message outgoing';
+        tempMsg.textContent = text;
+        tempMsg.style.opacity = '0.7';
+        chatMessagesEl.appendChild(tempMsg);
+        scrollToBottom();
         messageInput.value = '';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // 4. Update conversation list preview (optional but good practice)
-        const activeConvElement = document.querySelector(`.conversation.active .last-message`);
-        if (activeConvElement) {
-            activeConvElement.textContent = text;
+        try {
+            const formData = new FormData();
+            formData.append('conversation_id', activeConversationId);
+            formData.append('message', text);
+
+            const response = await fetch('index.php?action=send_message', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json().catch(() => { throw new Error("Invalid Server Response"); });
+
+            if (result.success) {
+                tempMsg.style.opacity = '1';
+                // Trigger an immediate fetch to ensure sync and update sidebar
+                fetchMessages(activeConversationId, false);
+
+                // Update sidebar preview text manually for instant feedback
+                const sidebarItem = document.querySelector(`.conversation[data-id="${activeConversationId}"] .last-message`);
+                if (sidebarItem) sidebarItem.textContent = text;
+
+            } else {
+                tempMsg.classList.add('error');
+                tempMsg.textContent += " (Failed)";
+                alert("Error sending message: " + (result.error || "Unknown error"));
+            }
+        } catch (e) {
+            console.error(e);
+            tempMsg.classList.add('error');
+            tempMsg.style.backgroundColor = '#ff4444';
+            tempMsg.textContent += " (Network Error)";
         }
-    };
+    }
 
-    // --- 5. Event Listeners ---
+    function scrollToBottom() {
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
 
-    // Conversation list click listener
-    conversationList.addEventListener('click', (event) => {
-        const target = event.target.closest('.conversation');
-        if (target && !target.classList.contains('active')) {
-            const userId = parseInt(target.dataset.userId);
-            switchConversation(userId);
+    // --- 5. Search Filter ---
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allConversations.filter(c =>
+            c.user_name.toLowerCase().includes(term) ||
+            c.item_title.toLowerCase().includes(term)
+        );
+        renderConversationList(filtered);
+    });
+
+    // --- 6. Event Listeners ---
+    sendButton.addEventListener('click', (e) => sendMessage(e));
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage(e);
         }
     });
 
-    // Send button click listener
-    sendButton.addEventListener('click', sendMessage);
-
-    // Enter key press listener on input field
-    messageInput.addEventListener('keypress', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevents a newline in case of a textarea
-            sendMessage();
-        }
-    });
-
-    // --- 6. Initialization ---
-    // Load the initial active conversation (Jim Hendrix Bag-eo)
-    switchConversation(activeConversationId);
+    // Initialize
+    renderConversationList(allConversations);
 });

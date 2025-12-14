@@ -23,50 +23,12 @@ h1 {
     font-family: Lalezar;
     font-size: 3rem;
 }
+/* Re-add your specific background classes if they were external or omitted here */
 
-.app-main-content {
-    height: 100vh; /* Use full viewport height */
-    width: 100vw; /* Use full viewport width */
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px; /* Padding for the container to float in the dark background */
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* --- Background Shapes (Slightly larger and subtle) --- */
-.shape-blue {
-    position: absolute;
-    width: 700px;
-    height: 700px;
-    background: linear-gradient(135deg, #0052FF, #007BFF);
-    top: -300px;
-    left: -300px;
-    transform: rotate(45deg);
-    opacity: 0.3; /* Make it more subtle */
-    z-index: 0;
-}
-
-.shape-yellow {
-    position: absolute;
-    width: 600px;
-    height: 600px;
-    background: linear-gradient(-45deg, #FFC700, #FFDA48);
-    bottom: -300px;
-    right: -300px;
-    transform: rotate(45deg);
-    opacity: 0.3; /* Make it more subtle */
-    z-index: 0;
-}
-
-
-/* --- Chat Container (The main white box) --- */
 .chat-container {
     display: flex;
     width: 100%;
-    height: 93%;
+    height: 85vh; /* Fixed height relative to viewport */
     background-color: var(--light-grey);
     border-radius: 16px;
     gap: 10px;
@@ -75,33 +37,21 @@ h1 {
     z-index: 1;
 }
 
-.profile-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-image: url('https://i.pravatar.cc/40?img=32');
-    background-size: cover;
-    border: 2px solid var(--primary); /* Added border for user */
-    cursor: pointer;
-}
-
-/* --- Messages List (Conversation Pane) --- */
+/* --- Messages List (Sidebar) --- */
 .messages-list {
     width: 320px;
     min-width: 300px;
     display: flex;
     flex-direction: column;
     border-right: 1px solid var(--grey);
-    margin: 10px 0px 10px 10px ;
+    margin: 10px 0px 10px 10px;
     border-radius: 10px;
     background-color: white;
-
 }
-
 
 .search-bar {
     position: relative;
-    padding: 0 20px 20px;
+    padding: 20px;
 }
 
 .search-bar input {
@@ -111,30 +61,26 @@ h1 {
     border: none;
     background-color: var(--grey);
     font-size: 15px;
-    box-sizing: border-box;
     transition: outline 0.2s ease;
 }
 
 .search-bar input:focus {
     outline: 2px solid var(--primary);
-    background-color: var(--background-white);
+    background-color: white;
 }
 
-/* FIX: Ensure perfect vertical centering and correct horizontal position */
 .search-bar i {
     position: absolute;
-    left: 30px; /* Position relative to the search-bar padding */
+    left: 35px;
     top: 50%;
-    transform: translateY(-50%); /* Crucial for vertical centering */
+    transform: translateY(-50%);
     color: var(--text-secondary);
-    font-size: 16px;
-    vertical-align: middle; /* Added to help align the icon font glyph */
 }
 
 .conversation-list {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 0 10px 10px 10px; /* Padding for scrollbar visibility */
+    padding: 0 10px 10px 10px;
 }
 
 .conversation {
@@ -148,12 +94,12 @@ h1 {
 }
 
 .conversation:hover {
-    background-color: var(--light-blue-bg); /* Use light blue on hover */
+    background-color: #eef2ff;
 }
 
 .conversation.active {
     background-color: var(--light-grey);
-    border-left: 3px solid var(--primary); /* Visual indicator for active */
+    border-left: 3px solid var(--primary);
     padding-left: 7px;
 }
 
@@ -161,10 +107,11 @@ h1 {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background-color: var(--medium-grey);
+    background-color: #ddd;
     margin-right: 15px;
     flex-shrink: 0;
     background-size: cover;
+    background-position: center;
 }
 
 .conversation-details {
@@ -182,19 +129,10 @@ h1 {
 
 .conversation-message {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: #666;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.conversation-status.new {
-    width: 8px;
-    height: 8px;
-    background-color: var(--accent-yellow);
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-left: 10px;
 }
 
 /* --- Chat Window (Right Pane) --- */
@@ -202,104 +140,101 @@ h1 {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    margin: 10px 10px 10px 0px ;
+    margin: 10px 10px 10px 0px;
     border-radius: 10px;
     background-color: white;
+    height: calc(100% - 20px); /* Ensure it fits in container */
 }
 
 .chat-header {
     padding: 15px 25px;
-    border-bottom: 1px solid var(--medium-grey);
+    border-bottom: 1px solid var(--grey);
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
 .chat-header-title {
-    font-size: 2rem;
+    font-size: 1.2rem;
     font-weight: 700;
     display: flex;
     align-items: center;
 }
 
-.chat-header-title i {
-    color: var(--dark-grey);
-    font-size: 14px;
-    margin-left: 8px;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-.chat-header-title i:hover {
-    color: var(--primary);
-}
-
 .chat-header-subtitle {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: #666;
     margin-top: 2px;
 }
 
+/* === UPDATED CHAT MESSAGES AREA === */
 .chat-messages {
     flex-grow: 1;
     padding: 25px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    overflow-y: auto;
-    /* This pushes the messages to the bottom, like a real chat */
-    justify-content: flex-end; 
+    gap: 8px;
+
+    /* SCROLL LOGIC */
+    overflow-y: auto;   /* Scroll only if content overflows */
+    overflow-x: hidden;
+
+    /* REMOVED: justify-content: flex-end; (This breaks scrolling) */
+}
+
+/* This pushes messages to the bottom when there are few,
+   but allows normal scrolling when there are many. */
+.chat-messages:not(.loading) > :first-child {
+    margin-top: auto;
 }
 
 .message {
-    max-width: 65%;
-    padding: 10px 15px;
+    max-width: 70%;
+    padding: 10px 16px;
     border-radius: 18px;
     font-size: 15px;
-    line-height: 1.4;
+    line-height: 1.5;
     word-wrap: break-word;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .message.incoming {
-    background-color: var(--grey);
-    color: var(--text-primary);
+    background-color: #f0f2f5;
+    color: #050505;
     align-self: flex-start;
-    border-bottom-left-radius: 6px; /* Sharper corner on one side */
+    border-bottom-left-radius: 4px;
 }
 
 .message.outgoing {
     background-color: var(--primary);
     color: white;
     align-self: flex-end;
-    border-bottom-right-radius: 6px; /* Sharper corner on one side */
+    border-bottom-right-radius: 4px;
 }
 
 .chat-input {
     display: flex;
     align-items: center;
-    margin: 15px 25px;
+    padding: 15px 25px;
     flex-shrink: 0;
+    background: white;
     border-radius: 10px;
 }
 
 .chat-input input {
     flex-grow: 1;
-    border: none;
-    background-color: var(--background-white); /* White input field */
-    border: 1px solid var(--medium-grey);
+    background-color: #f0f2f5;
+    border: 1px solid transparent;
     padding: 12px 20px;
     border-radius: 25px;
     font-size: 15px;
     margin-right: 15px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.chat-input input {
-    background-color: var(--grey);
+    outline: none;
 }
 
 .chat-input input:focus {
-    outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary);
 }
 
 .send-btn {
@@ -312,17 +247,16 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 18px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    flex-shrink: 0;margin: 10px;
+    transition: background 0.2s;
 }
 
 .send-btn:hover {
-    background-color: var(--secondary);
+    background-color: #1d4ed8;
 }
 
-/* Hide scrollbar for a cleaner look */
+/* Scrollbar Styling */
 .conversation-list::-webkit-scrollbar,
 .chat-messages::-webkit-scrollbar {
     width: 6px;
@@ -330,11 +264,32 @@ h1 {
 
 .conversation-list::-webkit-scrollbar-thumb,
 .chat-messages::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 
 .conversation-list::-webkit-scrollbar-track,
 .chat-messages::-webkit-scrollbar-track {
     background: transparent;
+}
+
+/* --- State Classes --- */
+.chat-messages.loading {
+    justify-content: center;
+    align-items: center;
+}
+.spinner-wrapper {
+    font-size: 2rem;
+    color: var(--primary);
+}
+.error-state {
+    color: #ef4444;
+    text-align: center;
+    margin: auto;
+}
+.empty-chat-state {
+    text-align: center;
+    color: #999;
+    margin: auto;
+    font-style: italic;
 }
