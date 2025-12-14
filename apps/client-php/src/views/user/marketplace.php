@@ -60,44 +60,6 @@
             </div>
         </div>
     </div>
-
-    <div class="modal" id="item-modal">
-        <div class="modal-content">
-            <button id="close-modal" class="close-btn" onclick="closeModal()">&times;</button>
-            <div class="modal-left">
-                <img id="modal-img" src="https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=600" alt="Main View">
-            </div>
-            <div class="modal-right">
-                <h2 id="modal-title">Item Title</h2>
-                <p class="seller-label">Sold by: <strong id="modal-seller">...</strong></p>
-                <div class="stats-row">
-                    <div class="stat-box">
-                        <span class="label">Current Bid</span>
-                        <div class="value-pill">₱ <span id="modal-price">0</span></div>
-                    </div>
-                    <div class="stat-box">
-                        <span class="label">Next Minimum</span>
-                        <div class="value-pill">₱ <span id="modal-next">0</span></div>
-                    </div>
-                </div>
-                <div class="timer-container">
-                    <span class="label">Auction Ends in</span>
-                    <div class="timer-pill">02d 14h 32m</div> <!-- timer -->
-                </div>
-                <form class="bid-form-area" onsubmit="alert('Bid Logic Here'); event.preventDefault();">
-                    <input type="number" placeholder="Enter amount" required>
-                    <button type="submit" class="btn-place-bid">Submit Bid</button>
-                </form>
-                <div class="info-section">
-                    <h4>Description</h4>
-                    <p>This is a simulated description for the preview.</p>
-                </div>
-                <div class="info-section">
-                    <h4>Bid History</h4>
-                    <p style="font-size: 0.9rem;">No bids yet.</p>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="/assets/js/utils.js"></script>
