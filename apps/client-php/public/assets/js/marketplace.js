@@ -90,7 +90,7 @@ function createCardHTML(item) {
                 ${badgeHTML}
             </div>
             <h4>${title}</h4>
-            <div class="item-price">₱ ${parseFloat(price).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+            <div class="item-price">₱ ${parseFloat(price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <div class="item-timer">
                 <span class="timer-label">${timerLabel}</span> 
                 <span class="timer-value" data-target="${item.timer.target}"></span>
@@ -106,19 +106,19 @@ function createCardHTML(item) {
 function setupTabs() {
     const tabs = document.querySelectorAll('.d-tab');
     tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
+        tab.addEventListener('click', function () {
             tabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
 
             // Handle Tab Redirections to profile page as implemented in other views
             const tabText = this.innerText.trim();
-            if(tabText.includes('Live Auctions')) {
-                 loadAuctions(); // Reload active items
+            if (tabText.includes('Live Auctions')) {
+                loadAuctions(); // Reload active items
             }
-            else if(tabText.includes('My Bids')) {
+            else if (tabText.includes('My Bids')) {
                 window.location.href = 'index.php?action=marketplace'; // TODO
             }
-            else if(tabText.includes('My Watchlist')) {
+            else if (tabText.includes('My Watchlist')) {
                 window.location.href = 'index.php?action=marketplace'; // TODO
             }
         });
@@ -126,7 +126,7 @@ function setupTabs() {
 }
 
 // Function to redirect to the dedicated item details page
-window.openItemDetails = function(itemId) {
+window.openItemDetails = function (itemId) {
     // This is the intended behavior since ItemDetailsDTO exists
     window.location.href = `index.php?action=item_details&id=${itemId}`;
 }
@@ -149,9 +149,9 @@ function updateTimers() {
 
         if (diff < 0) {
             if (isEndsIn) {
-                 display = 'Auction Ended';
+                display = 'Auction Ended';
             } else {
-                 display = 'Auction Started';
+                display = 'Auction Started';
             }
         } else {
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -244,6 +244,6 @@ setInterval(() => {
 
 // Keeping the original modal functions as stubs because the HTML file contains the modal structure.
 const modal = document.getElementById('item-modal');
-window.openModal = function() { modal.classList.add('active'); } // Not used by the cards anymore
-window.closeModal = function() { modal.classList.remove('active'); }
-window.onclick = function(event) { if (event.target == modal) { closeModal(); } }
+window.openModal = function () { modal.classList.add('active'); } // Not used by the cards anymore
+window.closeModal = function () { modal.classList.remove('active'); }
+window.onclick = function (event) { if (event.target == modal) { closeModal(); } }

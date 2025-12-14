@@ -159,7 +159,7 @@ class AuctionService
             $startBid,
             $startBid,
             $now,
-            $now,
+            $now, // CHANGE THIS TO START TIME
             $endDate,
             ItemStatus::Active,
             null,

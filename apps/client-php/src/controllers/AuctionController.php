@@ -137,6 +137,7 @@ class AuctionController extends BaseController
                     }
                 }
 
+                // TODO: add the start_time to the input
                 $newId = $this->auctionService->createListing(
                     $userId,
                     $input['title'],

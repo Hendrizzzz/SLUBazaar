@@ -50,14 +50,14 @@ class ChatService
                 'conversation_id' => $dto->conversationId,
 
                 // Combine names
-                'user_name'       => $dto->otherUserFname . ' ' . $dto->otherUserLname,
+                'user_name' => $dto->otherUserFname . ' ' . $dto->otherUserLname,
 
                 // Avatar logic (using UI Avatars if null)
-                'user_avatar'     => $dto->itemImageUrl ?? ('https://ui-avatars.com/api/?name=' . urlencode($dto->otherUserFname)),
+                'user_avatar' => $dto->itemImageUrl ?? ('https://ui-avatars.com/api/?name=' . urlencode($dto->otherUserFname)),
 
-                'item_title'      => $dto->itemTitle,
-                'last_message'    => $dto->lastMessage,
-                'is_read'         => $dto->isRead
+                'item_title' => $dto->itemTitle,
+                'last_message' => $dto->lastMessage,
+                'is_read' => $dto->isRead
             ];
         }
 
@@ -107,6 +107,35 @@ class ChatService
             false
         );
 
+
         $this->messageRepo->addMessage($message);
+    }
+
+    /**
+     * Requirement: A.2.14 (Transaction Verification)
+     */
+    public function verifyMeetup(int $userId, int $itemId, string $code): void
+    {
+        $item = $this->itemRepo->getItemById($itemId);
+
+        if (!$item)
+            throw new Exception("Item not found.");
+
+        // Verify it is the seller (The seller enters the code provided by buyer? Or confirms the transaction?)
+        // Based on "To Handover" context for Seller, Seller acts on this.
+        if ($item->getSellerId() !== $userId)
+            throw new Exception("Unauthorized access. Only the seller can verify the transaction.");
+
+        // Verify Status
+        if ($item->getItemStatus() !== ItemStatus::AwaitingMeetup)
+            throw new Exception("Item is not awaiting meetup.");
+
+        // Verify Code
+        if ($item->getMeetUpCode() !== $code)
+            throw new Exception("Invalid verification code.");
+
+        // Update State
+        $this->itemRepo->updateItemStatus($itemId, ItemStatus::Sold->value);
+        $this->itemRepo->addDateSold($itemId, new DateTimeImmutable());
     }
 }
