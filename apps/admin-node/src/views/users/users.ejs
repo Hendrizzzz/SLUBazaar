@@ -1,0 +1,57 @@
+<div class="users-container">
+    <h1>User Management</h1>
+    
+    <div class="filters">
+        <form method="GET" class="filter-form">
+            <input type="text" name="search" placeholder="Search users..." value="<%= searchQuery || '' %>">
+            <select name="status">
+                <option value="all" <%= statusFilter === 'all' ? 'selected' : '' %>>All Users</option>
+                <option value="active" <%= statusFilter === 'active' ? 'selected' : '' %>>Active</option>
+                <option value="banned" <%= statusFilter === 'banned' ? 'selected' : '' %>>Banned</option>
+            </select>
+            <button type="submit">Filter</button>
+        </form>
+    </div>
+    
+    <div class="users-table">
+        <% if (users && users.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.firstName %> <%= user.lastName %></td>
+                            <td><%= user.email %></td>
+                            <td><%= user.averageRating || 'N/A' %></td>
+                            <td>
+                                <span class="status-badge <%= user.accountStatus %>">
+                                    <%= user.accountStatus %>
+                                </span>
+                            </td>
+                            <td><%= new Date(user.createdAt).toLocaleDateString() %></td>
+                            <td>
+                                <% if (user.accountStatus === 'active') { %>
+                                    <button class="ban-btn" data-user-id="<%= user.userId %>">Ban</button>
+                                <% } else { %>
+                                    <button class="unban-btn" data-user-id="<%= user.userId %>">Unban</button>
+                                <% } %>
+                                <button class="edit-btn" data-user-id="<%= user.userId %>">Edit</button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>No users found.</p>
+        <% } %>
+    </div>
+</div>

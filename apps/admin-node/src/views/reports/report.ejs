@@ -1,0 +1,37 @@
+<div class="reports-container">
+    <h1>Report Management</h1>
+    
+    <div class="reports-table">
+        <% if (reports && reports.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reported Date</th>
+                        <th>Type</th>
+                        <th>Reason</th>
+                        <th>Reporter</th>
+                        <th>Target</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% reports.forEach(report => { %>
+                        <tr>
+                            <td><%= new Date(report.created_at).toLocaleDateString() %></td>
+                            <td><%= report.report_type %></td>
+                            <td><%= report.reason %></td>
+                            <td><%= report.reporter_id %></td>
+                            <td><%= report.target_id %></td>
+                            <td>
+                                <button class="review-btn" data-report-id="<%= report.report_id %>">Review</button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>No pending reports found.</p>
+        <% } %>
+    </div>
+</div>
+

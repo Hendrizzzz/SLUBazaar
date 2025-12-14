@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Admin Panel' %> - SLUBazaar Admin</title>
+    <link rel="stylesheet" href="/css/admin.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+<body>
+    <nav class="admin-nav">
+        <div class="nav-brand">
+            <h2>SLUBazaar Admin</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/admin/dashboard" class="<%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'active' : '' %>"> Dashboard</a></li>
+            <li><a href="/admin/reports" class="<%= (typeof currentPage !== 'undefined' && currentPage === 'reports') ? 'active' : '' %>"> Reports</a></li>
+            <li><a href="/admin/users" class="<%= (typeof currentPage !== 'undefined' && currentPage === 'users') ? 'active' : '' %>"> Users</a></li>
+            <li><a href="/admin/listings" class="<%= (typeof currentPage !== 'undefined' && currentPage === 'listings') ? 'active' : '' %>"> Listings</a></li>
+        </ul>
+        <div class="nav-user">
+            <span>Admin User</span>
+        </div>
+    </nav>
+    
+ 
+    <main class="admin-main">
+        <%- body %>
+    </main>
+    
+
+    <footer class="admin-footer">
+        <p>&copy; 2025 SLUBazaar Admin Panel</p>
+    </footer>
+    
+    <script src="/js/admin.js"></script>
+</body>
+</html>

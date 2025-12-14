@@ -1,11 +1,13 @@
-// Main router file
+// Main routes
 
-// sample code
-// const express = require('express');
-// const app = express();
+const express = require('express');
+const router = express.Router();
 
-// const mainRouter = require('./src/routes/index');
+// Home page
+router.get('/', (req, res) => {
+    res.render('index', {
+        title: 'SLUBazaar Admin Panel'
+    });
+});
 
-// app.use('/admin', mainRouter);
-
-// app.listen(3000);
+module.exports = router;
