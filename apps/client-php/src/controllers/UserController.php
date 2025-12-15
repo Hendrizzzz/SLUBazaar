@@ -193,4 +193,36 @@ class UserController extends BaseController
     }
 
 
+
+
+    public function submitReport(): void
+    {
+        $userId = $this->requireLogin();
+        $input = $this->getInput();
+
+        $targetUserId = isset($input['target_user_id'])
+            ? (int) $input['target_user_id']
+            : null;
+
+        $targetItemId = isset($input['target_item_id'])
+            ? (int) $input['target_item_id']
+            : null;
+
+        try {
+            $this->userService->submitReport(
+                $userId,
+                $targetUserId,
+                $targetItemId,
+                $input['reason'] ?? '',
+                $input['description'] ?? ''
+            );
+
+            $this->jsonResponse(['success' => true, 'message' => 'Report submitted successfully.']);
+
+        } catch (Exception $e) {
+            $this->errorResponse($e->getMessage());
+        }
+    }
+
+
 }

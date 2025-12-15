@@ -219,7 +219,8 @@ class Container
                 $this->getItemRepo(),
                 $this->getBidRepo(),
                 $this->getRatingRepo(),
-                $this->getWatchlistRepo()
+                $this->getWatchlistRepo(),
+                $this->getReportRepo()
             );
         }
         return $this->services['userService'];

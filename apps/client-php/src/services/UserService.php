@@ -11,19 +11,22 @@ class UserService
     private BidRepository $bidRepo;
     private RatingRepository $ratingRepo;
     private WatchlistRepository $watchlistRepo;
+    private ReportRepository $reportRepo;
 
     public function __construct(
         UserRepository $userRepo,
         ItemRepository $itemRepo,
         BidRepository $bidRepo,
         RatingRepository $ratingRepo,
-        WatchlistRepository $watchlistRepo
+        WatchlistRepository $watchlistRepo,
+        ReportRepository $reportRepo
     ) {
         $this->userRepo = $userRepo;
         $this->itemRepo = $itemRepo;
         $this->bidRepo = $bidRepo;
         $this->ratingRepo = $ratingRepo;
         $this->watchlistRepo = $watchlistRepo;
+        $this->reportRepo = $reportRepo;
     }
 
     /**
@@ -61,13 +64,13 @@ class UserService
     //     return match ($mainTab) {
     //         // TAB A: Selling Center (My Inventory)
     //         'selling' => $this->getSellingContent($userId, $subFilter),
-            
+
     //         // TAB B: Buying Activity (My Bids)
     //         'buying' => $this->getBuyingContent($userId, $subFilter),
-            
+
     //         // TAB C: Reputation (My Reviews)
     //         'reputation' => $this->getReputationContent($userId, $subFilter),
-            
+
     //         default => []
     //     };
     // }
@@ -78,21 +81,21 @@ class UserService
     {
         return match ($subFilter) {
             'handover' => $this->itemRepo->getToHandoverItemsByUserId($userId),
-            'active'   => $this->itemRepo->getActiveItemsByUserId($userId),
-            'sold'     => $this->itemRepo->getSoldItemsByUserId($userId),
-            'unsold'   => $this->itemRepo->getUnsoldItemsByUserId($userId), // Expired/Cancelled
-            default    => []
+            'active' => $this->itemRepo->getActiveItemsByUserId($userId),
+            'sold' => $this->itemRepo->getSoldItemsByUserId($userId),
+            'unsold' => $this->itemRepo->getUnsoldItemsByUserId($userId), // Expired/Cancelled
+            default => []
         };
     }
 
     public function getBuyingContent(int $userId, string $subFilter): array
     {
         return match ($subFilter) {
-            'claim'     => $this->bidRepo->getToClaimBidsByUserId($userId),
-            'active'    => $this->bidRepo->getActiveBidsByUserId($userId),
-            'history'   => $this->bidRepo->getPastBidsByUserId($userId),
+            'claim' => $this->bidRepo->getToClaimBidsByUserId($userId),
+            'active' => $this->bidRepo->getActiveBidsByUserId($userId),
+            'history' => $this->bidRepo->getPastBidsByUserId($userId),
             'watchlist' => $this->watchlistRepo->getWatchlistByUserId($userId),
-            default     => []
+            default => []
         };
     }
 
@@ -100,8 +103,8 @@ class UserService
     {
         return match ($subFilter) {
             'received' => $this->ratingRepo->getReceivedRatings($userId),
-            'given'    => $this->ratingRepo->getGivenRatings($userId),
-            default    => []
+            'given' => $this->ratingRepo->getGivenRatings($userId),
+            default => []
         };
     }
 
@@ -110,14 +113,14 @@ class UserService
      */
     public function submitRating(int $raterId, int $rateeId, int $itemId, int $stars, string $comment): void
     {
-        if ($stars < 1 || $stars > 5) 
+        if ($stars < 1 || $stars > 5)
             throw new Exception("Rating must be between 1 and 5 stars.");
 
-        if ($raterId === $rateeId) 
+        if ($raterId === $rateeId)
             throw new Exception("You cannot rate yourself.");
 
         $rating = new Rating(
-            null, 
+            null,
             $itemId,
             $raterId,
             $rateeId,
@@ -128,5 +131,44 @@ class UserService
 
         $this->ratingRepo->addRating($rating);
         $this->userRepo->updateAverageRating($rateeId);
+    }
+
+
+
+    /**
+     * Requirement A.2.16: User submits a report
+     */
+    public function submitReport(
+        int $reporterId,
+        ?int $targetUserId,
+        ?int $targetItemId,
+        string $reason,
+        string $desc
+    ): int {
+        if (empty($reason) || empty($desc))
+            throw new Exception("Reason and Description are required.");
+
+        if ($targetUserId === null && $targetItemId === null)
+            throw new Exception("You must specify a target (User or Item) to report.");
+
+        if ($targetUserId !== null && $targetItemId !== null)
+            throw new Exception("Invalid request: Cannot report both User and Item simultaneously.");
+
+        $typeEnum = ($targetUserId !== null) ? ReportType::User : ReportType::Item;
+        $report = new Report(
+            null,
+            $reporterId,
+            $targetUserId,
+            $targetItemId,
+            $typeEnum,
+            $reason,
+            $desc,
+            ReportStatus::Pending,
+            null,
+            new DateTimeImmutable()
+        );
+
+        $this->reportRepo->addReport($report);
+        return $report->getReportId();
     }
 }
