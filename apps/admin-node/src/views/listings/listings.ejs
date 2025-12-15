@@ -1,57 +1,41 @@
-<div class="listings-container">
-    <h1>Listing Management</h1>
-    
-    <div class="filters">
-        <form method="GET" class="filter-form">
-            <input type="text" name="search" placeholder="Search listings..." value="<%= searchQuery || '' %>">
-            <select name="status">
-                <option value="all" <%= statusFilter === 'all' ? 'selected' : '' %>>All Listings</option>
-                <option value="active" <%= statusFilter === 'active' ? 'selected' : '' %>>Active</option>
-                <option value="sold" <%= statusFilter === 'sold' ? 'selected' : '' %>>Sold</option>
-                <option value="removed" <%= statusFilter === 'removed' ? 'selected' : '' %>>Removed</option>
-            </select>
-            <button type="submit">Filter</button>
-        </form>
+<!DOCTYPE html>
+
+<!--mini cards -->
+<!--mini cards padding -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <!--active listings -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">WYMMM</h3>
+        <p class="text-4xl font-bold text-gray-900">43</p>
     </div>
-    
-    <div class="listings-table">
-        <% if (listings && listings.length > 0) { %>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Seller</th>
-                        <th>Status</th>
-                        <th>Created</th>
-                        <th>Current Bid</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% listings.forEach(listing => { %>
-                        <tr>
-                            <td><%= listing.title %></td>
-                            <td><%= listing.sellerId %></td>
-                            <td>
-                                <span class="status-badge <%= listing.itemStatus %>">
-                                    <%= listing.itemStatus %>
-                                </span>
-                            </td>
-                            <td><%= new Date(listing.createdAt).toLocaleDateString() %></td>
-                            <td>$<%= listing.currentBid || '0.00' %></td>
-                            <td>
-                                <% if (listing.itemStatus === 'Active') { %>
-                                    <button class="remove-btn" data-listing-id="<%= listing.itemId %>">Remove</button>
-                                <% } else if (listing.itemStatus === 'Removed') { %>
-                                    <button class="restore-btn" data-listing-id="<%= listing.itemId %>">Restore</button>
-                                <% } %>
-                            </td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        <% } else { %>
-            <p>No listings found.</p>
-        <% } %>
+
+    <!-- closed listings -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Closed Listings</h3>
+        <p class="text-4xl font-bold text-gray-900">67</p>
+    </div>
+
+    <!--total users -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Total Users</h3>
+        <p class="text-4xl font-bold text-gray-900">17</p>
+    </div>
+
+    <!--sold items -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Sold</h3>
+        <p class="text-4xl font-bold text-gray-900">9</p>
+    </div>
+
+    <!--reported listings -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Reported Listings</h3>
+        <p class="text-4xl font-bold text-gray-900">10</p>
+    </div>
+
+    <!--reported users -->
+    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+        <h3 class="text-lg font-semibold text-gray-700 mb-2">Reported Users</h3>
+        <p class="text-4xl font-bold text-gray-900">35</p>
     </div>
 </div>
