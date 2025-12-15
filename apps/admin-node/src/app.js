@@ -12,7 +12,7 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
-app.set('layout', 'layouts/main');
+app.set('layout', 'layouts/layout');
 
 
 app.use(express.static(path.join(__dirname, '../public')));
@@ -30,19 +30,14 @@ app.use('/admin', adminRouter);
 
 
 app.use((req, res, next) => {
-    res.status(404).render('error', {
-        title: 'Page Not Found',
-        message: 'Sorry, the page you are looking for does not exist.'
-    });
+    // Redirect to dashboard instead of rendering non-existent error view
+    res.redirect('/admin/dashboard/index');
 });
-
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).render('error', {
-        title: 'Server Error',
-        message: 'Something went wrong on our end. Please try again later.'
-    });
+    // Redirect to dashboard instead of rendering non-existent error view
+    res.redirect('/admin/dashboard');
 });
 
 module.exports = app;
