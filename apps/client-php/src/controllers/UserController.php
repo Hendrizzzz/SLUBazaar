@@ -216,15 +216,14 @@ class UserController extends BaseController
         $targetUserId = null;
         $targetItemId = null;
 
-        if ($isUserReport) {
+        if ($isUserReport)
             $targetUserId = isset($input['target_user_id'])
                 ? (int) $input['target_user_id']
                 : null;
-        } else {
+        else
             $targetItemId = isset($input['target_item_id'])
                 ? (int) $input['target_item_id']
                 : null;
-        }
 
         try {
             $this->userService->submitReport(

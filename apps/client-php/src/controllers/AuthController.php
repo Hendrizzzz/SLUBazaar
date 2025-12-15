@@ -28,9 +28,9 @@ class AuthController extends BaseController
                 $role = isset($user['role']) ? $user['role'] : 'Member';
 
                 $redirectUrl = ($role === 'Admin')
-                    ? 'admin/index.php?action=admin_dashboard'
+                    ? 'admin/dashboard' // proxy it to admin
                     : 'index.php?action=marketplace';
-                // TODO : change the redirect url to admin
+
                 $this->jsonResponse([
                     'success' => true,
                     'message' => 'Login successful',
