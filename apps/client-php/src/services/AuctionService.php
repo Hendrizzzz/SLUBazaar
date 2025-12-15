@@ -140,7 +140,7 @@ class AuctionService
      * 
      * @param array $files The $_FILES['images'] array from the controller
      */
-    public function createListing(int $sellerId, string $title, string $desc, float $startBid, string $cat, string $endString, array $files): int
+    public function createListing(int $sellerId, string $title, string $desc, float $startBid, string $cat, string $startString, string $endString, array $files): int
     {
         if ($startBid < 0)
             throw new Exception("Starting bid cannot be negative.");
@@ -148,6 +148,11 @@ class AuctionService
         $endDate = new DateTimeImmutable($endString);
         $now = new DateTimeImmutable();
 
+        if ($startString == null) {
+            $startDate = $now;
+        } else {
+            $startDate = new DateTimeImmutable($startString);
+        }
         if ($endDate <= $now)
             throw new Exception("End time must be in the future.");
 
@@ -159,7 +164,7 @@ class AuctionService
             $startBid,
             $startBid,
             $now,
-            $now, // CHANGE THIS TO START TIME
+            $startDate, // CHANGE THIS TO START TIME
             $endDate,
             ItemStatus::Active,
             null,

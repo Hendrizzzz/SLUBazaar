@@ -125,6 +125,10 @@ if (!isset($itemDetails)) {
                                 onclick="toggleWatchlist(<?php echo $itemDetails->itemId; ?>, this)">
                             <i class="<?php echo $itemDetails->isWatchlisted ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
                         </button>
+                        <button class="btn-report <?php echo $itemDetails->isWatchlisted ? 'active' : ''; ?>"
+                                onclick="toggleWatchlist(<?php echo $itemDetails->itemId; ?>, this)">
+                            <i class="<?php echo $itemDetails->isWatchlisted ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
+                        </button>
                     </div>
                     <p class="min-bid-hint">Minimum next bid: ₱ <?php echo number_format($itemDetails->nextMinimumBid, 2); ?></p>
                 <?php endif; ?>

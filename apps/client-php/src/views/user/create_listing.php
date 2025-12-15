@@ -75,6 +75,10 @@
                                     required>
                             </div>
                             <div class="form-row" style="flex: 1;">
+                                <label>Date Start (Optional):</label>
+                                <input type="datetime-local" name="start_time" class="input-field">
+                            </div>
+                            <div class="form-row" style="flex: 1;">
                                 <label>Date End:</label>
                                 <input type="datetime-local" name="end_time" class="input-field" required>
                             </div>
