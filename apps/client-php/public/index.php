@@ -100,9 +100,13 @@ try {
             // AJAX: Seller enters buyer code to complete deal
             $container->getUserController()->verifyTransaction();
             break;
-        case 'submit_report':
+        case 'report_user':
             // AJAX: User submits a report
-            $container->getUserController()->submitReport();
+            $container->getUserController()->reportUser();
+            break;
+        case 'report_item':
+            // AJAX: Item submits a report
+            $container->getUserController()->reportItem();
             break;
 
         // =========================================================

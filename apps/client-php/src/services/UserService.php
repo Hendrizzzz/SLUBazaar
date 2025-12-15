@@ -149,10 +149,17 @@ class UserService
             throw new Exception("Reason and Description are required.");
 
         if ($targetUserId === null && $targetItemId === null)
-            throw new Exception("You must specify a target (User or Item) to report.");
+            throw new InvalidArgumentException('You must specify a target (user or item) to report.');
 
         if ($targetUserId !== null && $targetItemId !== null)
-            throw new Exception("Invalid request: Cannot report both User and Item simultaneously.");
+            throw new InvalidArgumentException('Invalid request: cannot report both a user and an item.');
+
+        if ($targetUserId !== null && $targetUserId <= 0)
+            throw new InvalidArgumentException('Invalid target user ID.');
+
+
+        if ($targetItemId !== null && $targetItemId <= 0)
+            throw new InvalidArgumentException('Invalid target item ID.');
 
         $typeEnum = ($targetUserId !== null) ? ReportType::User : ReportType::Item;
         $report = new Report(

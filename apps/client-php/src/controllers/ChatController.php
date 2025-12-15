@@ -35,7 +35,7 @@ class ChatController extends BaseController
             $messageDtos = $this->chatService->getChatHistory($convoId, $userId);
 
             // 2. Format for JS
-            $formatted = array_map(function($msgDto) {
+            $formatted = array_map(function ($msgDto) {
                 return [
                     'id' => $msgDto->messageId,
                     'text' => $msgDto->messageText,
