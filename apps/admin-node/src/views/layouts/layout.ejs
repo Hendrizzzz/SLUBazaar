@@ -14,17 +14,51 @@ if (typeof title === 'undefined') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title || 'Admin' %></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentArea = document.getElementById('content-area');
+            const tabs = document.querySelectorAll('nav a');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = this.href;
+                    
+                    contentArea.innerHTML = '<div class="text-center py-8">Loading...</div>';
+                    
+                    //ajax to fetch content
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(html => {
+                            //get content from response
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = html;
+                            const newContent = tempDiv.querySelector('#content-area')?.innerHTML || 
+                                             tempDiv.querySelector('body')?.innerHTML;
+                            
+                            if (newContent) {
+                                contentArea.innerHTML = newContent;
+                            }
+                        })
+                        .catch(error => {
+                            contentArea.innerHTML = '<div class="text-red-600 p-4">Error loading content</div>';
+                        });
+                });
+            });
+        });
+    </script>
 </head>
 <body class="min-h-screen bg-gray-50">
     <!--bg img setup -->
     <div class="fixed inset-0 bg-center bg-cover -z-10"
-         style="background-image: url('/SLUBazaar/apps/admin-node/public/assets/slubakakeng.png')">
+         style="background-image: url('/assets/slubakakeng.png')">
     </div>
 
     <div class="min-h-screen p-4 md:p-6">
         <!--top left items (header)-->
         <header class="flex items-center gap-4 mb-6">
-            <img src="/SLUBazaar/apps/admin-node/public/assets/SLU Logo.png"
+            <img src="/assets/SLU Logo.png"
                  alt="slu_logo"
                  class="w-12 h-12 md:w-16 md:h-16 object-contain" />
             <div>
@@ -50,32 +84,32 @@ if (typeof title === 'undefined') {
                                : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">
                             Overview
                         </a>
-                        <a href="/SLUBazaar/apps/admin-node/src/views/reports/report.ejs"
+                        <a href="/admin/reports"
+                           class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
+                           <%= activeTab === 'reports'
+                               ? 'bg-blue-600 text-white border border-blue-600'
+                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">>
+                            Reports
+                        </a>
+                        <a href="/admin/users"
                            class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
                            <%= activeTab === 'users'
                                ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">
-                            Reports
-                        </a>
-                        <a href="/SLUBazaar/apps/admin-node/src/views/users/users.ejs"
-                           class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
-                           <%= activeTab === 'listings'
-                               ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">
+                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">>
                             Users
                         </a>
-                         <a href="/SLUBazaar/apps/admin-node/src/views/listings/listings.ejs"
+                         <a href="/admin/listings"
                            class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
                            <%= activeTab === 'listings'
                                ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">
+                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">>
                             Listings
                         </a>
                     </div>
                 </nav>
 
                 <!--page content - to be filled by dashboard\index.ejs -->
-                <div class="p-6 md:p-8">
+                <div class="p-6 md:p-8" id="content-area">
                     <%- body %>
                 </div>
             </section>
