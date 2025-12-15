@@ -241,10 +241,10 @@ setInterval(() => {
     }
 }, 1000);
 
-async function cancelAuction(itemid) {
+async function cancelAuction(itemId) {
     const res = await apiFetch('index.php?action=cancel_auction', {
         method: 'POST',
-        body: JSON.stringify({ item_id: itemid })
+        body: JSON.stringify({ item_id: itemId })
     })
 
     if (res && res.success ) {
@@ -252,6 +252,10 @@ async function cancelAuction(itemid) {
     } else {
         alert(res.error || "Failed to cancel listing.");
     }
+}
+
+async function  reportItem(itemId) {
+    
 }
 
 
