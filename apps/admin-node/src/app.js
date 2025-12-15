@@ -31,7 +31,7 @@ app.use('/admin', adminRouter);
 
 app.use((req, res, next) => {
     // Redirect to dashboard instead of rendering non-existent error view
-    res.redirect('/admin/dashboard/index');
+    console.log(err.stack);
 });
 
 app.use((err, req, res, next) => {
