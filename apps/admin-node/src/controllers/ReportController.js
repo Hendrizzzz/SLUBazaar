@@ -1,73 +1,87 @@
-const moderationService = require('../services/ModerationService');
-
-/**
- * Controller for the Reports/Moderation section
- */
-class ReportsController {
-    constructor(reportRepo, UserRepo, itemRepo){
-        this.reportRepo = reportRepo;
-        this.UserRepo = UserRepo;
-        this.itemRepo = itemRepo;
+class ReportController {
+    constructor(reportService) {
+        this.reportService = reportService;
     }
 
-    async viewReports(req, res) {
-        try {
-            console.log('Report route accessed');
-            
-            // Get pending reports for display
-            const reports = await this.reportRepo.getReportsByStatus('Pending');
 
-            console.log('Rendering reports with data:', reports);
-            res.render('reports/report', {
-                title: 'Report Management',
-                currentPage: 'reports',
-                reports: reports
-            });
+
+
+    /**
+     * [VIEW] Renders the Reports Management Page
+     * GET /admin/reports
+     */
+    async getReportsView(req, res) {
+        res.render('reports', {
+            title: 'Moderation Queue | SLU Bazaar Admin',
+            path: '/reports'
+        });
+    }
+
+
+
+
+    /**
+     * [API] Get filtered list for the table
+     * GET /admin/api/reports?status=Pending&type=Item
+     */
+    async getAllReports(req, res) {
+        try {
+            const filters = {
+                status: req.query.status || 'Pending',
+                type: req.query.type || null
+            };
+            const reports = await this.reportService.getAllReports(filters);
+            res.json({ success: true, data: reports });
         } catch (error) {
-            console.error('Error loading report data:', error);
-            res.status(500).render('error', {
-                title: 'Reports Error', 
-                message: 'Failed to load report data'
-            });
+            console.error(error);
+            res.status(500).json({ success: false, error: 'Database error' });
         }
     }
 
-    async resolveReport(req, res) {
-        try {
-            const { reportId, action, notes } = req.body;
-            
-            
-            await this.reportRepo.updateReportStatusWithNotes(reportId, 'Resolved', notes);
-            
-            res.json({ success: true, message: 'Report resolved successfully' });
-        } catch (error) {
-            console.error('Error resolving report:', error);
-            res.status(500).json({ 
-                success: false, 
-                message: error.message || 'Failed to resolve report' 
-            });
-        }
-    }
 
+
+    /**
+     * [API] Get full details (images, desc) for Modal
+     * GET /admin/api/reports/:id
+     */
     async getReportDetails(req, res) {
         try {
             const reportId = req.params.id;
-            const report = await this.reportRepo.getReportById(reportId);
-            
-            if (!report) {
-                return res.status(404).json({ success: false, message: 'Report not found' });
+            const details = await this.reportService.getReportDetails(reportId);
+
+            if (!details) {
+                return res.status(404).json({ success: false, error: 'Report not found' });
             }
-            
-            res.json({ success: true, data: report });
+
+            res.json({ success: true, data: details });
         } catch (error) {
-            console.error('Error fetching report details:', error);
-            res.status(500).json({ 
-                success: false, 
-                message: error.message || 'Failed to fetch report details' 
-            });
+            console.error(error);
+            res.status(500).json({ success: false, error: 'Internal Server Error' });
         }
     }
 
+
+
+    /**
+     * [API] Resolve a report (Ban, Remove, or Dismiss)
+     * POST /admin/api/reports/resolve
+     */
+    async resolveReport(req, res) {
+        try {
+            const { report_id, action, admin_notes } = req.body;
+
+            if (!report_id || !action) {
+                return res.status(400).json({ success: false, error: 'Missing report ID or action' });
+            }
+
+            const result = await this.reportService.resolveReport(report_id, action, admin_notes);
+            res.json({ success: true, message: result.message });
+
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ success: false, error: error.message });
+        }
+    }
 }
 
-module.exports = ReportsController;
+module.exports = ReportController;

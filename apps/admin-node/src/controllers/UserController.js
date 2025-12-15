@@ -1,98 +1,94 @@
-const UserService = require('../services/UserService');
-
-/**
- * Controller for the User Management section
- */
-class UsersController {
+class UserController {
     constructor(userService) {
         this.userService = userService;
     }
-  
-    async viewUsers(req, res) {
+
+
+
+
+
+    /**
+     * [VIEW] Renders the User Directory
+     * GET /admin/users
+     */
+    async getUsersView(req, res) {
+        res.render('users', {
+            title: 'User Management | SLU Bazaar Admin',
+            path: '/users'
+        });
+    }
+
+
+
+    /**
+     * [API] Search and Filter Users
+     * GET /admin/api/users?q=juan&status=active
+     */
+    async getAllUsers(req, res) {
         try {
-            const { search, status } = req.query;
-            const users = await this.userService.getAllActiveUsers(search, status);
-            
-            res.render('users/users', {
-                title: 'User Management',
-                currentPage: 'users',
-                users: users,
-                searchQuery: search || '',
-                statusFilter: status || 'all'
-            });
+            const filters = {
+                search: req.query.q || '',
+                status: req.query.status || 'all'
+            };
+            const users = await this.userService.getAllUsers(filters);
+            res.json({ success: true, data: users });
         } catch (error) {
-            console.error('Error loading users:', error);
-            res.status(500).render('error', {
-                title: 'Users Error',
-                message: 'Failed to load users'
-            });
+            res.status(500).json({ success: false, error: 'Failed to fetch users' });
         }
     }
 
-    async viewBannedUsers(req, res) {
-        try {
-            const users = await this.userService.getAllBannedUsers();
-            
-            res.render('users/banned', {
-                title: 'Banned Users',
-                currentPage: 'users',
-                users: users
-            });
-        } catch (error) {
-            console.error('Error loading banned users:', error);
-            res.status(500).render('error', {
-                title: 'Banned Users Error',
-                message: 'Failed to load banned users'
-            });
-        }
-    }
 
-   
-    async banUser(req, res) {
-        try {
-            const userId = req.params.id;
-            await this.userService.updateAccountStatus(userId);
-            
-            res.json({ success: true, message: 'User banned successfully' });
-        } catch (error) {
-            console.error('Error banning user:', error);
-            res.status(500).json({ 
-                success: false, 
-                message: error.message || 'Failed to ban user' 
-            });
-        }
-    }
 
-   
-    async unbanUser(req, res) {
+
+    /**
+     * [API] Get single user profile for Admin view
+     * GET /admin/api/users/:id
+     */
+    async getUserProfile(req, res) {
         try {
             const userId = req.params.id;
-            await this.userService.updateAccountStatus(userId);
-            
-            res.json({ success: true, message: 'User unbanned successfully' });
+            const user = await this.userService.getUserById(userId);
+
+            if (!user) {
+                return res.status(404).json({ success: false, error: 'User not found' });
+            }
+            res.json({ success: true, data: user });
         } catch (error) {
-            console.error('Error unbanning user:', error);
-            res.status(500).json({ 
-                success: false, 
-                message: error.message || 'Failed to unban user' 
-            });
+            res.status(500).json({ success: false, error: 'Internal error' });
         }
     }
 
+
+
+
+    /**
+     * [API] Update Status (Ban/Unban)
+     * POST /admin/api/users/:id/status
+     */
+    async updateUserStatus(req, res) {
+        try {
+            const userId = req.params.id;
+            const { status } = req.body; // 'active' or 'banned'
+
+            if (!['active', 'banned'].includes(status)) {
+                return res.status(400).json({ success: false, error: 'Invalid status' });
+            }
+
+            await this.userService.updateUserStatus(userId, status);
+            res.json({ success: true, message: `User marked as ${status}` });
+        } catch (error) {
+            res.status(500).json({ success: false, error: error.message });
+        }
+    }
+
+
+
+
+    // TODO: Implement this 
     async editUser(req, res) {
-        try {
-            const userId = req.params.id;
-            await this.userService.updateUser(userId, req.body);
-            res.json({ success: true, message: 'User updated successfully' });
-        } catch (error){
-            console.error('Error updating user:', error);
-            res.status(500).json({ 
-                success: false, 
-                message: error.message || 'Failed to update user' 
-            });
-        }
+        // Implementation for editing name/email directly
+        res.json({ success: true, message: 'Feature not implemented yet' });
     }
-    
 }
 
-module.exports = UsersController;
+module.exports = UserController;

@@ -2,51 +2,49 @@ class ListingService {
     constructor(itemRepo) {
         this.itemRepo = itemRepo;
     }
-    
-    async getAllListings(search, status) {
-        try {
-            // Get all items from the repository
-            const items = await this.itemRepo.getAllItemsForAdmin();
-            
-            // Filter by search term if provided
-            let filteredItems = items;
-            if (search) {
-                const searchTerm = search.toLowerCase();
-                filteredItems = items.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm) || 
-                    item.description.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            // Filter by status if provided
-            if (status && status !== 'all') {
-                filteredItems = filteredItems.filter(item => 
-                    item.itemStatus.toLowerCase() === status.toLowerCase()
-                );
-            }
-            
-            return filteredItems;
-        } catch (error) {
-            throw new Error(`Failed to get listings: ${error.message}`);
-        }
+
+    async getAllListings(filters) {
+        return await this.itemRepo.findAll(filters);
     }
-    
-    async removeListing(listingId) {
-        try {
-            await this.itemRepo.updateItemStatus(listingId, 'Removed By Admin');
-            return true;
-        } catch (error) {
-            throw new Error(`Failed to remove listing: ${error.message}`);
-        }
+
+    /**
+     * Soft Deletes an item by setting status to 'Removed By Admin'
+     */
+    async removeListing(itemId) {
+        const item = await this.itemRepo.findById(itemId);
+        if (!item) throw new Error("Item not found");
+
+        return await this.itemRepo.updateStatus(itemId, 'Removed By Admin');
     }
-    
-    async restoreListing(listingId) {
-        try {
-            await this.itemRepo.updateItemStatus(listingId, 'Active');
-            return true;
-        } catch (error) {
-            throw new Error(`Failed to restore listing: ${error.message}`);
-        }
+
+
+
+
+    /**
+     * Utility to restore an item if it was removed by mistake
+     */
+    async restoreListing(itemId) {
+        const item = await this.itemRepo.findById(itemId);
+        if (!item) throw new Error("Item not found");
+
+        // Restore to 'Active' (or 'Pending' if you prefer review)
+        return await this.itemRepo.updateStatus(itemId, 'Active');
+    }
+
+
+
+    /**
+     * Updates the text content of a listing (Sanitization)
+     */
+    async updateListingContent(itemId, title, description) {
+        const item = await this.itemRepo.findById(itemId);
+        if (!item) throw new Error("Item not found");
+
+        // Basic validation
+        if (title.length < 3 || description.length < 5)
+            throw new Error("Title or Description too short.");
+
+        return await this.itemRepo.updateContent(itemId, title, description);
     }
 }
 

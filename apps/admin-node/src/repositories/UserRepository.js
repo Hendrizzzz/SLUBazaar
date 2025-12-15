@@ -1,82 +1,57 @@
-
 class UserRepository {
     constructor(db) {
         this.db = db;
     }
 
-    async getAllActiveUsers() {
-        try {
-            const query = `
-                SELECT 
-                    user_id as userId,
-                    fname as firstName,
-                    lname as lastName,
-                    email,
-                    average_rating as averageRating,
-                    created_at as createdAt,
-                    account_status as accountStatus
-                FROM user 
-                WHERE account_status = ?
-            `;
-            const [rows] = await this.db.execute(query, ['active']);
-            return rows;
-        } catch (error) {
-            throw new Error(`Failed to get active users: ${error.message}`);
-        }
+
+
+    // Used by DashboardService
+    async countTotal() {
+        const [rows] = await this.db.query("SELECT COUNT(*) as count FROM user");
+        return rows[0].count;
     }
 
 
-    async getAllBannedUsers() {
-        try {
-            const query = `
-                SELECT 
-                    user_id as userId,
-                    fname as firstName,
-                    lname as lastName,
-                    email,
-                    average_rating as averageRating,
-                    created_at as createdAt,
-                    account_status as accountStatus
-                FROM user 
-                WHERE account_status = ?
-            `;
-            const [rows] = await this.db.execute(query, ['banned']);
-            return rows;
-        } catch (error) {
-            throw new Error(`Failed to get banned users: ${error.message}`);
+
+    // Used by UserController (Table View)
+    async findAll({ search, status }) {
+        let query = "SELECT user_id, fname, lname, email, account_status, created_at FROM user WHERE 1=1";
+        const params = [];
+
+        // Dynamic Filtering
+        if (status && status !== 'all') {
+            query += " AND account_status = ?";
+            params.push(status);
         }
+
+        if (search) {
+            query += " AND (email LIKE ? OR fname LIKE ? OR lname LIKE ?)";
+            const term = `%${search}%`;
+            params.push(term, term, term);
+        }
+
+        query += " ORDER BY created_at DESC";
+
+        const [rows] = await this.db.query(query, params);
+        return rows;
     }
 
-    async updateAccountStatus(userId, newStatus) {
-        try {
-            const query = "UPDATE user SET account_status = ? WHERE user_id = ?";
-            await this.db.execute(query, [newStatus, userId]);
-        } catch (error) {
-            throw new Error(`Failed to update account status: ${error.message}`);
-        }
+
+
+    async findById(id) {
+        const [rows] = await this.db.query("SELECT * FROM user WHERE user_id = ?", [id]);
+        return rows[0] || null;
     }
 
-    async countTotalMembers() {
-        try {
-            const query = "SELECT COUNT(*) as total FROM user";
-            const [rows] = await this.db.execute(query);
-            return parseInt(rows[0].total || 0);
-        } catch (error) {
-            throw new Error(`Failed to count total members: ${error.message}`);
-        }
-    }
 
-    async updateUser(userId, userData) {
-        try {
-            const { firstName, lastName, email } = userData;
-            const query = "UPDATE user SET fname = ?, lname = ?, email = ? WHERE user_id = ?";
-            await this.db.execute(query, [firstName, lastName, email, userId]);
-            return true;
-        } catch (error) {
-            throw new Error(`Failed to update user: ${error.message}`);
-        }
-    }
 
+    async updateStatus(id, status) {
+        const [result] = await this.db.query(
+            "UPDATE user SET account_status = ? WHERE user_id = ?",
+            [status, id]
+        );
+        return result.affectedRows > 0;
+    }
 }
 
 module.exports = UserRepository;
