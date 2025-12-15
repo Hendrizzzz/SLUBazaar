@@ -102,7 +102,8 @@ if (!isset($itemDetails)) {
                 <?php if ($itemDetails->isOwner): ?>
                     <div class="owner-controls">
                         <p class="owner-msg">You are the seller of this item.</p>
-                        <button class="btn-primary" style="width:100%">Manage Listing</button>
+                        <button class="btn-primary" style= "background: red; color: white; border: none;
+    padding: 0 30px; border-radius: 12px; height: 3rem; font-weight: 700; font-size: 1.1rem; cursor: pointer; " onclick="cancelAuction(<?php echo $itemDetails->itemId; ?>)">Cancel Auction</button>
                     </div>
                 <?php elseif ($itemDetails->status !== 'Active'): ?>
                     <div class="closed-controls">
@@ -121,6 +122,10 @@ if (!isset($itemDetails)) {
                             Place Bid
                         </button>
                         <button class="btn-watchlist <?php echo $itemDetails->isWatchlisted ? 'active' : ''; ?>"
+                                onclick="toggleWatchlist(<?php echo $itemDetails->itemId; ?>, this)">
+                            <i class="<?php echo $itemDetails->isWatchlisted ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
+                        </button>
+                        <button class="btn-report <?php echo $itemDetails->isWatchlisted ? 'active' : ''; ?>"
                                 onclick="toggleWatchlist(<?php echo $itemDetails->itemId; ?>, this)">
                             <i class="<?php echo $itemDetails->isWatchlisted ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
                         </button>

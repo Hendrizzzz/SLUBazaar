@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 11, 2025 at 09:36 PM
+-- Generation Time: Dec 15, 2025 at 04:29 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -88,7 +88,13 @@ INSERT INTO `conversation` (`conversation_id`, `item_id`, `buyer_id`, `seller_id
 (4, 14, 5, 4, 'Archived'),
 (5, 15, 4, 3, 'Archived'),
 (6, 19, 4, 3, 'Active'),
-(7, 20, 2, 3, 'Active');
+(7, 20, 2, 3, 'Active'),
+(8, 1, 5, 2, 'Active'),
+(9, 2, 5, 2, 'Active'),
+(10, 3, 4, 5, 'Active'),
+(11, 4, 3, 4, 'Active'),
+(12, 5, 5, 2, 'Active'),
+(13, 6, 2, 4, 'Active');
 
 -- --------------------------------------------------------
 
@@ -118,12 +124,12 @@ CREATE TABLE `item` (
 --
 
 INSERT INTO `item` (`item_id`, `seller_id`, `title`, `description`, `starting_bid`, `current_bid`, `created_at`, `auction_start`, `auction_end`, `item_status`, `meetup_code`, `category`, `date_sold`, `buyer_id`) VALUES
-(1, 2, 'Calculus TC7 Book', 'Standard engineering math book.', 500.00, 550.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-05 13:28:03', 'Active', NULL, 'Textbooks', NULL, NULL),
-(2, 2, 'Rotring Tech Pen', '0.5mm tip.', 600.00, 650.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-02 13:28:03', 'Active', NULL, 'Stationery', NULL, NULL),
-(3, 5, 'Casio fx-991EX', 'Classwiz calculator.', 900.00, 1000.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-03 13:28:03', 'Active', NULL, 'Electronics', NULL, NULL),
-(4, 4, 'Basketball', 'Molten generic.', 400.00, 420.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-04 13:28:03', 'Active', NULL, 'Sports Equipment', NULL, NULL),
-(5, 2, 'Umbrella', 'Foldable black.', 150.00, 180.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-01 13:28:03', 'Active', NULL, 'Accessories', NULL, NULL),
-(6, 4, 'Kpop Photocard', 'Twice.', 100.00, 300.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-06 13:28:03', 'Active', NULL, 'Collectibles', NULL, NULL),
+(1, 2, 'Calculus TC7 Book', 'Standard engineering math book.', 500.00, 550.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-05 13:28:03', 'Awaiting Meetup', '071509', 'Textbooks', '2025-12-12 13:40:55', 5),
+(2, 2, 'Rotring Tech Pen', '0.5mm tip.', 600.00, 650.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-02 13:28:03', 'Awaiting Meetup', '642604', 'Stationery', '2025-12-12 13:40:55', 5),
+(3, 5, 'Casio fx-991EX', 'Classwiz calculator.', 900.00, 1000.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-03 13:28:03', 'Awaiting Meetup', '323207', 'Electronics', '2025-12-12 13:40:55', 4),
+(4, 4, 'Basketball', 'Molten generic.', 400.00, 420.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-04 13:28:03', 'Awaiting Meetup', '940840', 'Sports Equipment', '2025-12-12 13:40:55', 3),
+(5, 2, 'Umbrella', 'Foldable black.', 150.00, 180.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-01 13:28:03', 'Awaiting Meetup', '628184', 'Accessories', '2025-12-12 13:40:55', 5),
+(6, 4, 'Kpop Photocard', 'Twice.', 100.00, 300.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-06 13:28:03', 'Awaiting Meetup', '551690', 'Collectibles', '2025-12-12 13:40:55', 2),
 (7, 5, 'Anatomy & Physiology', 'Hardbound.', 1200.00, 1200.00, '2025-11-30 05:28:03', '2025-12-02 13:28:03', '2025-12-09 13:28:03', 'Pending', NULL, 'Textbooks', NULL, NULL),
 (8, 2, 'Lab Gown', 'Canvas material.', 300.00, 300.00, '2025-11-30 05:28:03', '2025-12-01 13:28:03', '2025-12-05 13:28:03', 'Pending', NULL, 'Clothing', NULL, NULL),
 (9, 2, 'Volleyball Knee Pads', 'Asics.', 200.00, 200.00, '2025-11-30 05:28:03', '2025-12-03 13:28:03', '2025-12-10 13:28:03', 'Pending', NULL, 'Sports Equipment', NULL, NULL),
@@ -150,7 +156,25 @@ INSERT INTO `item` (`item_id`, `seller_id`, `title`, `description`, `starting_bi
 (30, 4, 'Answer Key for Exam', 'Leaks for finals.', 1000.00, 1000.00, '2025-11-30 05:28:03', '2025-11-29 13:28:03', '2025-12-01 13:28:03', 'Removed By Admin', NULL, 'Textbooks', NULL, NULL),
 (31, 5, 'Broken Monitor', 'Oops dropped it.', 1500.00, 1800.00, '2025-11-30 05:28:03', '2025-11-25 13:28:03', '2025-12-02 13:28:03', 'Cancelled By Seller', NULL, 'Electronics', NULL, NULL),
 (32, 2, 'Lost Wallet', 'Cant find it anymore.', 200.00, 300.00, '2025-11-30 05:28:03', '2025-11-27 13:28:03', '2025-12-04 13:28:03', 'Cancelled By Seller', NULL, 'Accessories', NULL, NULL),
-(33, 3, 'Change of Mind', 'Not selling anymore.', 100.00, 100.00, '2025-11-30 05:28:03', '2025-11-29 13:28:03', '2025-12-06 13:28:03', 'Cancelled By Seller', NULL, 'Stationery', NULL, NULL);
+(33, 3, 'Change of Mind', 'Not selling anymore.', 100.00, 100.00, '2025-11-30 05:28:03', '2025-11-29 13:28:03', '2025-12-06 13:28:03', 'Cancelled By Seller', NULL, 'Stationery', NULL, NULL),
+(34, 2, 'Aula F75 Keyboard', 'Condition: 10/10', 1800.00, 1800.00, '2025-12-12 01:48:49', '2025-12-12 09:48:49', '2025-12-12 16:56:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(35, 2, 'Puma Speedcat OG', 'Regular fit\r\nRounded toe\r\nHeel type: Flat\r\nLace closure\r\nPUMA branding details\r\nUpper: Leather; Lining: Textile; Midsole: Rubber; Outsole: Rubber', 6000.00, 6000.00, '2025-12-12 01:52:03', '2025-12-12 09:52:03', '2025-12-12 16:55:00', 'Expired', NULL, 'Accessories', NULL, NULL),
+(36, 2, 'Test', 'aaaaa', 1000.00, 1000.00, '2025-12-12 02:05:41', '2025-12-12 10:05:41', '2025-12-12 17:07:00', 'Expired', NULL, 'Textbooks', NULL, NULL),
+(37, 2, 'test2', 'bbbbbbbbbbbbbbbbb', 2000.00, 2000.00, '2025-12-12 02:10:42', '2025-12-12 10:10:42', '2025-12-12 17:12:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(38, 2, 'test3', 'ccccccccccccccccc', 3000.00, 3000.00, '2025-12-12 09:16:27', '2025-12-12 17:16:27', '2025-12-12 17:18:00', 'Expired', NULL, 'Clothing', NULL, NULL),
+(39, 2, 'test4', 'dddddddddddddddd', 4000.00, 4000.00, '2025-12-12 09:20:18', '2025-12-12 17:20:18', '2025-12-12 17:22:00', 'Expired', NULL, 'Sports Equipment', NULL, NULL),
+(40, 2, 'test1', 'aaaaaa', 1000.00, 1000.00, '2025-12-12 03:19:07', '2025-12-12 11:19:07', '2025-12-12 18:21:00', 'Expired', NULL, 'Stationery', NULL, NULL),
+(41, 2, 'test1', 'aaaaaaaaaaa', 9999.00, 9999.00, '2025-12-12 13:42:43', '2025-12-12 21:42:43', '2025-12-12 21:44:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(42, 2, 'test11', 'aaaaa', 6868.00, 6868.00, '2025-12-12 18:42:14', '2025-12-13 02:42:14', '2025-12-13 02:43:00', 'Expired', NULL, 'Stationery', NULL, NULL),
+(43, 2, 'test5', 'aaaaaaaaaaaaaaaaaaaaa', 900.00, 900.00, '2025-12-12 18:45:14', '2025-12-13 02:45:14', '2025-12-13 02:46:00', 'Expired', NULL, 'Clothing', NULL, NULL),
+(44, 2, 'test8', '7777', 5555.00, 5555.00, '2025-12-12 18:52:08', '2025-12-13 02:52:08', '2025-12-13 02:53:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(45, 2, 'test15', 'aaa', 1000.00, 1000.00, '2025-12-12 19:16:28', '2025-12-13 03:16:28', '2025-12-13 03:17:00', 'Active', NULL, 'Clothing', NULL, NULL),
+(46, 2, 'test16', 'aa', 1000.00, 1000.00, '2025-12-12 19:17:39', '2025-12-13 03:17:39', '2025-12-13 03:18:00', 'Active', NULL, 'Stationery', NULL, NULL),
+(47, 2, 'aaa', 'aaa', 1000.00, 1000.00, '2025-12-12 19:23:48', '2025-12-13 03:23:48', '2025-12-13 03:24:00', 'Active', NULL, 'Stationery', NULL, NULL),
+(48, 2, '123123', '1111', 1000.00, 1000.00, '2025-12-12 19:56:44', '2025-12-13 03:56:44', '2025-12-13 03:58:00', 'Active', NULL, 'Clothing', NULL, NULL),
+(49, 2, 'testttt', '12123', 1000.00, 1000.00, '2025-12-12 20:04:13', '2025-12-13 04:04:13', '2025-12-13 04:05:00', 'Active', NULL, 'Electronics', NULL, NULL),
+(50, 2, 'aaa', 'aaa', 1111.00, 1111.00, '2025-12-12 20:31:04', '2025-12-13 04:31:04', '2025-12-13 06:30:00', 'Active', NULL, 'Stationery', NULL, NULL),
+(51, 2, 'aaaa', 'aaaa', 1111.00, 1111.00, '2025-12-12 20:44:15', '2025-12-13 04:44:15', '2025-12-13 04:47:00', 'Active', NULL, 'Electronics', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -210,7 +234,25 @@ INSERT INTO `item_image` (`image_id`, `item_id`, `image_url`) VALUES
 (39, 30, 'uploads/items/paper_leak.jpg'),
 (40, 31, 'uploads/items/broken_screen.jpg'),
 (41, 32, 'uploads/items/wallet.jpg'),
-(42, 33, 'uploads/items/notebook.jpg');
+(42, 33, 'uploads/items/notebook.jpg'),
+(43, 34, 'assets/uploads/items/item_34_693bd6f142962.jpg'),
+(44, 35, 'assets/uploads/items/item_35_693bd7b3aa2cc.webp'),
+(45, 36, 'assets/uploads/items/item_36_693bdae52e22f.webp'),
+(46, 37, 'assets/uploads/items/item_37_693bdc12bbc9b.webp'),
+(47, 38, 'assets/uploads/items/item_38_693bdd6bde53d.webp'),
+(48, 39, 'assets/uploads/items/item_39_693bde5229330.webp'),
+(49, 40, 'assets/uploads/items/item_40_693bec1b1bd11.webp'),
+(50, 41, 'assets/uploads/items/item_41_693c1bd35ab4e.jpg'),
+(51, 42, 'assets/uploads/items/item_42_693c620630857.webp'),
+(52, 43, 'assets/uploads/items/item_43_693c62ba6facd.webp'),
+(53, 44, 'assets/uploads/items/item_44_693c645873565.webp'),
+(54, 45, 'assets/uploads/items/item_45_693c6a0cc09bf.jpg'),
+(55, 46, 'assets/uploads/items/item_46_693c6a53c238b.jpg'),
+(56, 47, 'assets/uploads/items/item_47_693c6bc48d045.jpg'),
+(57, 48, 'assets/uploads/items/item_48_693c737c0875e.png'),
+(58, 49, 'assets/uploads/items/item_49_693c753d34891.webp'),
+(59, 50, 'assets/uploads/items/item_50_693c7b88e3123.webp'),
+(60, 51, 'assets/uploads/items/item_51_693c7e9f80b3f.webp');
 
 -- --------------------------------------------------------
 
@@ -253,7 +295,8 @@ INSERT INTO `message` (`message_id`, `conversation_id`, `message_text`, `is_sell
 (19, 7, 'Does this include the bag?', 0, '2025-11-29 05:30:00', 1),
 (20, 7, 'Yes, the original black bag.', 1, '2025-11-29 05:35:00', 1),
 (21, 7, 'Are there any scratches on the frame?', 0, '2025-11-29 05:40:00', 0),
-(22, 7, 'Just minor ones on the top, but no cracks.', 1, '2025-11-29 05:45:00', 0);
+(22, 7, 'Just minor ones on the top, but no cracks.', 1, '2025-11-29 05:45:00', 0),
+(23, 11, 'aaaaaaaa', 0, '2025-12-14 12:54:45', 0);
 
 -- --------------------------------------------------------
 
@@ -276,7 +319,30 @@ CREATE TABLE `notification` (
 
 INSERT INTO `notification` (`notif_id`, `user_id`, `notif_title`, `content`, `notif_type`, `notif_time`) VALUES
 (1, 2, 'Item Removed', 'Your item \"Nike Fake Shoes\" was removed due to policy violation.', 'System', '2025-11-27 05:28:03'),
-(2, 3, 'Item Sold', 'Accounting 101 Sold.', 'System', '2025-11-28 05:28:03');
+(2, 3, 'Item Sold', 'Accounting 101 Sold.', 'System', '2025-11-28 05:28:03'),
+(3, 2, 'Item Sold! 💰', 'Your item \'Calculus TC7 Book\' sold for ₱550.00. Chat with the buyer now.', 'SOLD', '2025-12-12 13:40:55'),
+(4, 5, 'Congratulations! 🎉', 'You won the auction for \'Calculus TC7 Book\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-12 13:40:55'),
+(5, 2, 'Item Sold! 💰', 'Your item \'Rotring Tech Pen\' sold for ₱650.00. Chat with the buyer now.', 'SOLD', '2025-12-12 13:40:55'),
+(6, 5, 'Congratulations! 🎉', 'You won the auction for \'Rotring Tech Pen\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-12 13:40:55'),
+(7, 5, 'Item Sold! 💰', 'Your item \'Casio fx-991EX\' sold for ₱1,000.00. Chat with the buyer now.', 'SOLD', '2025-12-12 13:40:55'),
+(8, 4, 'Congratulations! 🎉', 'You won the auction for \'Casio fx-991EX\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-12 13:40:55'),
+(9, 4, 'Item Sold! 💰', 'Your item \'Basketball\' sold for ₱420.00. Chat with the buyer now.', 'SOLD', '2025-12-12 13:40:55'),
+(10, 3, 'Congratulations! 🎉', 'You won the auction for \'Basketball\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-12 13:40:55'),
+(11, 2, 'Item Sold! 💰', 'Your item \'Umbrella\' sold for ₱180.00. Chat with the buyer now.', 'SOLD', '2025-12-12 13:40:55'),
+(12, 5, 'Congratulations! 🎉', 'You won the auction for \'Umbrella\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-12 13:40:55'),
+(13, 4, 'Item Sold! 💰', 'Your item \'Kpop Photocard\' sold for ₱300.00. Chat with the buyer now.', 'SOLD', '2025-12-12 13:40:55'),
+(14, 2, 'Congratulations! 🎉', 'You won the auction for \'Kpop Photocard\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-12 13:40:55'),
+(15, 2, 'Auction Expired', 'Your listing \'Aula F75 Keyboard\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(16, 2, 'Auction Expired', 'Your listing \'Puma Speedcat OG\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(17, 2, 'Auction Expired', 'Your listing \'Test\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(18, 2, 'Auction Expired', 'Your listing \'test2\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(19, 2, 'Auction Expired', 'Your listing \'test3\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(20, 2, 'Auction Expired', 'Your listing \'test4\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(21, 2, 'Auction Expired', 'Your listing \'test1\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:40:55'),
+(22, 2, 'Auction Expired', 'Your listing \'test1\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:44:00'),
+(23, 2, 'Auction Expired', 'Your listing \'test11\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:43:03'),
+(24, 2, 'Auction Expired', 'Your listing \'test5\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:46:03'),
+(25, 2, 'Auction Expired', 'Your listing \'test8\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:53:00');
 
 -- --------------------------------------------------------
 
@@ -510,31 +576,31 @@ ALTER TABLE `bid`
 -- AUTO_INCREMENT for table `conversation`
 --
 ALTER TABLE `conversation`
-  MODIFY `conversation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `conversation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `item_image`
 --
 ALTER TABLE `item_image`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
 
 --
 -- AUTO_INCREMENT for table `message`
 --
 ALTER TABLE `message`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `rating`

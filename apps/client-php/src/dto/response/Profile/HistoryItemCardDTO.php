@@ -53,25 +53,22 @@ class HistoryItemCardDTO implements JsonSerializable
         ];
     }
 
-    
+
 
 
     public static function fromArray(array $data, int $currentUserId) : self
     {
-        // 1. Determine Date: Use date_sold if available, otherwise auction_end
         $rawDate = $data['date_sold'] ?? $data['auction_end'];
-        
-        // 2. Determine Winner:
         $isWinner = isset($data['buyer_id']) && (int)$data['buyer_id'] === $currentUserId;
 
         return new self (
             (int)$data['item_id'],
             $data['title'],
-            $data['image_url'], // Handle null image
+            $data['image_url'] ?? '',
             (float)$data['current_bid'],
             new DateTimeImmutable($rawDate),
             $isWinner,
-            (bool)$data['has_rated'], // 1 or 0 from DB
+            (bool)$data['has_rated'],
             $data['category'],
             (int)$data['seller_id'],
             $data['item_status']

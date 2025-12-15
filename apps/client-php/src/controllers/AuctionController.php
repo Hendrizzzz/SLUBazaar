@@ -144,6 +144,17 @@ class AuctionController extends BaseController
                     $input['description'],
                     (float) $input['starting_bid'],
                     $input['category'],
+                    $input['start_time'],
+                    $input['end_time'],
+                    $files
+                );
+
+                $newId = $this->auctionService->createListing(
+                    $userId,
+                    $input['title'],
+                    $input['description'],
+                    (float) $input['starting_bid'],
+                    $input['category'],
                     $input['end_time'],
                     $files
                 );

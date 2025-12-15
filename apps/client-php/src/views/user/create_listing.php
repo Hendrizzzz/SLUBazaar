@@ -75,6 +75,10 @@
                                     required>
                             </div>
                             <div class="form-row" style="flex: 1;">
+                                <label>Date Start (Optional):</label>
+                                <input type="datetime-local" name="start_time" class="input-field">
+                            </div>
+                            <div class="form-row" style="flex: 1;">
                                 <label>Date End:</label>
                                 <input type="datetime-local" name="end_time" class="input-field" required>
                             </div>
@@ -123,6 +127,26 @@
     </div>
 
     <script src="/assets/js/marketplace.js"></script>
+
+    <script>
+        function previewImage(input, boxId) {
+            const box = document.getElementById(boxId);
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    box.style.backgroundImage = `url('${e.target.result}')`;
+                    box.innerHTML = ''; 
+                    
+                    box.style.borderStyle = 'solid';
+                    box.style.borderColor = '#3b82f6'; // var(--primary)
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 
 </body>
 

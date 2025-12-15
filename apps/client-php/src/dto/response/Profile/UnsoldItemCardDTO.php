@@ -6,10 +6,10 @@ class UnsoldItemCardDTO implements JsonSerializable
 {
     public function __construct(
         public readonly int $itemId,
-        public readonly string $title, 
+        public readonly string $title,
         public readonly string $imageUrl,
         public readonly float $startingBid,
-        public readonly float $currentBid, 
+        public readonly float $currentBid,
         public readonly int $bidCount,
         public readonly DateTimeImmutable $auctionEnd,
         public readonly string $itemStatus,
@@ -34,7 +34,7 @@ class UnsoldItemCardDTO implements JsonSerializable
         ];
     }
 
-    
+
 
 
     public static function fromArray(array $data) : self
@@ -42,7 +42,7 @@ class UnsoldItemCardDTO implements JsonSerializable
         return new self (
             (int)$data['item_id'],
             $data['title'],
-            $data['image_url'],
+            $data['image_url'] ?? '',
             (float)$data['starting_bid'],
             (float)$data['current_bid'],
             (int)$data['bid_count'],

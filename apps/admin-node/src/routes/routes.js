@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // Import database connection
-const db = require('../config/db');
+const db = require('../../config/db');
 
 // Import repositories
 const UserRepository = require('../repositories/UserRepository');
@@ -31,7 +31,7 @@ const listingService = new ListingService(itemRepo);
 const userService = new UserService(userRepo);
 
 // Create controller instances with dependencies
-const dashboardController = new  DashboardController(dashboardService);
+const dashboardController = new DashboardController(dashboardService);
 const reportsController = new ReportsController(reportRepo, userRepo, itemRepo);
 const usersController = new UsersController(userService);
 const listingsController = new ListingsController(listingService);

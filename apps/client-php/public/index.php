@@ -100,6 +100,14 @@ try {
             // AJAX: Seller enters buyer code to complete deal
             $container->getUserController()->verifyTransaction();
             break;
+        case 'report_user':
+            // AJAX: User submits a report
+            $container->getUserController()->reportUser();
+            break;
+        case 'report_item':
+            // AJAX: Item submits a report
+            $container->getUserController()->reportItem();
+            break;
 
         // =========================================================
         // CHAT SYSTEM (ChatController)
