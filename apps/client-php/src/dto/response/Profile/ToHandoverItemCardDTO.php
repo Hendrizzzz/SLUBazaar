@@ -36,7 +36,7 @@ class ToHandoverItemCardDTO implements JsonSerializable
         return new self (
             (int)$data['item_id'],
             $data['title'],
-            $data['image_url'],
+            $data['image_url'] ?? '',
             (float)$data['current_bid'],
             $data['fname'],
             $data['lname']

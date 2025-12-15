@@ -24,19 +24,18 @@ class ClaimItemCardDTO implements JsonSerializable
         public readonly float $currentBid,
         public readonly int $sellerId,
         public readonly int $meetupCode
-    ) {
-    }
+    ) {}
 
 
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data) : self
     {
         return new self(
-            (int) $data['item_id'],
+            (int)$data['item_id'],
             $data['title'],
-            $data['image_url'],
-            (float) $data['current_bid'],
-            (int) $data['selled_id'],
-            (int) $data['meetup_code']
+            $data['image_url'] ?? '',
+            (float)$data['current_bid'],
+            (int)$data['seller_id'],
+            (int)$data['meetup_code']
         );
     }
 
