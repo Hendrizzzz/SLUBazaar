@@ -241,6 +241,19 @@ setInterval(() => {
     }
 }, 1000);
 
+async function cancelAuction(itemid) {
+    const res = await apiFetch('index.php?action=cancel_auction', {
+        method: 'POST',
+        body: JSON.stringify({ item_id: itemid })
+    })
+
+    if (res && res.success ) {
+        alert("Auction Canceled");
+    } else {
+        alert(res.error || "Failed to cancel listing.");
+    }
+}
+
 
 // Keeping the original modal functions as stubs because the HTML file contains the modal structure.
 const modal = document.getElementById('item-modal');
