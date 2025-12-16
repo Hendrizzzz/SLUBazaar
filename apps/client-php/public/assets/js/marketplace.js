@@ -59,7 +59,6 @@ async function fetchAuctions() {
     }
     return data || [];
 }
-
 async function loadAuctions() {
     const container = document.getElementById('auction-container');
     if (!container) return;
@@ -203,26 +202,163 @@ function setMainTab(tabName) {
 
     TABS[tabName].forEach((sub, index) => {
         const btn = document.createElement('button');
-        btn.className = 'sub-tab-pill';
+        btn.className = 'sub-tab-pill'; // Ensure CSS exists for this or use 'tab-btn'
+        btn.style.marginRight = "10px";
+        btn.style.padding = "5px 15px";
+        btn.style.borderRadius = "15px";
+        btn.style.border = "1px solid #ccc";
+        btn.style.background = "white";
+        btn.style.cursor = "pointer";
+
         btn.innerText = sub.label;
-        btn.onclick = () => loadContent(sub.id, btn);
+        btn.onclick = () => {
+            // Visual toggle
+            Array.from(subContainer.children).forEach(c => {
+                c.style.background = "white";
+                c.style.color = "black";
+                c.style.borderColor = "#ccc";
+            });
+            btn.style.background = "#3b82f6";
+            btn.style.color = "white";
+            btn.style.borderColor = "#3b82f6";
+            loadContent(sub.id, btn);
+        };
         subContainer.appendChild(btn);
 
-        if (index === 0) loadContent(sub.id, btn);
+        // Auto-load first tab
+        if (index === 0) btn.click();
+
+        btn.setAttribute('data-id', sub.id);
     });
 }
 
-async function loadContent(filterId, btnElement) {
-    currentSubFilter = filterId;
-
-    document.querySelectorAll('.sub-tab-pill').forEach(btn => btn.classList.remove('active'));
-    if(btnElement) btnElement.classList.add('active');
-    else {
-        const buttons = Array.from(document.querySelectorAll('.sub-tab-pill'));
-        const target = buttons.find(b => b.innerText.toLowerCase().includes(filterId.replace('_',' ')));
-        if(target) target.classList.add('active');
+window.openRateModal = function(itemId, sellerId) {
+    const modal = document.getElementById('rate-modal');
+    if(!modal) {
+        console.error("Rate modal not found. Ensure HTML is present in profile.php");
+        return;
     }
 
+    // Reset Form Data
+    document.getElementById('rate-item-id').value = itemId;
+    document.getElementById('rate-seller-id').value = sellerId;
+    document.getElementById('rate-stars').value = 0;
+    document.getElementById('rate-comment').value = '';
+
+    // Reset Visual Stars
+    updateStars(0);
+
+    // Show Modal
+    modal.classList.add('active');
+
+    // Initialize Star Click Logic (One-time setup)
+    if(!window.ratingLogicInitialized) {
+        setupRatingLogic();
+        window.ratingLogicInitialized = true;
+    }
+};
+
+// 2. Close Modal
+window.closeRateModal = function() {
+    document.getElementById('rate-modal').classList.remove('active');
+};
+
+// 3. Setup Star Interaction
+function setupRatingLogic() {
+    const stars = document.querySelectorAll('.star-rating-input i');
+    const hiddenInput = document.getElementById('rate-stars');
+
+    if(!stars.length) return;
+
+    stars.forEach(star => {
+        // Click: Set value
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            hiddenInput.value = value;
+            updateStars(value);
+        });
+
+        // Hover: Temporary preview
+        star.addEventListener('mouseover', function() {
+            updateStars(this.getAttribute('data-value'), true);
+        });
+    });
+
+    // Mouse leave container: Revert to selected value
+    const starContainer = document.querySelector('.star-rating-input');
+    if(starContainer) {
+        starContainer.addEventListener('mouseleave', function() {
+            updateStars(hiddenInput.value);
+        });
+    }
+}
+
+// 4. Update Star Visuals
+function updateStars(value, isHover = false) {
+    const stars = document.querySelectorAll('.star-rating-input i');
+    // Gold for active, Gray for inactive.
+    // If hovering, use a slightly lighter gold to indicate "preview"
+    const activeColor = isHover ? '#fbbf24' : '#f59e0b';
+    const inactiveColor = '#cbd5e1';
+
+    stars.forEach(s => {
+        if(parseInt(s.getAttribute('data-value')) <= value) {
+            s.style.color = activeColor;
+        } else {
+            s.style.color = inactiveColor;
+        }
+    });
+}
+
+// 5. Submit Rating (AJAX)
+window.submitRating = async function() {
+    const itemId = document.getElementById('rate-item-id').value;
+    const targetUserId = document.getElementById('rate-seller-id').value;
+    const stars = document.getElementById('rate-stars').value;
+    const comment = document.getElementById('rate-comment').value;
+
+    if(stars == 0) {
+        alert("Please click a star to give a rating.");
+        return;
+    }
+
+    const btn = document.querySelector('#rating-form button');
+    const originalText = btn.innerText;
+    btn.innerText = "Submitting...";
+    btn.disabled = true;
+
+    try {
+        const result = await apiFetch('index.php?action=submit_rating', {
+            method: 'POST',
+            body: JSON.stringify({
+                item_id: itemId,
+                target_user_id: targetUserId,
+                stars: stars,
+                comment: comment
+            })
+        });
+
+        if(result && result.success) {
+            alert("Rating submitted successfully!");
+            closeRateModal();
+            // Refresh current tab content to remove the "Rate" button
+            // We assume the current active pill button is correct
+            const activeBtn = document.querySelector('.sub-tab-pill[style*="rgb(59, 130, 246)"]');
+            if(activeBtn) activeBtn.click();
+        } else {
+            alert(result.error || "Failed to submit rating.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("An error occurred.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+};
+
+async function loadContent(filterId, btnElement) {
+    currentSubFilter = filterId;
     const grid = document.getElementById('content-grid');
     if(!grid) return;
 
@@ -230,45 +366,26 @@ async function loadContent(filterId, btnElement) {
 
     const data = await apiFetch(`index.php?action=get_profile_tab&tab=${currentMainTab}&filter=${filterId}`);
 
-    // SAFETY CHECK: Ensure data is actually an array before looping
     if (!data || !Array.isArray(data)) {
-        if(currentMainTab === 'selling' && filterId === 'handover') {
-            // Fallback if handover is empty/fails
-            const buttons = document.querySelectorAll('.sub-tab-pill');
-            if(buttons[1]) {
-                loadContent('active', buttons[1]);
-                return;
-            }
-        }
-        grid.innerHTML = '<div class="empty-state"><p>No items found or server error.</p></div>';
+        grid.innerHTML = '<div class="empty-state"><p>No items found.</p></div>';
         return;
-    }
-
-    // Smart Redirect for Handover if empty
-    if (currentMainTab === 'selling' && filterId === 'handover' && data.length === 0) {
-        const buttons = document.querySelectorAll('.sub-tab-pill');
-        if(buttons[1]) {
-            loadContent('active', buttons[1]);
-            return;
-        }
     }
 
     grid.innerHTML = '';
 
     if (data.length === 0) {
-        grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px;"></i><p>No items found in this section.</p></div>';
+        grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-folder-open" style="font-size:2rem; margin-bottom:10px;"></i><p>No items found.</p></div>';
         return;
     }
 
     if (currentMainTab === 'reputation') {
-        grid.style.display = 'block';
+        grid.style.display = 'block'; // Stack vertically for reviews
         data.forEach(item => grid.innerHTML += createReputationCard(item));
     } else {
         grid.style.display = 'grid';
         data.forEach(item => grid.innerHTML += createItemCard(item, filterId));
     }
 }
-
 function createReputationCard(item) {
     let starsHtml = '';
     const ratingValue = item.rating || 0;
@@ -397,8 +514,8 @@ function createItemCard(item, type) {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Only run Marketplace logic if the container exists
     if (document.getElementById('auction-container')) {
-        setupFilters(); // Initialize filters
-        loadAuctions(); // Load default view
+        if(typeof setupFilters === 'function') setupFilters();
+        loadAuctions();
         setupTabs();
         setInterval(updateTimers, 1000);
         updateTimers();
@@ -412,6 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Global Click Handler for Cards
     document.addEventListener('click', (event) => {
         const card = event.target.closest('.item-card');
+        // Prevent opening details if clicking a button (like "Rate Seller")
         if (card && !event.target.closest('button') && !event.target.closest('a')) {
             const itemId = card.getAttribute('data-item-id');
             if (itemId) openItemDetails(itemId);
@@ -492,6 +610,66 @@ function applyAllFilters() {
     const filters = getFilterValues();
     loadAuctions(filters);
 }
+
+window.openVerifyModal = function(itemId) {
+    const modal = document.getElementById('verify-modal');
+    if(!modal) {
+        console.error("Verify modal not found. Ensure HTML is present in profile.php");
+        return;
+    }
+    document.getElementById('verify-item-id').value = itemId;
+    document.getElementById('verify-code').value = '';
+    modal.classList.add('active');
+};
+
+window.closeVerifyModal = function() {
+    document.getElementById('verify-modal').classList.remove('active');
+};
+
+window.submitVerification = async function() {
+    const itemId = document.getElementById('verify-item-id').value;
+    const code = document.getElementById('verify-code').value;
+
+    if(code.length !== 6) {
+        alert("Please enter the complete 6-digit code.");
+        return;
+    }
+
+    const btn = document.querySelector('#verify-form button');
+    const originalText = btn.innerText;
+    btn.innerText = "Verifying...";
+    btn.disabled = true;
+
+    try {
+        const result = await apiFetch('index.php?action=verify_transaction', {
+            method: 'POST',
+            body: JSON.stringify({ item_id: itemId, code: code })
+        });
+
+        if(result && result.success) {
+            alert(result.message || "Transaction Verified!");
+            closeVerifyModal();
+
+            const soldBtn = document.querySelector('.sub-tab-pill[data-id="sold"]');
+            if (soldBtn) {
+                soldBtn.click();
+            } else {
+                const activeBtn = document.querySelector('.sub-tab-pill[style*="rgb(59, 130, 246)"]');
+                if(activeBtn) activeBtn.click();
+            }
+
+        } else {
+            alert(result.error || "Verification failed. Check code.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("An error occurred.");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+};
+
 
 // =============================
 //      DATA LOADING
@@ -639,11 +817,6 @@ function updateTimers() {
     });
 }
 
-
-
-function openVerifyModal(itemId) { alert("TODO"); }
-// TODO: RATINGS
-function openRateModal(itemId, userId) { alert("Rating feature check console for details."); }
 async function placeBid(itemId) {}
 async function toggleWatchlist(itemId, btn) {}
 async function cancelAuction(itemId) {}
