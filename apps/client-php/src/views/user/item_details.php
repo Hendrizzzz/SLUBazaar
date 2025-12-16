@@ -125,10 +125,8 @@ if (!isset($itemDetails)) {
                                 onclick="toggleWatchlist(<?php echo $itemDetails->itemId; ?>, this)">
                             <i class="<?php echo $itemDetails->isWatchlisted ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
                         </button>
-                        <button class="btn-report <?php echo $itemDetails->isWatchlisted ? 'active' : ''; ?>"
-                                onclick="toggleWatchlist(<?php echo $itemDetails->itemId; ?>, this)">
-                            <i class="<?php echo $itemDetails->isWatchlisted ? 'fa-solid' : 'fa-regular'; ?> fa-heart"></i>
-                        </button>
+                        <button class="btn-report" onclick="openReportModal()">
+                            <i class="fa-regular fa-flag"></i> </button>
                     </div>
                     <p class="min-bid-hint">Minimum next bid: ₱ <?php echo number_format($itemDetails->nextMinimumBid, 2); ?></p>
                 <?php endif; ?>
@@ -164,7 +162,90 @@ if (!isset($itemDetails)) {
     </div>
 </div>
 
+<div id="reportModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Report Item</h2>
+            <p>Why are you reporting this item?</p>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="report-reason">Reason</label>
+                <select id="report-reason">
+                    <option value="Prohibited Item">Prohibited Item</option>
+                    <option value="Counterfeit">Counterfeit / Fake</option>
+                    <option value="Spam">Spam / Misleading</option>
+                    <option value="Inappropriate Content">Inappropriate Content</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="report-desc">Description</label>
+                <textarea id="report-desc" rows="4" placeholder="Please provide more details..."></textarea>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+            <button class="btn-submit-report" onclick="submitReport()">Submit Report</button>
+        </div>
+    </div>
+</div>
+
 <script src="/assets/js/utils.js"></script>
 <script src = "/assets/js/marketplace.js"></script>
+
+<script>
+    const reportModal = document.getElementById('reportModal');
+    const itemId = <?php echo $itemDetails->itemId; ?>; // Pass PHP ID to JS
+
+    function openReportModal() {
+        reportModal.style.display = 'flex';
+    }
+
+    function closeReportModal() {
+        reportModal.style.display = 'none';
+        document.getElementById('report-desc').value = '';
+    }
+
+    async function submitReport() {
+        const reason = document.getElementById('report-reason').value;
+        const desc = document.getElementById('report-desc').value;
+
+        if(!desc) {
+            alert("Please provide a description.");
+            return;
+        }
+
+        try {
+            // Using your existing apiFetch wrapper from utils.js
+            const response = await apiFetch('index.php?action=report_item', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    'item_id': itemId,
+                    'reason': reason,
+                    'description': desc
+                })
+            });
+
+            if (response.success) {
+                alert("Report submitted successfully. Thank you.");
+                closeReportModal();
+            } else {
+                alert(response.message || "Failed to submit report.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("An error occurred.");
+        }
+    }
+
+    // Close modal if clicking outside the box
+    window.onclick = function(event) {
+        if (event.target == reportModal) {
+            closeReportModal();
+        }
+    }
+</script>
 </body>
 </html>
