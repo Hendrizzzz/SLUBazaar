@@ -17,12 +17,18 @@ class ItemRepository {
 
     // Used by ListingController (Table View)
     async findAll({ search, status }) {
-        // Joins with User table to show Seller Name
         let query = `
-            SELECT i.item_id, i.title, i.current_bid, i.item_status, i.created_at, 
-                   u.fname as seller_fname, u.lname as seller_lname 
-            FROM item i
-            JOIN user u ON i.seller_id = u.user_id
+            SELECT 
+                i.item_id, 
+                i.title, 
+                i.current_bid as price, 
+                i.description, 
+                (SELECT img.image_url FROM item_image img WHERE img.item_id = i.item_id LIMIT 1) as image_url,
+                i.item_status as status, 
+                i.created_at, 
+                CONCAT(u.fname, ' ', u.lname) as seller
+            FROM \`item\` i
+            LEFT JOIN \`user\` u ON i.seller_id = u.user_id
             WHERE 1=1
         `;
         const params = [];

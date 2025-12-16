@@ -11,9 +11,9 @@ class ReportController {
      * GET /admin/reports
      */
     async getReportsView(req, res) {
-        res.render('reports', {
+        res.render('reports/index', {
             title: 'Moderation Queue | SLU Bazaar Admin',
-            path: '/reports'
+            activeTab: 'reports'
         });
     }
 

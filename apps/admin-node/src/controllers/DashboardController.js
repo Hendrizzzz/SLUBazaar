@@ -11,9 +11,11 @@ class DashboardController {
      */
     async getDashboardView(req, res) {
         try {
-            res.render('dashboard', {
+            const metrics = await this.dashboardService.getStats();
+            res.render('dashboard/index', {
                 title: 'Overview | SLU Bazaar Admin',
-                path: '/dashboard'
+                activeTab: 'overview',
+                metrics: metrics
             });
         } catch (error) {
             console.error('Error rendering dashboard:', error);

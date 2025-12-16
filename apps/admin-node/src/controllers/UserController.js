@@ -12,9 +12,9 @@ class UserController {
      * GET /admin/users
      */
     async getUsersView(req, res) {
-        res.render('users', {
+        res.render('users/index', {
             title: 'User Management | SLU Bazaar Admin',
-            path: '/users'
+            activeTab: 'users'
         });
     }
 
@@ -33,7 +33,8 @@ class UserController {
             const users = await this.userService.getAllUsers(filters);
             res.json({ success: true, data: users });
         } catch (error) {
-            res.status(500).json({ success: false, error: 'Failed to fetch users' });
+            console.error("UserController Error:", error);
+            res.status(500).json({ success: false, error: error.message });
         }
     }
 

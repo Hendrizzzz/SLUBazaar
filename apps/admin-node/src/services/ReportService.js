@@ -6,7 +6,8 @@ class ReportService {
     }
 
     async getAllReports(filters) {
-        return await this.reportRepo.findAll(filters);
+        const status = filters.status || 'Pending';
+        return await this.reportRepo.getReportsByStatus(status);
     }
 
     async getReportDetails(id) {

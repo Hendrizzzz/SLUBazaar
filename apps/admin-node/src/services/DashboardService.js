@@ -35,12 +35,12 @@ class DashboardService {
             const closedCount = soldCount + expiredCount + cancelledCount + removedCount;
 
             return {
-                pendingReports: pendingItemReports + pendingUserReports,
-                activeUsers: totalUsers,
                 activeListings: activeCount,
+                closedListings: closedCount,
+                totalUsers: totalUsers,
                 soldItems: soldCount,
-                reportedUsers: pendingUserReports,
-                closedListings: closedCount
+                reportedListings: pendingItemReports,
+                reportedUsers: pendingUserReports
             };
 
         } catch (error) {

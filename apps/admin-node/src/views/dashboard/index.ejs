@@ -2,41 +2,149 @@
 
 <!--mini cards -->
 <!--mini cards padding -->
+<!-- Dashboard Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-    <!--active listings -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Active Listings</h3>
-       
-        <p class="text-4xl font-bold text-gray-900"> <%= metrics.activeListings || 0 %></p>
+
+    <!-- Active Listings -->
+    <div
+        class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Active Listings</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                <%= metrics.activeListings || 0 %>
+            </p>
+            <div class="mt-2 flex items-center text-xs text-green-600 font-medium">
+                <span class="bg-green-100 px-2 py-0.5 rounded-full">Live Now</span>
+            </div>
+        </div>
     </div>
 
-    <!-- closed listings -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Closed Listings</h3>
-        <p class="text-4xl font-bold text-gray-900"><%= metrics.closedListings || 0 %></p>
+    <!-- Closed Listings -->
+    <div
+        class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Closed Listings</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                <%= metrics.closedListings || 0 %>
+            </p>
+            <div class="mt-2 flex items-center text-xs text-gray-500 font-medium">
+                <span class="bg-gray-100 px-2 py-0.5 rounded-full">Archived</span>
+            </div>
+        </div>
     </div>
 
-    <!--total users -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Total Users</h3>
-        <p class="text-4xl font-bold text-gray-900"><%= metrics.totalUsers || 0 %></p>
+    <!-- Total Users -->
+    <div
+        class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-16 h-16 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                </path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Total Users</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                <%= metrics.totalUsers || 0 %>
+            </p>
+            <div class="mt-2 flex items-center text-xs text-indigo-600 font-medium">
+                <span class="bg-indigo-100 px-2 py-0.5 rounded-full">Members</span>
+            </div>
+        </div>
     </div>
 
-    <!--sold items -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Sold</h3>
-        <p class="text-4xl font-bold text-gray-900"><%= metrics.soldItems || 0 %></p>
+    <!-- Sold Items -->
+    <div
+        class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                </path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Sold Items</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                <%= metrics.soldItems || 0 %>
+            </p>
+            <div class="mt-2 flex items-center text-xs text-green-600 font-medium">
+                <span class="bg-green-100 px-2 py-0.5 rounded-full">Revenue +</span>
+            </div>
+        </div>
     </div>
 
-    <!--reported listings -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Reported Listings</h3>
-        <p class="text-4xl font-bold text-gray-900"><%= metrics.reportedListings || 0 %></p>
+    <!-- Reported Listings -->
+    <div
+        class="bg-white rounded-xl p-6 shadow-sm border border-red-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-16 h-16 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                </path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <div class="flex justify-between items-start">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Reported Items</h3>
+                <% if (metrics.reportedListings> 0) { %>
+                    <span class="flex h-3 w-3">
+                        <span
+                            class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    <% } %>
+            </div>
+            <p class="text-3xl font-bold text-gray-900">
+                <%= metrics.reportedListings || 0 %>
+            </p>
+            <div class="mt-2 flex items-center text-xs text-red-600 font-medium">
+                <span class="bg-red-100 px-2 py-0.5 rounded-full">Action Required</span>
+            </div>
+        </div>
     </div>
 
-    <!--reported users -->
-    <div class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
-        <h3 class="text-lg font-semibold text-gray-700 mb-2">Reported Users</h3>
-        <p class="text-4xl font-bold text-gray-900"><%= metrics.reportedUsers || 0 %></p>
+    <!-- Reported Users -->
+    <div
+        class="bg-white rounded-xl p-6 shadow-sm border border-red-100 hover:shadow-md transition-shadow relative overflow-hidden group">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <svg class="w-16 h-16 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636">
+                </path>
+            </svg>
+        </div>
+        <div class="relative z-10">
+            <div class="flex justify-between items-start">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Reported Users</h3>
+                <% if (metrics.reportedUsers> 0) { %>
+                    <span class="flex h-3 w-3">
+                        <span
+                            class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-orange-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+                    </span>
+                    <% } %>
+            </div>
+            <p class="text-3xl font-bold text-gray-900">
+                <%= metrics.reportedUsers || 0 %>
+            </p>
+            <div class="mt-2 flex items-center text-xs text-orange-600 font-medium">
+                <span class="bg-orange-100 px-2 py-0.5 rounded-full">Review Status</span>
+            </div>
+        </div>
     </div>
+
 </div>
