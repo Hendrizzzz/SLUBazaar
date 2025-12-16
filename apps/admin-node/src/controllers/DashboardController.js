@@ -1,31 +1,45 @@
-const DashboardService = require('../services/DashboardService');
-
 class DashboardController {
     constructor(dashboardService) {
         this.dashboardService = dashboardService;
     }
 
-    async getDashboard(req, res) {
-        try {
-            console.log('Dashboard route accessed');
-            
-            // Use service to get metrics
-            const metrics = await this.dashboardService.getDashboardMetrics();
 
-            console.log('Rendering dashboard with metrics:', metrics);
-            res.render('dashboard/index', {
-                title: 'Admin Dashboard',
-                currentPage: 'dashboard',
-                metrics: metrics
+
+    /**
+     * [VIEW] Renders the main Dashboard Page
+     * GET /admin/dashboard
+     */
+    async getDashboardView(req, res) {
+        try {
+            res.render('dashboard', {
+                title: 'Overview | SLU Bazaar Admin',
+                path: '/dashboard'
             });
         } catch (error) {
-            console.error('Error loading dashboard:', error);
-            res.status(500).render('error', {
-                title: 'Dashboard Error', 
-                message: 'Failed to load dashboard data'
+            console.error('Error rendering dashboard:', error);
+            res.status(500).send('Internal Server Error');
+        }
+    }
+
+
+
+    /**
+     * [API] Fetches real-time counts
+     * GET /admin/api/stats
+     */
+    async getDashboardStats(req, res) {
+        try {
+            const stats = await this.dashboardService.getStats();
+
+            res.json({
+                success: true,
+                data: stats
             });
+        } catch (error) {
+            console.error('Error fetching stats:', error);
+            res.status(500).json({ success: false, error: 'Failed to load statistics' });
         }
     }
 }
 
-module.exports =  DashboardController;
+module.exports = DashboardController;

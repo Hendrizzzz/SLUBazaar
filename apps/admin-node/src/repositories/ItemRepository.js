@@ -1,67 +1,74 @@
-
 class ItemRepository {
     constructor(db) {
         this.db = db;
     }
 
-    async getAllItemsForAdmin() {
-        try {
-            const query = `
-                SELECT 
-                    item_id as itemId,
-                    seller_id as sellerId,
-                    title,
-                    description,
-                    current_bid as currentBid,
-                    created_at as createdAt,
-                    item_status as itemStatus,
-                    category
-                FROM item
-                ORDER BY created_at DESC
-            `;
-            const [rows] = await this.db.execute(query);
-            return rows;
-        } catch (error) {
-            throw new Error(`Failed to get all items: ${error.message}`);
-        }
+    // Used by DashboardService
+    async countByStatus(status) {
+        const [rows] = await this.db.query(
+            "SELECT COUNT(*) as count FROM item WHERE item_status = ?",
+            [status]
+        );
+        return rows[0].count;
     }
 
-    async getItemDashboardStats() {
-        try {
-            const query = `
-                SELECT 
-                    SUM(CASE WHEN item_status = 'Active' THEN 1 ELSE 0 END) AS active_count,
-                    SUM(CASE WHEN item_status IN ('Sold', 'Awaiting Meetup') THEN 1 ELSE 0 END) AS closed_count,
-                    SUM(CASE WHEN item_status = 'Sold' THEN 1 ELSE 0 END) AS sold_count
-                FROM item
-            `;
-            const [rows] = await this.db.execute(query);
-            return {
-                active_count: parseInt(rows[0].active_count || 0),
-                closed_count: parseInt(rows[0].closed_count || 0),
-                sold_count: parseInt(rows[0].sold_count || 0)
-            };
-        } catch (error) {
-            throw new Error(`Failed to get item stats: ${error.message}`);
+
+
+
+    // Used by ListingController (Table View)
+    async findAll({ search, status }) {
+        // Joins with User table to show Seller Name
+        let query = `
+            SELECT i.item_id, i.title, i.current_bid, i.item_status, i.created_at, 
+                   u.fname as seller_fname, u.lname as seller_lname 
+            FROM item i
+            JOIN user u ON i.seller_id = u.user_id
+            WHERE 1=1
+        `;
+        const params = [];
+
+        if (status && status !== 'all') {
+            query += " AND i.item_status = ?";
+            params.push(status);
         }
+
+        if (search) {
+            query += " AND i.title LIKE ?";
+            params.push(`%${search}%`);
+        }
+
+        query += " ORDER BY i.created_at DESC";
+
+        const [rows] = await this.db.query(query, params);
+        return rows;
     }
 
-    async updateItemStatus(itemId, newStatus) {
-        try {
-            const query = "UPDATE item SET item_status = ? WHERE item_id = ?";
-            await this.db.execute(query, [newStatus, itemId]);
-        } catch (error) {
-            throw new Error(`Failed to update item status: ${error.message}`);
-        }
+    async findById(id) {
+        const [rows] = await this.db.query("SELECT * FROM item WHERE item_id = ?", [id]);
+        return rows[0] || null;
     }
 
-    async removeAllActiveItemsBySeller(sellerId) {
-        try {
-            const query = "UPDATE item SET item_status = 'Removed By Admin' WHERE seller_id = ? AND item_status = 'Active'";
-            await this.db.execute(query, [sellerId]);
-        } catch (error) {
-            throw new Error(`Failed to remove items by seller: ${error.message}`);
-        }
+
+
+
+    // Used for Soft Delete / Restore
+    async updateStatus(id, status) {
+        const [result] = await this.db.query(
+            "UPDATE item SET item_status = ? WHERE item_id = ?",
+            [status, id]
+        );
+        return result.affectedRows > 0;
+    }
+
+
+
+    // Used for Sanitization (Req #10)
+    async updateContent(id, title, description) {
+        const [result] = await this.db.query(
+            "UPDATE item SET title = ?, description = ? WHERE item_id = ?",
+            [title, description, id]
+        );
+        return result.affectedRows > 0;
     }
 }
 

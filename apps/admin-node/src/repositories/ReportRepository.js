@@ -3,6 +3,8 @@ class ReportRepository {
         this.db = db;
     }
 
+
+
     async getReportsByStatus(status) {
         try {
             const query = `
@@ -17,6 +19,8 @@ class ReportRepository {
         }
     }
 
+
+
     async updateReportStatusWithNotes(reportId, newStatus, notes) {
         try {
             const query = "UPDATE report SET report_status = ?, admin_notes = ? WHERE report_id = ?";
@@ -25,6 +29,9 @@ class ReportRepository {
             throw new Error(`Failed to update report status: ${error.message}`);
         }
     }
+
+
+
 
     async getReportById(reportId) {
         try {
@@ -35,6 +42,9 @@ class ReportRepository {
             throw new Error(`Failed to get report by ID: ${error.message}`);
         }
     }
+
+
+
 
     async getPendingReportStats() {
         try {
@@ -55,5 +65,7 @@ class ReportRepository {
         }
     }
 }
+
+
 
 module.exports = ReportRepository;
