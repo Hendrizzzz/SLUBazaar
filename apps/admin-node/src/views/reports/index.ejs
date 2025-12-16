@@ -1,0 +1,377 @@
+<div class="space-y-6">
+    <!-- Header & Filters -->
+    <div
+        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">
+                Moderation Queue
+            </h2>
+            <p class="text-gray-500 text-sm mt-1">
+                Review and resolve user and item reports.
+            </p>
+        </div>
+
+        <div class="flex gap-3">
+            <select id="filter-type"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option value="">All Types</option>
+                <option value="Item">Items</option>
+                <option value="User">Users</option>
+            </select>
+
+            <select id="filter-status"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <option value="Pending">Pending</option>
+                <option value="Resolved">Resolved</option>
+                <option value="Dismissed">Dismissed</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-50 text-gray-700 uppercase text-xs font-semibold tracking-wider">
+                    <tr>
+                        <th class="px-6 py-4 border-b">Date</th>
+                        <th class="px-6 py-4 border-b">Type</th>
+                        <th class="px-6 py-4 border-b">Reason</th>
+                        <th class="px-6 py-4 border-b">Reporter</th>
+                        <th class="px-6 py-4 border-b">Target</th>
+                        <th class="px-6 py-4 border-b text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reports-table-body" class="divide-y divide-gray-100">
+                    <!-- Dynamic Content via AJAX -->
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-gray-500">
+                            Loading reports...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div id="review-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" onclick="closeReviewModal()"></div>
+
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <!-- Modal Panel -->
+        <div class="bg-white rounded-2xl shadow-2xl transform transition-all w-full max-w-2xl overflow-hidden relative">
+
+            <!-- Header -->
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-800" id="modal-title">Review Report</h3>
+                <button onclick="closeReviewModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 max-h-[70vh] overflow-y-auto" id="modal-content">
+
+                <!-- Loading State -->
+                <div id="modal-loading" class="text-center py-8">
+                    <div
+                        class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent">
+                    </div>
+                    <p class="mt-2 text-gray-500">Loading details...</p>
+                </div>
+
+                <!-- Actual Details (Hidden initially) -->
+                <div id="modal-details" class="space-y-6 hidden">
+
+                    <!-- Description -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-2">Description / Reason
+                        </h4>
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p id="modal-desc" class="text-gray-700 whitespace-pre-wrap"></p>
+                        </div>
+                    </div>
+
+                    <!-- Evidence Images -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-2">Evidence</h4>
+                        <div id="modal-images" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Images injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Admin Notes -->
+                    <div>
+                        <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-2">Admin Notes</h4>
+                        <textarea id="modal-notes"
+                            class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            rows="3" placeholder="Add notes about this resolution..."></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Footer / Actions -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap justify-end gap-3">
+                <button id="btn-dismiss"
+                    class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors">
+                    Dismiss Report
+                </button>
+                <button id="btn-remove"
+                    class="px-4 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 border border-orange-200 rounded-lg font-medium transition-colors">
+                    Remove Item
+                </button>
+                <button id="btn-ban"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow-md transition-all">
+                    Ban User
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * SLU Bazaar Admin - Reports Management
+     * Handles AJAX table loading, Modal interactions, and Report Resolution.
+     */
+
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Reports Script Loaded via Inline");
+        loadReports();
+
+        // Event Delegation for dynamic buttons
+        const tableBody = document.getElementById('reports-table-body');
+        if (tableBody) {
+            tableBody.addEventListener('click', handleTableActions);
+        }
+
+        // Modal Action Buttons
+        document.getElementById('btn-dismiss')?.addEventListener('click', () => resolveReport('Dismiss'));
+        document.getElementById('btn-ban')?.addEventListener('click', () => resolveReport('BanUser'));
+        document.getElementById('btn-remove')?.addEventListener('click', () => resolveReport('RemoveItem'));
+
+        // Filter Listeners
+        document.getElementById('filter-status')?.addEventListener('change', loadReports);
+        document.getElementById('filter-type')?.addEventListener('change', loadReports);
+    });
+
+    // --- 1. Load Reports Table ---
+    async function loadReports() {
+        const status = document.getElementById('filter-status')?.value || 'Pending';
+        const type = document.getElementById('filter-type')?.value || '';
+        const tableBody = document.getElementById('reports-table-body');
+
+        try {
+            // Spinner
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-8 text-center">
+                        <div class="flex justify-center items-center">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                        <p class="text-gray-400 text-sm mt-2">Loading reports...</p>
+                    </td>
+                </tr>`;
+
+            const response = await fetch(`/admin/api/reports?status=${status}&type=${type}`);
+
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const result = await response.json();
+
+            if (result.success && result.data.length > 0) {
+                renderTable(result.data);
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No reports found.</td></tr>';
+            }
+
+        } catch (error) {
+            console.error('Error loading reports:', error);
+            tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">Failed to load reports: ${error.message}</td></tr>`;
+        }
+    }
+
+    function renderTable(reports) {
+        const tableBody = document.getElementById('reports-table-body');
+        tableBody.innerHTML = reports.map(report => `
+            <tr class="hover:bg-gray-50 transition-colors border-b last:border-b-0" id="row-${report.report_id}">
+                <td class="px-6 py-4 text-sm text-gray-600">${new Date(report.date).toLocaleDateString()}</td>
+                <td class="px-6 py-4">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                        ${report.type === 'User' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
+                        ${report.type}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-900 font-medium">${escapeHtml(report.reason)}</td>
+                <td class="px-6 py-4 text-sm text-gray-600">${escapeHtml(report.reporter)}</td>
+                <td class="px-6 py-4 text-sm text-gray-600 truncate max-w-xs" title="${escapeHtml(report.target)}">
+                    ${escapeHtml(report.target)}
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button 
+                        data-id="${report.report_id}" 
+                        class="btn-review text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-colors">
+                        Review
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+
+    // --- 2. Handle Table Clicks (Open Modal) ---
+    async function handleTableActions(e) {
+        if (e.target.classList.contains('btn-review')) {
+            const reportId = e.target.getAttribute('data-id');
+            await openReviewModal(reportId);
+        }
+    }
+
+    let currentReportId = null;
+
+    async function openReviewModal(reportId) {
+        currentReportId = reportId;
+        const modal = document.getElementById('review-modal');
+        const content = document.getElementById('modal-content');
+
+        // Show modal in loading state
+        modal.classList.remove('hidden');
+        content.innerHTML = '<div class="text-center py-10">Loading details...</div>';
+
+        try {
+            const response = await fetch(`/admin/api/reports/${reportId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                renderModalContent(result.data);
+
+                // Show/Hide action buttons based on report type
+                const isUserReport = result.data.type === 'User';
+                /* Note: The backend requirements for 3.3 Get Report Details returns 'target_id' but not explicitly 'type'. 
+                   We can infer or should verify if getAllReports passed enough info, but fetching detail is safer. 
+                   Assuming result.data contains type or we rely on the row data. 
+                   For now, we'll show all relevant buttons or logic-check them. 
+                */
+
+                const btnRemove = document.getElementById('btn-remove');
+                const btnBan = document.getElementById('btn-ban');
+
+                // Basic logic: If it's an Item report, show remove item. If User, show Ban.
+                // But the requirement says "Three Buttons: Dismiss, Delete Item, Ban User" are shown.
+                // We can keep all 3 visible or conditionally hide. Let's keep all 3 as per req default or smart-hide.
+                // Let's toggle their visibility if we have the data.
+
+            } else {
+                content.innerHTML = '<div class="text-red-500 py-4">Error loading report details.</div>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            content.innerHTML = '<div class="text-red-500 py-4">Network error.</div>';
+        }
+    }
+
+    function renderModalContent(data) {
+        // Populate the read-only details
+        document.getElementById('modal-desc').textContent = data.description || 'No description provided.';
+        document.getElementById('modal-notes').value = data.admin_notes || '';
+
+        // Images
+        const imgContainer = document.getElementById('modal-images');
+        imgContainer.innerHTML = '';
+        if (data.evidence_images && data.evidence_images.length > 0) {
+            data.evidence_images.forEach(imgUrl => {
+                const img = document.createElement('img');
+                img.src = imgUrl.startsWith('http') ? imgUrl : `/assets/uploads/${imgUrl}`; // Adjust logic based on your upload path
+                img.className = 'w-full h-auto rounded-lg border border-gray-200 mt-2';
+                imgContainer.appendChild(img);
+            });
+        } else {
+            imgContainer.innerHTML = '<p class="text-sm text-gray-500 italic">No evidence images attached.</p>';
+        }
+        document.getElementById('modal-content').innerHTML = '';
+
+        const loadingDiv = document.getElementById('modal-loading');
+        const detailsDiv = document.getElementById('modal-details');
+
+        loadingDiv.classList.add('hidden');
+        detailsDiv.classList.remove('hidden');
+    }
+
+
+    // --- 3. Resolve Report ---
+    async function resolveReport(action) {
+        if (!currentReportId) return;
+
+        const notes = document.getElementById('modal-notes').value;
+        const btn = event.target; // The button clicked
+        const originalText = btn.textContent;
+
+        // Loading State
+        btn.disabled = true;
+        btn.textContent = 'Processing...';
+
+        try {
+            const response = await fetch('/admin/api/reports/resolve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    report_id: currentReportId,
+                    action: action,
+                    admin_notes: notes
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // Close modal
+                closeModal();
+                // Remove row from table
+                const row = document.getElementById(`row-${currentReportId}`);
+                if (row) row.remove();
+
+                // Optional: Show toast success
+                // alert('Report resolved successfully'); 
+            } else {
+                alert('Error: ' + (result.error || 'Failed to resolve report'));
+            }
+
+        } catch (error) {
+            console.error('Error resolving:', error);
+            alert('System error occurred.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    }
+
+    // Utility: Close Modal
+    function closeModal() {
+        document.getElementById('review-modal').classList.add('hidden');
+        // Reset state
+        document.getElementById('modal-loading').classList.remove('hidden');
+        document.getElementById('modal-details').classList.add('hidden');
+        currentReportId = null;
+    }
+
+    // Global scope for Close button in HTML
+    window.closeReviewModal = closeModal;
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>

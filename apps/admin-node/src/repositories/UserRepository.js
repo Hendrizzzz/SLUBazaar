@@ -15,22 +15,32 @@ class UserRepository {
 
     // Used by UserController (Table View)
     async findAll({ search, status }) {
-        let query = "SELECT user_id, fname, lname, email, account_status, created_at FROM user WHERE 1=1";
+        let query = `
+            SELECT 
+                u.user_id, 
+                CONCAT(u.fname, ' ', u.lname) AS name, 
+                u.email, 
+                u.account_status AS status, 
+                u.created_at,
+                (SELECT COUNT(*) FROM report r WHERE r.target_user_id = u.user_id) as reports_against_count
+            FROM \`user\` u 
+            WHERE u.role = 'Member'
+        `;
         const params = [];
 
         // Dynamic Filtering
         if (status && status !== 'all') {
-            query += " AND account_status = ?";
+            query += " AND u.account_status = ?";
             params.push(status);
         }
 
         if (search) {
-            query += " AND (email LIKE ? OR fname LIKE ? OR lname LIKE ?)";
+            query += " AND (u.email LIKE ? OR u.fname LIKE ? OR u.lname LIKE ?)";
             const term = `%${search}%`;
             params.push(term, term, term);
         }
 
-        query += " ORDER BY created_at DESC";
+        query += " ORDER BY u.created_at DESC";
 
         const [rows] = await this.db.query(query, params);
         return rows;

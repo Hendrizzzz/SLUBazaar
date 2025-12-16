@@ -1,119 +1,123 @@
-<% 
-if (typeof activeTab === 'undefined') {
-    activeTab = '';
-}
-if (typeof title === 'undefined') {
-    title = 'Admin Hub';
-}
-%>
+<% if (typeof activeTab==='undefined' ) { activeTab='' ; } if (typeof title==='undefined' ) { title='Admin Hub' ; } %>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title || 'Admin' %></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const contentArea = document.getElementById('content-area');
-            const tabs = document.querySelectorAll('nav a');
-            
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const url = this.href;
-                    
-                    contentArea.innerHTML = '<div class="text-center py-8">Loading...</div>';
-                    
-                    //ajax to fetch content
-                    fetch(url)
-                        .then(response => response.text())
-                        .then(html => {
-                            //get content from response
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = html;
-                            const newContent = tempDiv.querySelector('#content-area')?.innerHTML || 
-                                             tempDiv.querySelector('body')?.innerHTML;
-                            
-                            if (newContent) {
-                                contentArea.innerHTML = newContent;
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            <%= title || 'Admin' %>
+        </title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['Outfit', 'sans-serif'],
+                        },
+                        colors: {
+                            slu: {
+                                blue: '#0056b3', // Approximate match for the screenshot blue
+                                light: '#4aa3f0',
+                                accent: '#d4e157' // The lime/greenish accent
                             }
-                        })
-                        .catch(error => {
-                            contentArea.innerHTML = '<div class="text-red-600 p-4">Error loading content</div>';
-                        });
-                });
-            });
-        });
-    </script>
-</head>
-<body class="min-h-screen bg-gray-50">
-    <!--bg img setup -->
-    <div class="fixed inset-0 bg-center bg-cover -z-10"
-         style="background-image: url('/assets/slubakakeng.png')">
-    </div>
+                        }
+                    }
+                }
+            }
+        </script>
+        <style>
+            body {
+                font-family: 'Outfit', sans-serif;
+            }
 
-    <div class="min-h-screen p-4 md:p-6">
-        <!--top left items (header)-->
-        <header class="flex items-center gap-4 mb-6">
-            <img src="/assets/SLU Logo.png"
-                 alt="slu_logo"
-                 class="w-12 h-12 md:w-16 md:h-16 object-contain" />
-            <div>
-                <h1 class="text-2xl md:text-3xl font-bold text-white drop-shadow">
-                    SLU Bazaar
-                </h1>
-                <p class="text-base md:text-lg text-white/90">
-                    Admin Overview
-                </p>
-            </div>
-        </header>
+            /* Custom diagonal background */
+            .slu-bg {
+                background: linear-gradient(135deg, #2b6cb0 0%, #2b6cb0 35%, #9cbd3c 35.1%, #9cbd3c 100%);
+                background-attachment: fixed;
+            }
 
-        <!--main card-->
-        <main class="flex justify-center">
-            <section class="w-full max-w-6xl bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden min-h-[600px]">
-                <!-- card tabs for page navi -->
-                <nav class="border-b">
-                    <div class="flex flex-wrap gap-1 px-6 pt-4">
+            /* Glassmorphism for the main card */
+            .glass-panel {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+            }
+        </style>
+    </head>
+
+    <body class="min-h-screen slu-bg">
+
+        <div class="min-h-screen flex flex-col">
+            <!-- Header -->
+            <header class="w-full px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="assets/SLU Logo.png" alt="slu_logo" class="w-12 h-12 object-contain drop-shadow-md" />
+                    <div class="text-white">
+                        <h1 class="text-2xl font-bold leading-tight">SLU Bazaar</h1>
+                        <p class="text-xs opacity-90">Admin Administration</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <!-- Logout Button -->
+                    <a href="/index.php?action=logout"
+                        class="text-white/80 hover:text-white text-xs font-medium uppercase tracking-wider transition-colors">
+                        Logout
+                    </a>
+
+                    <!-- User Avatar Placeholder (Admin) -->
+                    <div
+                        class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-white font-bold border border-white/30 cursor-pointer hover:bg-white/30 transition">
+                        A
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-grow px-4 md:px-8 py-6 flex justify-center items-start">
+                <section
+                    class="w-full max-w-7xl glass-panel rounded-xl shadow-2xl overflow-hidden min-h-[700px] flex flex-col">
+
+                    <!-- Navigation Tabs (Styled like the screenshot's top bar) -->
+                    <nav class="bg-white/50 border-b border-gray-100 px-6 pt-4 flex gap-6 overflow-x-auto">
                         <a href="/admin/dashboard"
-                           class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
-                           <%= activeTab === 'overview'
-                               ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">
+                            class="pb-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap
+                       <%= activeTab === 'overview' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
                             Overview
                         </a>
                         <a href="/admin/reports"
-                           class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
-                           <%= activeTab === 'reports'
-                               ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">>
+                            class="pb-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap
+                       <%= activeTab === 'reports' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
                             Reports
                         </a>
                         <a href="/admin/users"
-                           class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
-                           <%= activeTab === 'users'
-                               ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">>
-                            Users
+                            class="pb-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap
+                       <%= activeTab === 'users' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
+                            Users (Members)
                         </a>
-                         <a href="/admin/listings"
-                           class="inline-flex items-center px-5 py-3 rounded-t-lg font-medium transition-all duration-200
-                           <%= activeTab === 'listings'
-                               ? 'bg-blue-600 text-white border border-blue-600'
-                               : 'text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 hover:border-gray-400' %>">>
+                        <a href="/admin/listings"
+                            class="pb-3 border-b-2 font-medium text-sm transition-all whitespace-nowrap
+                       <%= activeTab === 'listings' ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' %>">
                             Listings
                         </a>
-                    </div>
-                </nav>
+                    </nav>
 
-                <!--page content - to be filled by dashboard\index.ejs -->
-                <div class="p-6 md:p-8" id="content-area">
-                    <%- body %>
-                </div>
-            </section>
-        </main>
-    </div>
-</body>
-</html>
+                    <!-- Page Content -->
+                    <div class="p-6 md:p-8 flex-grow bg-gray-50/50" id="content-area">
+                        <%- body %>
+                    </div>
+
+                </section>
+            </main>
+
+            <footer class="text-center py-4 text-white/60 text-xs">
+                &copy; 2025 SLU Bazaar Admin
+            </footer>
+        </div>
+    </body>
+
+    </html>

@@ -11,9 +11,9 @@ class ListingController {
      * GET /admin/listings
      */
     async getListingsView(req, res) {
-        res.render('listings', {
+        res.render('listings/index', {
             title: 'Marketplace Listings | SLU Bazaar Admin',
-            path: '/listings'
+            activeTab: 'listings'
         });
     }
 
@@ -33,7 +33,8 @@ class ListingController {
             const items = await this.listingService.getAllListings(filters);
             res.json({ success: true, data: items });
         } catch (error) {
-            res.status(500).json({ success: false, error: 'Failed to fetch listings' });
+            console.error("ListingController Error:", error);
+            res.status(500).json({ success: false, error: error.message });
         }
     }
 
