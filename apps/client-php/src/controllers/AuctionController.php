@@ -44,6 +44,47 @@ class AuctionController extends BaseController
             require __DIR__ . '/../views/user/marketplace.php';  // PLACEHOLDER ##################################################
     }
 
+    /**
+     * Route: index.php?action=report_item
+     */
+    public function reportItem(): void
+    {
+        // 1. Ensure user is logged in
+        $userId = $this->requireLogin();
+        $input = $this->getInput();
+
+        try {
+            // 2. Validate Input
+            $itemId = (int) ($input['item_id'] ?? 0);
+            $reason = trim($input['reason'] ?? '');
+            $description = trim($input['description'] ?? '');
+
+            if ($itemId <= 0) {
+                throw new Exception("Invalid item ID.");
+            }
+            if (empty($reason) || empty($description)) {
+                throw new Exception("Please provide a reason and description.");
+            }
+
+            // 3. Call the Service (ModerationService)
+            
+            $moderationService = $container->get(ModerationService::class);
+
+            // Params: reporterId, targetUserId (null), targetItemId, reason, description
+            $moderationService->submitReport(
+                $userId, 
+                null, 
+                $itemId, 
+                $reason, 
+                $description
+            );
+
+            $this->jsonResponse(['success' => true, 'message' => 'Report submitted successfully.']);
+
+        } catch (Exception $e) {
+            $this->errorResponse($e->getMessage());
+        }
+    }
 
 
 

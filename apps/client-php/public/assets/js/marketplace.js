@@ -393,6 +393,8 @@ function createItemCard(item, type) {
     `;
 }
 
+
+
 function openVerifyModal(itemId) { alert("TODO"); }
 // TODO: RATINGS
 function openRateModal(itemId, userId) { alert("Rating feature check console for details."); }
