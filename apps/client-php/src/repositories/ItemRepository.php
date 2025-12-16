@@ -426,6 +426,95 @@ class ItemRepository
         return $items;
     }
 
+    public function findAllActive(array $filters = []): array
+    {
+        // Base Query: Select items that are Active
+        $sql = "SELECT i.*, 
+                (SELECT COUNT(*) FROM bids b WHERE b.item_id = i.item_id) as bid_count 
+                FROM items i 
+                WHERE i.item_status = 'Active'";
+
+        $params = [];
+        $types = "";
+
+        // --- DYNAMIC FILTERING ---
+
+        // 1. Search (Title or Description)
+        if (!empty($filters['search'])) {
+            $sql .= " AND (i.title LIKE ? OR i.description LIKE ?)";
+            $searchTerm = "%" . $filters['search'] . "%";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $types .= "ss";
+        }
+
+        // 2. Categories (IN clause)
+        if (!empty($filters['categories']) && is_array($filters['categories'])) {
+            // Create placeholders based on array length: e.g., (?, ?, ?)
+            $placeholders = implode(',', array_fill(0, count($filters['categories']), '?'));
+            $sql .= " AND i.category IN ($placeholders)";
+            
+            foreach ($filters['categories'] as $cat) {
+                $params[] = $cat;
+                $types .= "s";
+            }
+        }
+
+        // 3. Conditions (IN clause)
+        if (!empty($filters['conditions']) && is_array($filters['conditions'])) {
+            $placeholders = implode(',', array_fill(0, count($filters['conditions']), '?'));
+            // Assuming your DB column is named 'item_condition' or similar. 
+            // Check your database schema. If it's just 'condition', use that.
+            $sql .= " AND i.item_condition IN ($placeholders)";
+            
+            foreach ($filters['conditions'] as $cond) {
+                $params[] = $cond;
+                $types .= "s";
+            }
+        }
+
+        // 4. Price Range
+        if (!empty($filters['min_price'])) {
+            $sql .= " AND i.starting_bid >= ?";
+            $params[] = $filters['min_price'];
+            $types .= "d"; // 'd' for double/decimal
+        }
+        if (!empty($filters['max_price'])) {
+            $sql .= " AND i.starting_bid <= ?";
+            $params[] = $filters['max_price'];
+            $types .= "d";
+        }
+
+        // --- SORTING ---
+        // Validate sort option to prevent SQL injection
+        $sortMap = [
+            'newest' => 'ORDER BY i.created_at DESC',
+            'price_asc' => 'ORDER BY i.starting_bid ASC',
+            'price_desc' => 'ORDER BY i.starting_bid DESC',
+            'ending_soon' => 'ORDER BY i.auction_end ASC'
+        ];
+
+        $sortKey = $filters['sort'] ?? 'newest';
+        $sql .= " " . ($sortMap[$sortKey] ?? $sortMap['newest']);
+
+
+        // --- EXECUTION ---
+        $stmt = $this->db->prepare($sql);
+        if (!$stmt) {
+            throw new Exception("Database prepare error: " . $this->db->error);
+        }
+
+        // Bind params dynamically if any exist
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
 
 
 

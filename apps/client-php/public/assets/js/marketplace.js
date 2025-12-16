@@ -392,6 +392,252 @@ function createItemCard(item, type) {
         </div>
     `;
 }
+// SLUBazaar/public/assets/js/marketplace.js
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Only run Marketplace logic if the container exists
+    if (document.getElementById('auction-container')) {
+        setupFilters(); // Initialize filters
+        loadAuctions(); // Load default view
+        setupTabs();
+        setInterval(updateTimers, 1000);
+        updateTimers();
+    }
+
+    // 2. Only run Profile logic if the grid exists
+    if (document.getElementById('content-grid')) {
+        setMainTab('selling');
+    }
+
+    // 3. Global Click Handler for Cards
+    document.addEventListener('click', (event) => {
+        const card = event.target.closest('.item-card');
+        if (card && !event.target.closest('button') && !event.target.closest('a')) {
+            const itemId = card.getAttribute('data-item-id');
+            if (itemId) openItemDetails(itemId);
+        }
+    });
+});
+
+// =============================
+//      FILTER & SEARCH LOGIC
+// =============================
+
+function setupFilters() {
+    // Elements
+    const sidebarSearch = document.getElementById('search-input');
+    const topSearchForm = document.querySelector('.search-bar');
+    const sortSelect = document.getElementById('sort-select');
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    const applyBtn = document.getElementById('apply-filters');
+    
+    // 1. Apply Button (Triggers Search, Price, and Category filters)
+    if (applyBtn) {
+        applyBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            applyAllFilters();
+        });
+    }
+
+    // 2. Sort Dropdown (Triggers immediately)
+    if (sortSelect) {
+        sortSelect.addEventListener('change', () => {
+            applyAllFilters();
+        });
+    }
+
+    // 3. Top Search Bar (Syncs with sidebar and triggers)
+    if (topSearchForm) {
+        topSearchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = topSearchForm.querySelector('input').value;
+            if(sidebarSearch) sidebarSearch.value = val; // Sync
+            applyAllFilters();
+        });
+    }
+
+    // 4. Enter key on sidebar search
+    if (sidebarSearch) {
+        sidebarSearch.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') applyAllFilters();
+        });
+    }
+}
+
+function getFilterValues() {
+    // Search
+    const searchVal = document.getElementById('search-input')?.value || document.querySelector('.search-bar input')?.value || '';
+    
+    // Sort
+    const sortVal = document.getElementById('sort-select')?.value || 'newest';
+
+    // Categories
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]:checked');
+    const categories = Array.from(categoryCheckboxes).map(cb => cb.value);
+
+    // Price
+    const minPrice = document.getElementById('min-price')?.value || '';
+    const maxPrice = document.getElementById('max-price')?.value || '';
+
+    return {
+        q: searchVal,
+        sort: sortVal,
+        category: categories, // Array
+        min: minPrice,
+        max: maxPrice
+    };
+}
+
+function applyAllFilters() {
+    const filters = getFilterValues();
+    loadAuctions(filters);
+}
+
+// =============================
+//      DATA LOADING
+// =============================
+
+async function loadAuctions(filters = {}) {
+    const container = document.getElementById('auction-container');
+    if (!container) return;
+
+    container.innerHTML = '<div style="width:100%; text-align:center; padding: 40px;"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem; color:var(--primary);"></i><p style="margin-top:10px; color:#64748b;">Loading items...</p></div>';
+
+    // Build URL Params
+    const params = new URLSearchParams();
+    params.append('action', 'marketplace');
+
+    // Append simple values
+    if (filters.q) params.append('q', filters.q);
+    if (filters.sort) params.append('sort', filters.sort);
+    if (filters.min) params.append('min', filters.min);
+    if (filters.max) params.append('max', filters.max);
+
+    // Append Arrays (Categories)
+    if (filters.category && Array.isArray(filters.category)) {
+        filters.category.forEach(cat => params.append('category[]', cat));
+    }
+
+    try {
+        const url = `index.php?${params.toString()}`;
+        const data = await apiFetch(url);
+
+        container.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1/-1; text-align:center; padding:50px; color:#94a3b8; background: #f8fafc; border-radius: 12px; border: 2px dashed #e2e8f0;">
+                    <i class="fa-solid fa-store-slash" style="font-size: 2.5rem; margin-bottom: 15px; display: block;"></i>
+                    <p>No active listings found matching your filters.</p>
+                    <button onclick="clearFilters()" style="margin-top:15px; background:none; border:none; color:var(--primary); text-decoration:underline; cursor:pointer;">Clear Filters</button>
+                </div>`;
+            return;
+        }
+
+        data.forEach(item => {
+            container.innerHTML += createCardHTML(item);
+        });
+    } catch (error) {
+        console.error("Load Error:", error);
+        container.innerHTML = '<p style="color:red; text-align:center;">Failed to load items.</p>';
+    }
+}
+
+function clearFilters() {
+    // Reset Inputs
+    document.querySelectorAll('input').forEach(i => {
+        if(i.type === 'checkbox') i.checked = false;
+        else i.value = '';
+    });
+    document.getElementById('sort-select').value = 'newest';
+    
+    // Reload
+    loadAuctions();
+}
+
+function createCardHTML(item) {
+    const title = item.title;
+    const img = item.image || '/assets/img/default-image.png';
+    const price = item.price.amount;
+    const timerLabel = item.timer.label;
+
+    let borderClass = '';
+    let badgeHTML = '';
+
+    if (item.status === 'Pending') {
+        badgeHTML = `<span class="status-badge badge-closed">Pending</span>`;
+        borderClass = 'opacity-75';
+    } else {
+        badgeHTML = `<span class="status-badge badge-winning">Active</span>`;
+    }
+
+    return `
+            <div class="item-card ${borderClass}" data-item-id="${item.itemId}">
+                <div class="card-img-wrapper">
+                    <img src="${img}" alt="${title}">
+                    ${badgeHTML}
+                </div>
+                <h4>${title}</h4>
+                <div class="item-price">₱ ${parseFloat(price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                <div class="item-timer">
+                    <span class="timer-label">${timerLabel}</span> 
+                    <span class="timer-value" data-target="${item.timer.target}"></span>
+                </div>
+                <div style="margin-top: auto; width: 100%;">
+                    <button class="btn-action btn-bid">View / Bid</button>
+                </div>
+            </div>
+    `;
+}
+
+// =============================
+//      UTILS & HELPERS
+// =============================
+
+function setupTabs() {
+    const tabs = document.querySelectorAll('.d-tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            const tabText = this.innerText.trim();
+            if (tabText.includes('Live Auctions')) {
+                clearFilters(); // Reset filters when going back to main tab
+            }
+        });
+    });
+}
+
+window.openItemDetails = function (itemId) {
+    window.location.href = `index.php?action=item_details&id=${itemId}`;
+}
+
+function updateTimers() {
+    document.querySelectorAll('.timer-value').forEach(timerElement => {
+        const targetIso = timerElement.getAttribute('data-target');
+        if (!targetIso) return;
+
+        const targetDate = new Date(targetIso);
+        const now = new Date();
+        let diff = targetDate.getTime() - now.getTime();
+
+        const labelElement = timerElement.previousElementSibling;
+        const isEndsIn = labelElement && labelElement.innerText.includes('Ends in');
+
+        let display = '';
+        if (diff < 0) {
+            display = isEndsIn ? 'Ended' : 'Started';
+        } else {
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            if (days > 0) display = `${days}d ${hours}h left`;
+            else display = `${hours}h ${minutes}m left`;
+        }
+        timerElement.innerText = display;
+    });
+}
 
 
 

@@ -22,7 +22,18 @@ class AuctionController extends BaseController
         $input = $this->getInput();
 
         $search = $input['q'] ?? '';
-        $category = $input['category'] ?? 'all';
+        
+        // Handle Category (Can be string 'all' or array of strings)
+        $rawCategory = $input['category'] ?? [];
+        $categories = [];
+
+        if (is_array($rawCategory)) {
+            $categories = $rawCategory;
+        } elseif (is_string($rawCategory) && $rawCategory !== 'all' && !empty($rawCategory)) {
+            $categories = [$rawCategory];
+        }
+        // If it's 'all' or empty, we leave $categories as []
+
         $status = $input['status'] ?? 'Active';
         $minPrice = isset($input['min']) && is_numeric($input['min']) ? (float) $input['min'] : null;
         $maxPrice = isset($input['max']) && is_numeric($input['max']) ? (float) $input['max'] : null;
@@ -30,18 +41,18 @@ class AuctionController extends BaseController
 
         $items = $this->auctionService->searchItems(
             $search,
-            $category,
+            $categories, // Pass array
             $status,
             $minPrice,
             $maxPrice,
             $sort
         );
 
-        // We only send json if it is ajaxx
-        if ($this->isAjax())
+        if ($this->isAjax()) {
             $this->jsonResponse($items);
-        else
-            require __DIR__ . '/../views/user/marketplace.php';  // PLACEHOLDER ##################################################
+        } else {
+            require __DIR__ . '/../views/user/marketplace.php';
+        }
     }
 
     /**

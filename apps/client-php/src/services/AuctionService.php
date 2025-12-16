@@ -32,13 +32,12 @@ class AuctionService
     //  1. MARKETPLACE BROWSING (Web)
     // =========================================================================
 
-    public function searchItems(?string $keyword, string $category, string $status, ?float $minPrice, ?float $maxPrice, string $sort): array
+    public function searchItems(?string $keyword, array $categories, string $status, ?float $minPrice, ?float $maxPrice, string $sort): array
     {
-        // 1. Convert simple inputs into the DTO expected by ItemRepository::search
         $data = [
             'q' => $keyword,
-            'categories' => ($category === 'all') ? [] : [$category], // All, Electronics, etc
-            'statuses' => $status, // SearchItemsRequestDTO handles 'All' -> ['Active', 'Pending'] logic
+            'categories' => $categories,
+            'statuses' => $status,
             'min' => $minPrice,
             'max' => $maxPrice,
             'sort' => $sort
@@ -235,6 +234,18 @@ class AuctionService
         return $savedPaths;
     }
 
+    public function getMarketplaceItems(array $filters = []): array
+{
+    // Call the repository with the filter array
+    $itemRows = $this->itemRepository->findAllActive($filters);
+
+    $dtos = [];
+    foreach ($itemRows as $row) {
+        $dtos[] = ItemCardDTO::fromArray($row);
+    }
+
+    return $dtos;
+}
 
 
 

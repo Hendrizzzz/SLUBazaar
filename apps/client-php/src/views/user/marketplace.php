@@ -39,27 +39,73 @@
         </div>
 
         <div class="page-container">
+            
             <div class="dash-tabs">
                 <div class="d-tab active">Live Auctions</div>
                 <div class="d-tab">My Bids</div>
                 <div class="d-tab">My Watchlist</div>
             </div>
 
-            <div class="dash-content">
-                <form class="search-bar" onsubmit="event.preventDefault();">
-                    <input type="text" placeholder="Search items...">
-                    <button type="submit" id="filter-btn">
-                        <i class="fa-solid fa-magnifying-glass"></i> Search
-                    </button>
-                </form>
+            <div class="marketplace-layout">
                 
-                <hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 30px;">
-                
-                <div class="grid-container" id="auction-container">
+                <aside class="filters-sidebar">
+                    <div class="filter-header">
+                        <h3>Filters</h3>
+                        <button onclick="clearFilters()" class="clear-btn">Clear</button>
                     </div>
+
+                    <div class="filter-group">
+                        <label>Search</label>
+                        <div class="input-icon-wrapper">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="search-input" placeholder="Keyword...">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Sort By</label>
+                        <select id="sort-select">
+                            <option value="newest">Newest Listed</option>
+                            <option value="ending_soon">Ending Soonest</option>
+                            <option value="price_asc">Price: Low to High</option>
+                            <option value="price_desc">Price: High to Low</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Price Range (₱)</label>
+                        <div class="price-inputs">
+                            <input type="number" id="min-price" placeholder="Min">
+                            <span>-</span>
+                            <input type="number" id="max-price" placeholder="Max">
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Categories</label>
+                        <div class="checkbox-list">
+                            <label><input type="checkbox" name="category" value="Textbooks"> Textbooks</label>
+                            <label><input type="checkbox" name="category" value="Stationery"> Stationery</label>
+                            <label><input type="checkbox" name="category" value="Electronics"> Electronics</label>
+                            <label><input type="checkbox" name="category" value="Clothing"> Clothing</label>
+                            <label><input type="checkbox" name="category" value="Sports Equipment"> Sports Equipment</label>
+                            <label><input type="checkbox" name="category" value="Accessories"> Accessories</label>
+                            <label><input type="checkbox" name="category" value="Furniture"> Furniture</label>
+                            <label><input type="checkbox" name="category" value="Collectibles"> Collectibles</label>
+                            <label><input type="checkbox" name="category" value="Other"> Other</label>
+                        </div>
+                    </div>
+
+                    <button id="apply-filters" class="btn-apply">Apply Filters</button>
+                </aside>
+
+                <main class="listings-area">
+                    <div class="grid-container" id="auction-container">
+                        </div>
+                </main>
+
             </div>
         </div>
-    </div>
     </div>
 
     <script src="/assets/js/utils.js"></script>
