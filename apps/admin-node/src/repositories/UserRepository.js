@@ -29,7 +29,7 @@ class UserRepository {
         const params = [];
 
         // Dynamic Filtering
-        if (status && status !== 'all') {
+        if (status && status.toLowerCase() !== 'all') {
             query += " AND u.account_status = ?";
             params.push(status);
         }

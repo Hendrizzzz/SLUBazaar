@@ -10,6 +10,11 @@ dotenv.config();
 
 const app = express();
 
+// Static Files (Moved to top for priority)
+app.use(express.static(path.join(__dirname, '../public')));
+// PROXY FIX: Also serve static files at /admin so the proxy can find them
+app.use('/admin', express.static(path.join(__dirname, '../public')));
+
 // View Engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -19,7 +24,10 @@ app.use(expressLayouts);
 app.set('layout', 'layouts/layout');
 
 // Static Files
+// Static Files
 app.use(express.static(path.join(__dirname, '../public')));
+// PROXY FIX: Also serve static files at /admin so the proxy can find them
+app.use('/admin', express.static(path.join(__dirname, '../public')));
 
 // Body Parser
 app.use(express.urlencoded({ extended: true }));

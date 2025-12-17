@@ -34,6 +34,9 @@ class UserService
      */
     public function getProfileInfo(int $userId): ?User
     {
+        // Self-repair: Ensure the cached average_rating is accurate
+        $this->userRepo->updateAverageRating($userId);
+
         $user = $this->userRepo->getUserById($userId);
         if (!$user) {
             throw new Exception("User not found.");

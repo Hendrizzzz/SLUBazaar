@@ -6,10 +6,15 @@
     --light-grey: rgba(247, 247, 247, 0.822);
     --sidebar-width: 80px;
     --bg-glass: rgba(204, 204, 204, 0.85);
-    --shadow: 0 4px 20px rgba(0,0,0,0.05);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Khula', sans-serif; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Khula', sans-serif;
+}
 
 /* --- Main Layout --- */
 .main-wrapper {
@@ -23,12 +28,14 @@ h1 {
     font-family: Lalezar;
     font-size: 3rem;
 }
+
 /* Re-add your specific background classes if they were external or omitted here */
 
 .chat-container {
     display: flex;
     width: 100%;
-    height: 85vh; /* Fixed height relative to viewport */
+    height: 85vh;
+    /* Fixed height relative to viewport */
     background-color: var(--light-grey);
     border-radius: 16px;
     gap: 10px;
@@ -143,7 +150,8 @@ h1 {
     margin: 10px 10px 10px 0px;
     border-radius: 10px;
     background-color: white;
-    height: calc(100% - 20px); /* Ensure it fits in container */
+    height: calc(100% - 20px);
+    /* Ensure it fits in container */
 }
 
 .chat-header {
@@ -176,7 +184,8 @@ h1 {
     gap: 8px;
 
     /* SCROLL LOGIC */
-    overflow-y: auto;   /* Scroll only if content overflows */
+    overflow-y: auto;
+    /* Scroll only if content overflows */
     overflow-x: hidden;
 
     /* REMOVED: justify-content: flex-end; (This breaks scrolling) */
@@ -184,7 +193,7 @@ h1 {
 
 /* This pushes messages to the bottom when there are few,
    but allows normal scrolling when there are many. */
-.chat-messages:not(.loading) > :first-child {
+.chat-messages:not(.loading)> :first-child {
     margin-top: auto;
 }
 
@@ -196,7 +205,7 @@ h1 {
     line-height: 1.5;
     word-wrap: break-word;
     position: relative;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .message.incoming {
@@ -278,15 +287,18 @@ h1 {
     justify-content: center;
     align-items: center;
 }
+
 .spinner-wrapper {
     font-size: 2rem;
     color: var(--primary);
 }
+
 .error-state {
     color: #ef4444;
     text-align: center;
     margin: auto;
 }
+
 .empty-chat-state {
     text-align: center;
     color: #999;

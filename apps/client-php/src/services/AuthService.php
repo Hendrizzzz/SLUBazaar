@@ -112,6 +112,23 @@ class AuthService
         $this->userRepo->updatePassword($userId, $newHash);
     }
 
+    /**
+     * Verify the current password for a user.
+     * Used by profile updates to ensure user identity before making changes.
+     * @throws Exception if password is incorrect
+     */
+    public function verifyPassword(int $userId, string $password): void
+    {
+        $user = $this->userRepo->getUserById($userId);
+        if (!$user) {
+            throw new Exception("User not found.");
+        }
+
+        if (!password_verify($password, $user->getPasswordHash())) {
+            throw new Exception("Current password is incorrect.");
+        }
+    }
+
     public function startUserSession(array $user): void
     {
         // Assumes session_start() is called in index.php

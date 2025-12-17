@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 
-class Item 
+class Item
 {
 
     private ?int $itemId;
@@ -20,13 +20,22 @@ class Item
     private Category $category;
     private ?DateTimeImmutable $dateSold;
 
-    public function __construct(?int $itemId, int $sellerId, string $title, string $description, 
-                                float $startingBid, float $currentBid, DateTimeImmutable $createdAt, 
-                                DateTimeImmutable $auctionStart, DateTimeImmutable $auctionEnd, 
-                                ItemStatus $itemStatus, ?string $meetUpCode, Category $category,
-                                ?DateTimeImmutable $dateSold)
-    {
-        $this->itemId = $itemId; 
+    public function __construct(
+        ?int $itemId,
+        int $sellerId,
+        string $title,
+        string $description,
+        float $startingBid,
+        float $currentBid,
+        DateTimeImmutable $createdAt,
+        DateTimeImmutable $auctionStart,
+        DateTimeImmutable $auctionEnd,
+        ItemStatus $itemStatus,
+        ?string $meetUpCode,
+        Category $category,
+        ?DateTimeImmutable $dateSold
+    ) {
+        $this->itemId = $itemId;
         $this->sellerId = $sellerId;
         $this->title = $title;
         $this->description = $description;
@@ -43,28 +52,28 @@ class Item
 
 
 
-    public static function fromArray(array $item) : self 
+    public static function fromArray(array $item): self
     {
         $dateSold = $item['date_sold'] ? new DateTimeImmutable($item['date_sold']) : null;
-        
+
         return new self(
-            (int)$item['item_id'], 
-            (int)$item['seller_id'], 
-            $item['title'], 
-            $item['description'], 
-            (float)$item['starting_bid'], 
-            (float)$item['current_bid'], 
-            new DateTimeImmutable($item['created_at']), 
-            new DateTimeImmutable($item['auction_start']), 
+            (int) $item['item_id'],
+            (int) $item['seller_id'],
+            $item['title'],
+            $item['description'],
+            (float) $item['starting_bid'],
+            (float) $item['current_bid'],
+            new DateTimeImmutable($item['created_at']),
+            new DateTimeImmutable($item['auction_start']),
             new DateTimeImmutable($item['auction_end']),
-            ItemStatus::from($item['item_status']), 
-            $item['meetup_code'] ?? null, 
+            ItemStatus::from($item['item_status']),
+            $item['meetup_code'] ?? null,
             Category::from($item['category']),
             $dateSold // Use the fixed nullable value
         );
     }
 
-    
+
 
 
 
@@ -218,6 +227,33 @@ class Item
     public function getItemStatus(): ItemStatus
     {
         return $this->itemStatus;
+    }
+
+    /**
+     * Calculates the REAL status based on Time vs DB Status.
+     * Use this for Display purposes.
+     */
+    public function getEffectiveStatus(): string
+    {
+        // 1. If manually cancelled or sold, trust the DB.
+        if (
+            $this->itemStatus === ItemStatus::Sold ||
+            $this->itemStatus === ItemStatus::CancelledBySeller ||
+            $this->itemStatus === ItemStatus::Expired
+        ) {
+            return $this->itemStatus->value;
+        }
+
+        // 2. Otherwise, check time for Active/Pending items
+        $now = new DateTimeImmutable();
+
+        if ($now < $this->auctionStart) {
+            return 'Pending';
+        } elseif ($now >= $this->auctionStart && $now <= $this->auctionEnd) {
+            return 'Active';
+        } else {
+            return 'Ended'; // Or 'Unsold' / 'Completed' depending on partial logic
+        }
     }
 
     /**

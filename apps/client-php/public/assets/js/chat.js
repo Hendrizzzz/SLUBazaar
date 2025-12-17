@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 4. Send Message ---
     async function sendMessage(e) {
-        if(e) e.preventDefault();
+        if (e) e.preventDefault();
 
         const text = messageInput.value.trim();
         if (!text || !activeConversationId) return;
@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 tempMsg.classList.add('error');
                 tempMsg.textContent += " (Failed)";
-                alert("Error sending message: " + (result.error || "Unknown error"));
+                showToast("Error sending message: " + (result.error || "Unknown error"), "error");
             }
         } catch (e) {
             console.error(e);

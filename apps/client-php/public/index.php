@@ -106,7 +106,7 @@ try {
             break;
         case 'report_item':
             // AJAX: Item submits a report
-            $container->getUserController()->reportItem();
+            $container->getAuctionController()->reportItem();
             break;
 
         // =========================================================

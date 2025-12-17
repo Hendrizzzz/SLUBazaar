@@ -23,6 +23,7 @@
     $baseUrl = rtrim($protocol . $domainName . $path, '/') . '/';
     ?>
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>assets/css/auth-modern.css?v=<?php echo time(); ?>">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="slu-bg">

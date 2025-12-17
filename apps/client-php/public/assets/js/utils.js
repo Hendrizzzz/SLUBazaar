@@ -32,40 +32,29 @@ async function apiFetch(url, options = {}) {
 }
 
 /**
- * Show a Toast Notification
+ * Show a Toast Notification using SweetAlert2
  * @param {string} message 
- * @param {string} type 'success', 'error', 'info'
+ * @param {string} type 'success', 'error', 'info', 'warning'
  */
 function showToast(message, type = 'success') {
     // Standardize 'danger' to 'error'
     if (type === 'danger') type = 'error';
 
-    // Create container if not exists (though we append direct to body usually)
-    let toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
+    // Create the mixin if not defined globally
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
 
-    // Icon mapping
-    let iconClass = 'fa-check-circle';
-    if (type === 'error') iconClass = 'fa-exclamation-circle';
-    if (type === 'info') iconClass = 'fa-info-circle';
-
-    toast.innerHTML = `
-        <i class="fa-solid ${iconClass}" style="font-size: 1.2rem;"></i>
-        <span>${message}</span>
-    `;
-
-    document.body.appendChild(toast);
-
-    // Trigger animation
-    setTimeout(() => {
-        toast.classList.add('show');
-    }, 10);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-            toast.remove();
-        }, 300); // 300ms transition time
-    }, 3000);
+    Toast.fire({
+        icon: type,
+        title: message
+    });
 }

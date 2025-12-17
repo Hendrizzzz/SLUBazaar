@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class ItemRepository 
+class ItemRepository
 {
     private mysqli $db;
 
@@ -12,7 +12,7 @@ class ItemRepository
     }
 
 
-    public function addItem(Item $item) : void
+    public function addItem(Item $item): void
     {
         $query = "INSERT INTO item(seller_id, title, description, starting_bid, current_bid, 
                                     created_at, auction_start, auction_end, item_status, category) 
@@ -31,14 +31,24 @@ class ItemRepository
         $createdAt = $item->getCreatedAt()->format('Y-m-d H:i:s');
         $auctionStart = $item->getAuctionStart()->format('Y-m-d H:i:s');
         $auctionEnd = $item->getAuctionEnd()->format('Y-m-d H:i:s');
-        
+
         $itemStatus = $item->getItemStatus()->value;
         $category = $item->getCategory()->value;
 
-        $statement->bind_param('issddsssss', $sellerId, $title, $description, $startingBid, 
-                                $currentBid, $createdAt, $auctionStart, $auctionEnd, 
-                                $itemStatus, $category);
-        
+        $statement->bind_param(
+            'issddsssss',
+            $sellerId,
+            $title,
+            $description,
+            $startingBid,
+            $currentBid,
+            $createdAt,
+            $auctionStart,
+            $auctionEnd,
+            $itemStatus,
+            $category
+        );
+
         if (!$statement->execute())
             throw new Exception("Failed to add item " . $statement->error);
 
@@ -50,7 +60,7 @@ class ItemRepository
     /**
      * Gets the full details of the item
      */
-    public function getItemById(int $itemId) : ?Item 
+    public function getItemById(int $itemId): ?Item
     {
         $query = "SELECT * FROM item WHERE item_id = ?";
         $statement = $this->db->prepare($query);
@@ -99,7 +109,7 @@ class ItemRepository
 
         // Transform [['image_url' => 'a.jpg'], ...] into ['a.jpg', ...]
         $urls = [];
-        foreach ($rows as $row) 
+        foreach ($rows as $row)
             $urls[] = $row['image_url'];
 
         return $urls;
@@ -107,14 +117,14 @@ class ItemRepository
 
 
 
-    public function getToHandoverItemsByUserId(int $userId) : array
+    public function getToHandoverItemsByUserId(int $userId): array
     {
         $query = $this->retrieveGetToHandoverItemsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
             throw new Exception("There was an error preparing the getToHandoverItemsByUserId : "
-                                . $this->db->error);
+                . $this->db->error);
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
@@ -125,7 +135,7 @@ class ItemRepository
         $statement->close();
 
         $toHandoverItems = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $toHandoverItems[] = ToHandoverItemCardDTO::fromArray($row);
 
         return $toHandoverItems;
@@ -133,14 +143,14 @@ class ItemRepository
 
 
 
-    public function getActiveItemsByUserId(int $userId) : array
+    public function getActiveItemsByUserId(int $userId): array
     {
         $query = $this->retrieveGetActiveItemsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was a problem in preparing the getActiveItemsByUserId query : " 
-                                . $this->db->error);
+            throw new Exception("There was a problem in preparing the getActiveItemsByUserId query : "
+                . $this->db->error);
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
@@ -151,7 +161,7 @@ class ItemRepository
         $statement->close();
 
         $activeItems = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $activeItems[] = ItemRowDTO::fromArray($row);
 
         return $activeItems;
@@ -159,13 +169,13 @@ class ItemRepository
 
 
 
-    public function getSoldItemsByUserId(int $userId) : array
+    public function getSoldItemsByUserId(int $userId): array
     {
         $query = $this->retrieveGetSoldItemsByUserIdQuery();
         $statement = $this->db->prepare($query);
         if (!$statement)
-            throw new Exception("There was an error in preparing the getSoldItemsByUserId: " 
-                                . $this->db->error);
+            throw new Exception("There was an error in preparing the getSoldItemsByUserId: "
+                . $this->db->error);
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
@@ -176,13 +186,13 @@ class ItemRepository
         $statement->close();
 
         $soldItems = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $soldItems[] = SoldItemCardDTO::fromArray($row);
         return $soldItems;
     }
 
 
-    public function getUnsoldItemsByUserId(int $userId) : array
+    public function getUnsoldItemsByUserId(int $userId): array
     {
         $query = $this->retrieveGetUnsoldItemsByUserIdQuery();
         $statement = $this->db->prepare($query);
@@ -200,7 +210,7 @@ class ItemRepository
         $statement->close();
 
         $unsoldItems = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $unsoldItems[] = UnsoldItemCardDTO::fromArray($row);
 
         return $unsoldItems;
@@ -208,13 +218,13 @@ class ItemRepository
 
 
 
-    public function addDateSold(int $itemId, DateTimeImmutable $dateSold) : void    
+    public function addDateSold(int $itemId, DateTimeImmutable $dateSold): void
     {
         $query = "UPDATE item SET date_sold = ? WHERE item_id = ?";
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an error preparing the addDateSold query :"  . $this->db->error);
+            throw new Exception("There was an error preparing the addDateSold query :" . $this->db->error);
 
         $dateSoldString = $dateSold->format('Y-m-d H:i:s');
         $statement->bind_param('si', $dateSoldString, $itemId);
@@ -229,7 +239,7 @@ class ItemRepository
 
 
 
-    public function getItemsBySellerId(int $sellerId) : array
+    public function getItemsBySellerId(int $sellerId): array
     {
         // SQL: Fetch Item + First Image + Count of Bids
         $query = "SELECT 
@@ -265,10 +275,10 @@ class ItemRepository
     }
 
 
-    
-    
 
-    public function search(SearchItemsRequestDTO $criteria) : array
+
+
+    public function search(SearchItemsRequestDTO $criteria): array
     {
         $sql = "SELECT 
                     item.item_id, item.title, item.item_status, 
@@ -279,7 +289,7 @@ class ItemRepository
                 FROM item 
                 JOIN user ON item.seller_id = user.user_id 
                 WHERE 1=1";
-                
+
         $params = [];
         $types = "";
 
@@ -295,13 +305,13 @@ class ItemRepository
 
 
 
-    public function updateItemStatus(int $id, string $newStatus) : void
+    public function updateItemStatus(int $id, string $newStatus): void
     {
         $query = "UPDATE item SET item_status = ? WHERE item_id = ?";
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an error preparing the updateItemStatus query :"  . $this->db->error);
+            throw new Exception("There was an error preparing the updateItemStatus query :" . $this->db->error);
 
         $statement->bind_param('si', $newStatus, $id);
 
@@ -313,7 +323,7 @@ class ItemRepository
 
 
 
-    public function addMeetupCode(int $id, string $meetupCode) : void
+    public function addMeetupCode(int $id, string $meetupCode): void
     {
         $query = "UPDATE item SET meetup_code = ? WHERE item_id = ?";
         $statement = $this->db->prepare($query);
@@ -370,8 +380,8 @@ class ItemRepository
                     SUM(CASE WHEN item_status NOT IN ('Active', 'Pending') THEN 1 ELSE 0 END) AS closed_count
                   FROM item";
 
-        $result = $this->db->query($query); 
-        
+        $result = $this->db->query($query);
+
         if (!$result)
             throw new Exception("Failed to get item stats: " . $this->db->error);
 
@@ -386,7 +396,8 @@ class ItemRepository
      */
     public function addItemImages(int $itemId, array $imagePaths): void
     {
-        if (empty($imagePaths)) return;
+        if (empty($imagePaths))
+            return;
 
         $query = "INSERT INTO item_image (item_id, image_url) VALUES (?, ?)";
         $statement = $this->db->prepare($query);
@@ -407,7 +418,7 @@ class ItemRepository
 
 
 
-    public function getAllItemsForAdmin() : array
+    public function getAllItemsForAdmin(): array
     {
         $query = 'SELECT * FROM item';
         $statement = $this->db->prepare($query);
@@ -421,7 +432,7 @@ class ItemRepository
         $rows = $result->fetch_all(MYSQLI_ASSOC);
 
         $items = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $items[] = $row;
         return $items;
     }
@@ -453,7 +464,7 @@ class ItemRepository
             // Create placeholders based on array length: e.g., (?, ?, ?)
             $placeholders = implode(',', array_fill(0, count($filters['categories']), '?'));
             $sql .= " AND i.category IN ($placeholders)";
-            
+
             foreach ($filters['categories'] as $cat) {
                 $params[] = $cat;
                 $types .= "s";
@@ -466,7 +477,7 @@ class ItemRepository
             // Assuming your DB column is named 'item_condition' or similar. 
             // Check your database schema. If it's just 'condition', use that.
             $sql .= " AND i.item_condition IN ($placeholders)";
-            
+
             foreach ($filters['conditions'] as $cond) {
                 $params[] = $cond;
                 $types .= "s";
@@ -511,7 +522,7 @@ class ItemRepository
 
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
@@ -535,12 +546,12 @@ class ItemRepository
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $limit);
         $stmt->execute();
-        
+
         $result = $stmt->get_result();
         $items = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        return $items; 
+        return $items;
     }
 
 
@@ -577,7 +588,7 @@ class ItemRepository
 
 
 
-    private function executeQuery(string $sql, array $params, string $types) : array
+    private function executeQuery(string $sql, array $params, string $types): array
     {
         $statement = $this->db->prepare($sql);
 
@@ -595,7 +606,7 @@ class ItemRepository
         $statement->close();
 
         $dtos = [];
-        foreach($rows as $row) 
+        foreach ($rows as $row)
             $dtos[] = ItemCardDTO::fromArray($row);
 
         return $dtos;
@@ -604,7 +615,8 @@ class ItemRepository
 
     private function applyKeywordFilter(string &$sql, array &$params, string &$types, SearchItemsRequestDTO $criteria)
     {
-        if (empty($criteria->searchWord)) return;
+        if (empty($criteria->searchWord))
+            return;
 
         $sql .= " AND (item.title LIKE ? OR item.description LIKE ?)";
         $term = "%" . $criteria->searchWord . "%";
@@ -615,12 +627,13 @@ class ItemRepository
 
     private function applyCategoryFilter(string &$sql, array &$params, string &$types, SearchItemsRequestDTO $criteria)
     {
-        if (empty($criteria->category)) return;
+        if (empty($criteria->category))
+            return;
 
         $placeholders = implode(',', array_fill(0, count($criteria->category), '?'));
         $sql .= " AND item.category IN ($placeholders)";
         foreach ($criteria->category as $cat) {
-            $params[] = $cat; 
+            $params[] = $cat;
             $types .= "s";
         }
     }
@@ -628,14 +641,29 @@ class ItemRepository
 
     private function applyStatusFilter(string &$sql, array &$params, string &$types, SearchItemsRequestDTO $criteria)
     {
-        if (empty($criteria->statuses)) return;
+        if (empty($criteria->statuses))
+            return;
 
-        $placeholders = implode(',', array_fill(0, count($criteria->statuses), '?'));
-        $sql .= " AND item.item_status IN ($placeholders)";
-        
+        // If filtering for Active/Pending, we MUST ensure we don't show expired items
+        // even if the DB active job hasn't run yet.
+        $statusConditions = [];
+        $hasActive = false;
+
         foreach ($criteria->statuses as $status) {
-            $params[] = $status;
-            $types .= "s";
+            if ($status === 'Active') {
+                $hasActive = true;
+                // Active means: declared active AND time hasn't run out
+                $statusConditions[] = "(item.item_status = 'Active' AND item.auction_end > NOW())";
+            } else {
+                // For Pending, Sold, etc., trust the DB status
+                $statusConditions[] = "item.item_status = ?";
+                $params[] = $status;
+                $types .= "s";
+            }
+        }
+
+        if (!empty($statusConditions)) {
+            $sql .= " AND (" . implode(" OR ", $statusConditions) . ")";
         }
     }
 
@@ -658,7 +686,7 @@ class ItemRepository
 
     private function sort(string &$sql, SearchItemsRequestDTO $criteria)
     {
-        $order = match($criteria->sortBy) {
+        $order = match ($criteria->sortBy) {
             "newest" => " ORDER BY item.created_at DESC",
             "created_asc" => " ORDER BY item.created_at ASC",
             "bid_asc" => " ORDER BY item.current_bid ASC",
@@ -675,7 +703,7 @@ class ItemRepository
 
 
 
-    private function retrieveGetSoldItemsByUserIdQuery() : string 
+    private function retrieveGetSoldItemsByUserIdQuery(): string
     {
         return "SELECT 
                     i.item_id, 
@@ -696,7 +724,7 @@ class ItemRepository
     }
 
 
-    private function retrieveGetActiveItemsByUserId() : string 
+    private function retrieveGetActiveItemsByUserId(): string
     {
         return "
             SELECT 
@@ -714,7 +742,7 @@ class ItemRepository
 
 
 
-    private function retrieveGetUnsoldItemsByUserIdQuery() : string 
+    private function retrieveGetUnsoldItemsByUserIdQuery(): string
     {
         return "SELECT 
             i.item_id,
@@ -757,10 +785,10 @@ class ItemRepository
         ORDER BY 
             i.auction_end DESC;";
     }
-    
 
 
-    private function retrieveGetToHandoverItemsByUserId() : string 
+
+    private function retrieveGetToHandoverItemsByUserId(): string
     {
         return "SELECT 
                     i.item_id,
@@ -787,4 +815,7 @@ class ItemRepository
 
 
 }
+
+
+
 

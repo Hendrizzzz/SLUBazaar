@@ -62,7 +62,8 @@
 
     <div class="flex items-center justify-center min-h-screen p-4">
         <!-- Modal Panel -->
-        <div class="bg-white rounded-2xl shadow-2xl transform transition-all w-full max-w-2xl overflow-hidden relative">
+        <div class="bg-white rounded-2xl shadow-2xl transform transition-all w-full max-w-3xl overflow-hidden relative"
+            style="max-height: 80vh; display: flex; flex-direction: column;">
 
             <!-- Header -->
             <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
@@ -75,8 +76,8 @@
                 </button>
             </div>
 
-            <!-- Content -->
-            <div class="p-6 max-h-[70vh] overflow-y-auto" id="modal-content">
+            <!-- Content (Flex 1 + Scroll) -->
+            <div class="p-6 custom-scrollbar" id="modal-content" style="flex: 1; overflow-y: auto; min-height: 0;">
 
                 <!-- Loading State -->
                 <div id="modal-loading" class="text-center py-8">
@@ -118,7 +119,8 @@
             </div>
 
             <!-- Footer / Actions -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap justify-end gap-3">
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex flex-wrap justify-end gap-3"
+                style="flex: none;">
                 <button id="btn-dismiss"
                     class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg font-medium transition-colors">
                     Dismiss Report
@@ -152,6 +154,10 @@
         if (tableBody) {
             tableBody.addEventListener('click', handleTableActions);
         }
+
+        // PORTAL FIX: Move modal to body to obtain correct stacking context
+        const modal = document.getElementById('review-modal');
+        if (modal) document.body.appendChild(modal);
 
         // Modal Action Buttons
         document.getElementById('btn-dismiss')?.addEventListener('click', () => resolveReport('Dismiss'));
@@ -244,7 +250,10 @@
 
         // Show modal in loading state
         modal.classList.remove('hidden');
-        content.innerHTML = '<div class="text-center py-10">Loading details...</div>';
+
+        // Reset state
+        document.getElementById('modal-loading').classList.remove('hidden');
+        document.getElementById('modal-details').classList.add('hidden');
 
         try {
             const response = await fetch(`/admin/api/reports/${reportId}`);
@@ -253,7 +262,6 @@
             if (result.success) {
                 renderModalContent(result.data);
 
-                // Show/Hide action buttons based on report type
                 const isUserReport = result.data.type === 'User';
                 /* Note: The backend requirements for 3.3 Get Report Details returns 'target_id' but not explicitly 'type'. 
                    We can infer or should verify if getAllReports passed enough info, but fetching detail is safer. 
@@ -274,7 +282,9 @@
             }
         } catch (error) {
             console.error('Error:', error);
-            content.innerHTML = '<div class="text-red-500 py-4">Network error.</div>';
+            document.getElementById('modal-desc').textContent = 'Network error.';
+            document.getElementById('modal-loading').classList.add('hidden');
+            document.getElementById('modal-details').classList.remove('hidden');
         }
     }
 
@@ -283,20 +293,95 @@
         document.getElementById('modal-desc').textContent = data.description || 'No description provided.';
         document.getElementById('modal-notes').value = data.admin_notes || '';
 
+        // --- NEW: Target Details Section ---
+        const detailsContainer = document.getElementById('modal-details');
+
+        // Check if we already appended a target info box (to prevent duplicates on re-open if not cleared?)
+        // Actually renderModalContent runs once per open. We usually rely on innerHTML reset logic.
+        // But here we are modifying the DOM structure.
+        // Let's create a dedicated container for target details if it doesn't exist, or clear it.
+        let targetBox = document.getElementById('modal-target-info');
+        if (!targetBox) {
+            targetBox = document.createElement('div');
+            targetBox.id = 'modal-target-info';
+            targetBox.className = 'bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6';
+            detailsContainer.prepend(targetBox); // Put it at the top
+        }
+
+        // Build Content
+        let targetHtml = `<h4 class="text-sm font-bold text-blue-900 uppercase tracking-wide mb-2">Target Details</h4>`;
+
+        if (data.type === 'Item') {
+            targetHtml += `
+                <div class="space-y-4">
+                    <!-- Item Header -->
+                    <div class="flex gap-4 items-start">
+                        ${data.item_image ? `<img src="${data.item_image.startsWith('http') ? data.item_image : '/admin/uploads/items/' + data.item_image.split('/').pop()}" class="w-24 h-24 object-cover rounded-lg border border-blue-200">` : ''}
+                        <div>
+                            <p class="text-gray-900 font-bold text-lg leading-tight transition-colors hover:text-blue-600">
+                                ${escapeHtml(data.target_name)}
+                            </p>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">₱${data.item_price}</span>
+                                <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full font-medium">${data.item_status}</span>
+                                <span class="bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded-full">ID: ${data.target_item_id}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seller Info -->
+                    <div class="bg-white p-3 rounded-md border border-gray-100 shadow-sm">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Posted By (Seller)</p>
+                        <div class="flex items-center gap-2">
+                            <div class="h-8 w-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold text-xs">
+                                ${data.seller_name ? data.seller_name.charAt(0) : '?'}
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">${escapeHtml(data.seller_name || 'Unknown')}</p>
+                                <p class="text-xs text-gray-500">${escapeHtml(data.seller_email || 'No email')}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item Description -->
+                    <div class="bg-white p-3 rounded-md border border-gray-100">
+                        <p class="text-xs font-bold text-gray-400 uppercase mb-1">Item Details</p>
+                        <p class="text-sm text-gray-600 whitespace-pre-wrap line-clamp-6 hover:line-clamp-none transition-all">
+                            ${escapeHtml(data.item_description || 'No description.')}
+                        </p>
+                    </div>
+                </div>
+            `;
+        } else {
+            targetHtml += `
+                <div class="flex gap-3 items-center">
+                    <div class="h-12 w-12 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-bold text-xl">
+                        ${data.target_name.charAt(0)}
+                    </div>
+                    <div>
+                        <p class="text-gray-900 font-bold">${escapeHtml(data.target_name)}</p>
+                        <p class="text-sm text-gray-500">User ID: ${data.target_user_id}</p>
+                    </div>
+                </div>
+            `;
+        }
+        targetBox.innerHTML = targetHtml;
+
+        // ... Existing Image Logic ...
+
         // Images
         const imgContainer = document.getElementById('modal-images');
         imgContainer.innerHTML = '';
         if (data.evidence_images && data.evidence_images.length > 0) {
             data.evidence_images.forEach(imgUrl => {
                 const img = document.createElement('img');
-                img.src = imgUrl.startsWith('http') ? imgUrl : `/assets/uploads/${imgUrl}`; // Adjust logic based on your upload path
+                img.src = imgUrl.startsWith('http') ? imgUrl : `/admin/uploads/items/${imgUrl.split('/').pop()}`; // Fixed path for Proxy
                 img.className = 'w-full h-auto rounded-lg border border-gray-200 mt-2';
                 imgContainer.appendChild(img);
             });
         } else {
             imgContainer.innerHTML = '<p class="text-sm text-gray-500 italic">No evidence images attached.</p>';
         }
-        document.getElementById('modal-content').innerHTML = '';
 
         const loadingDiv = document.getElementById('modal-loading');
         const detailsDiv = document.getElementById('modal-details');
@@ -332,11 +417,16 @@
             const result = await response.json();
 
             if (result.success) {
+                // Remove row from table cleanly
+                const row = document.getElementById(`row-${currentReportId}`);
+                if (row) {
+                    row.style.transition = 'opacity 0.5s';
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 500);
+                }
+
                 // Close modal
                 closeModal();
-                // Remove row from table
-                const row = document.getElementById(`row-${currentReportId}`);
-                if (row) row.remove();
 
                 // Optional: Show toast success
                 // alert('Report resolved successfully'); 

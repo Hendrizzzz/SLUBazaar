@@ -33,7 +33,7 @@ class ItemRepository {
         `;
         const params = [];
 
-        if (status && status !== 'all') {
+        if (status && status.toLowerCase() !== 'all') {
             query += " AND i.item_status = ?";
             params.push(status);
         }

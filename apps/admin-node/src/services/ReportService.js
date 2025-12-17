@@ -6,12 +6,12 @@ class ReportService {
     }
 
     async getAllReports(filters) {
-        const status = filters.status || 'Pending';
-        return await this.reportRepo.getReportsByStatus(status);
+        // Pass the entire filters object (status, type, etc.)
+        return await this.reportRepo.getReportsByStatus(filters);
     }
 
     async getReportDetails(id) {
-        return await this.reportRepo.findByIdWithImages(id);
+        return await this.reportRepo.getReportById(id);
     }
 
     /**
@@ -22,16 +22,19 @@ class ReportService {
      */
     async resolveReport(reportId, action, adminNotes) {
         // 1. Fetch the report to find out WHO or WHAT is being targeted
-        const report = await this.reportRepo.findById(reportId);
+        const report = await this.reportRepo.getReportById(reportId);
         if (!report) throw new Error("Report not found");
 
         // 2. Perform the Action
         switch (action) {
             case 'BanUser':
-                if (report.target_user_id) {
-                    await this.userRepo.updateStatus(report.target_user_id, 'banned');
+                // Identify the user to ban
+                const userIdToBan = report.target_user_id || report.item_seller_id;
+
+                if (userIdToBan) {
+                    await this.userRepo.updateStatus(userIdToBan, 'banned');
                 } else {
-                    throw new Error("Cannot ban user: No target user linked to this report.");
+                    throw new Error("Cannot ban user: No target user or item seller found for this report.");
                 }
                 break;
 
@@ -55,7 +58,7 @@ class ReportService {
         // If action is Dismiss, status is Dismissed. Otherwise Resolved.
         const newStatus = (action === 'Dismiss') ? 'Dismissed' : 'Resolved';
 
-        await this.reportRepo.updateResolution(reportId, newStatus, adminNotes);
+        await this.reportRepo.updateReportStatusWithNotes(reportId, newStatus, adminNotes);
 
         return { message: `Report processed: ${action} applied.` };
     }

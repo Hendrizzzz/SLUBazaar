@@ -300,7 +300,7 @@ class Container
     public function getAuctionController(): AuctionController
     {
         if (!isset($this->services['auctionController']))
-            $this->services['auctionController'] = new AuctionController($this->getAuctionService());
+            $this->services['auctionController'] = new AuctionController($this->getAuctionService(), $this->getModerationService());
         return $this->services['auctionController'];
     }
 

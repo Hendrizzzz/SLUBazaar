@@ -20,7 +20,7 @@ class ItemDetailsDTO implements JsonSerializable
         public readonly int $bidCount,
 
         // 3. Timing
-        public readonly DateTimeImmutable $auctionEnd,
+        public readonly DateTimeImmutable $timerTarget,
         public readonly string $timeLeftLabel, // "2 days, 5 hours left"
 
         // 4. Visuals
@@ -38,37 +38,38 @@ class ItemDetailsDTO implements JsonSerializable
 
         // 7. History
         public readonly array $bidHistory // Array of ItemPageBidDTO
-    ) {}
+    ) {
+    }
 
     public function jsonSerialize(): array
     {
         return [
             'id' => $this->itemId,
             'info' => [
-                'title'       => $this->title,
+                'title' => $this->title,
                 'description' => $this->description,
-                'category'    => $this->category,
-                'status'      => $this->status,
-                'images'      => $this->images, // Array of URLs
+                'category' => $this->category,
+                'status' => $this->status,
+                'images' => $this->images, // Array of URLs
             ],
             'price' => [
-                'current'  => $this->currentPrice,
+                'current' => $this->currentPrice,
                 'next_min' => $this->nextMinimumBid,
-                'count'    => $this->bidCount,
+                'count' => $this->bidCount,
             ],
             'timer' => [
-                'end_iso' => $this->auctionEnd->format('c'), // ISO 8601 for JS Countdown
-                'label'   => $this->timeLeftLabel,
+                'end_iso' => $this->timerTarget->format('c'), // ISO 8601 for JS Countdown
+                'label' => $this->timeLeftLabel,
             ],
             'seller' => [
-                'id'     => $this->sellerId,
-                'name'   => $this->sellerName,
+                'id' => $this->sellerId,
+                'name' => $this->sellerName,
                 'rating' => $this->sellerRating,
                 'avatar' => $this->sellerAvatar,
             ],
             'user_context' => [
                 'is_watching' => $this->isWatchlisted,
-                'is_owner'    => $this->isOwner,
+                'is_owner' => $this->isOwner,
             ],
             'history' => $this->bidHistory // The array of bid objects
         ];
@@ -85,17 +86,17 @@ class ItemDetailsDTO implements JsonSerializable
      * @param int $currentUserId To check ownership
      */
     public static function create(
-        Item $item, 
-        User $seller, 
-        array $imageUrls, 
-        array $bids, 
+        Item $item,
+        User $seller,
+        array $imageUrls,
+        array $bids,
         bool $isWatchlisted,
         int $currentUserId
     ): self {
         // --- Logic: Price ---
         // If 0 bids, current price is starting bid. Otherwise, it's current bid.
         $currentPrice = ($item->getCurrentBid() > 0) ? $item->getCurrentBid() : $item->getStartingBid();
-        
+
         // --- Logic: Next Bid Increment ---
         // Example: If price < 1000, increment 10. If > 1000, increment 50.
         $increment = ($currentPrice >= 1000) ? 50.00 : 10.00;
@@ -103,8 +104,21 @@ class ItemDetailsDTO implements JsonSerializable
 
         // --- Logic: Time Label ---
         $now = new DateTimeImmutable();
-        $diff = $now->diff($item->getAuctionEnd());
-        $timeLabel = $diff->invert ? 'Ended' : $diff->format('%d days, %h hours left');
+        $status = $item->getEffectiveStatus();
+
+        if ($status === 'Pending') {
+            $timerTarget = $item->getAuctionStart();
+            $diff = $now->diff($timerTarget);
+            $timeLabel = "Starts in " . $diff->format('%d d %h h');
+        } elseif ($status === 'Active') {
+            $timerTarget = $item->getAuctionEnd();
+            $diff = $now->diff($timerTarget);
+            $timeLabel = $diff->invert ? 'Ended' : $diff->format('%d d %h h left');
+        } else {
+            // Ended, Sold, Cancelled
+            $timerTarget = $item->getAuctionEnd();
+            $timeLabel = "Auction Ended";
+        }
 
         // --- Logic: Seller Name ---
         // Format: "Juan D."
@@ -122,11 +136,11 @@ class ItemDetailsDTO implements JsonSerializable
             $item->getDescription(),
             $item->getCategory()->value,
             "Used", // You might want to add 'Condition' to your DB/Item Model later
-            $item->getItemStatus()->value,
+            $status,
             $currentPrice,
             $nextMin,
             count($bids),
-            $item->getAuctionEnd(),
+            $timerTarget,
             $timeLabel,
             $imageUrls,
             $seller->getUserId(),

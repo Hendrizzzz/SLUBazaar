@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-class ReportRepository 
+class ReportRepository
 {
     private mysqli $db;
 
@@ -25,30 +25,38 @@ class ReportRepository
         $reporterId = $report->getReporterId();
         $targetUserId = $report->getTargetUserId();
         $targetItemId = $report->getTargetItemId();
-        $reportType = $report->getReportType();
+        $reportType = $report->getReportType()->value; // Extract Enum Value
         $reasonType = $report->getReasonType();
         $description = $report->getDescription();
-        $createdAt = $report->getCreatedAt();
-        $statement->bind_param('iiissss', $reporterId, $targetUserId, $targetItemId, 
-                                        $reportType, $reasonType, $description, $createdAt);
+        $createdAt = $report->getCreatedAt()->format('Y-m-d H:i:s'); // Format DateTime
+        $statement->bind_param(
+            'iiissss',
+            $reporterId,
+            $targetUserId,
+            $targetItemId,
+            $reportType,
+            $reasonType,
+            $description,
+            $createdAt
+        );
 
         if (!$statement->execute())
             throw new Exception("Failed to add report : " . $statement->error);
-        
+
         $report->setReportId($this->db->insert_id);
         $statement->close();
     }
 
 
 
-    public function updateReport(int $reportId, $newStatus) : void
+    public function updateReport(int $reportId, $newStatus): void
     {
         $query = "UPDATE report SET report_status = ? WHERE report_id = ?";
         $statement = $this->db->prepare($query);
 
         if (!$statement)
             throw new Exception("There was an error preparing the updateReport query : " . $this->db->error);
-        
+
         $statement->bind_param('si', $newStatus, $reportId);
 
         if (!$statement->execute())
@@ -83,7 +91,7 @@ class ReportRepository
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        
+
         return $row ? Report::fromArray($row) : null;
     }
 
@@ -95,9 +103,10 @@ class ReportRepository
         $stmt->execute();
         $result = $stmt->get_result();
         $rows = $result->fetch_all(MYSQLI_ASSOC);
-        
+
         $reports = [];
-        foreach($rows as $row) $reports[] = Report::fromArray($row);
+        foreach ($rows as $row)
+            $reports[] = Report::fromArray($row);
         return $reports;
     }
 
@@ -112,12 +121,12 @@ class ReportRepository
                   WHERE report_status = 'Pending'";
 
         $result = $this->db->query($query);
-        
+
         if (!$result)
             throw new Exception("Failed to get report stats: " . $this->db->error);
 
         $row = $result->fetch_assoc();
-        
+
         return [
             'item_reports' => (int) ($row['item_reports'] ?? 0),
             'user_reports' => (int) ($row['user_reports'] ?? 0)

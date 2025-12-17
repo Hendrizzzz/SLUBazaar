@@ -12,6 +12,7 @@
 
     <link rel="stylesheet" href="/assets/css/user/create_listing.css">
     <link rel="stylesheet" href="/assets/css/global.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -131,14 +132,14 @@
     <script>
         function previewImage(input, boxId) {
             const box = document.getElementById(boxId);
-            
+
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     box.style.backgroundImage = `url('${e.target.result}')`;
-                    box.innerHTML = ''; 
-                    
+                    box.innerHTML = '';
+
                     box.style.borderStyle = 'solid';
                     box.style.borderColor = '#3b82f6'; // var(--primary)
                 }

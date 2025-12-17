@@ -32,7 +32,7 @@ class AuctionService
     //  1. MARKETPLACE BROWSING (Web)
     // =========================================================================
 
-    public function searchItems(?string $keyword, array $categories, string $status, ?float $minPrice, ?float $maxPrice, string $sort): array
+    public function searchItems(?string $keyword, array $categories, array|string $status, ?float $minPrice, ?float $maxPrice, string $sort): array
     {
         $data = [
             'q' => $keyword,
@@ -235,17 +235,17 @@ class AuctionService
     }
 
     public function getMarketplaceItems(array $filters = []): array
-{
-    // Call the repository with the filter array
-    $itemRows = $this->itemRepository->findAllActive($filters);
+    {
+        // Call the repository with the filter array
+        $itemRows = $this->itemRepo->findAllActive($filters);
 
-    $dtos = [];
-    foreach ($itemRows as $row) {
-        $dtos[] = ItemCardDTO::fromArray($row);
+        $dtos = [];
+        foreach ($itemRows as $row) {
+            $dtos[] = ItemCardDTO::fromArray($row);
+        }
+
+        return $dtos;
     }
-
-    return $dtos;
-}
 
 
 

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 
 
-class BidRepository 
+class BidRepository
 {
     private mysqli $db;
 
-    public function __construct(mysqli $db) 
+    public function __construct(mysqli $db)
     {
         $this->db = $db;
     }
@@ -17,7 +17,7 @@ class BidRepository
 
 
 
-    public function addBid(Bid $bid) : void
+    public function addBid(Bid $bid): void
     {
         $query = "INSERT INTO bid (item_id, bidder_id, bid_amount) VALUES (?, ?, ?)";
         $statement = $this->db->prepare($query);
@@ -41,14 +41,14 @@ class BidRepository
 
 
 
-    public function getToClaimBidsByUserId(int $userId) : array
+    public function getToClaimBidsByUserId(int $userId): array
     {
         $query = $this->retrieveGetToClaimBidsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an error in preparing getToClaimBidsByUserId : " 
-                                . $this->db->error);
+            throw new Exception("There was an error in preparing getToClaimBidsByUserId : "
+                . $this->db->error);
         $statement->bind_param('i', $userId);
 
         if (!$statement->execute())
@@ -59,7 +59,7 @@ class BidRepository
         $statement->close();
 
         $toClaimBids = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $toClaimBids[] = ClaimItemCardDTO::fromArray($row);
 
         return $toClaimBids;
@@ -70,14 +70,14 @@ class BidRepository
     /**
      * Gets the active bids in the profile view (Active Bids)
      */
-    public function getActiveBidsByUserId(int $userId) : array
+    public function getActiveBidsByUserId(int $userId): array
     {
         $query = $this->retrieveGetBidsByUserIdQuery();
         $statement = $this->db->prepare($query);
 
-        if (!$statement) 
-            throw new Exception("There was a problem preparing the getActiveBidsByUserId() query: " 
-                                . $this->db->error);
+        if (!$statement)
+            throw new Exception("There was a problem preparing the getActiveBidsByUserId() query: "
+                . $this->db->error);
 
         $statement->bind_param('i', $userId);
 
@@ -89,21 +89,21 @@ class BidRepository
         $statement->close();
 
         $activeBidsOfUser = [];
-        foreach ($rows as $row) 
-            $activeBidsOfUser[] = BidRowDTO::fromArray($row); 
-        
+        foreach ($rows as $row)
+            $activeBidsOfUser[] = BidRowDTO::fromArray($row);
+
         return $activeBidsOfUser;
     }
 
 
-    public function getPastBidsByUserId(int $userId) : array
+    public function getPastBidsByUserId(int $userId): array
     {
         $query = $this->retrieveGetPastBidsByUserId();
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was an error in preparing getPastBidsByUserId : " 
-                                . $this->db->error);
+            throw new Exception("There was an error in preparing getPastBidsByUserId : "
+                . $this->db->error);
         $statement->bind_param('ii', $userId, $userId);
 
         if (!$statement->execute())
@@ -114,7 +114,7 @@ class BidRepository
         $statement->close();
 
         $pastBids = [];
-        foreach($rows as $row)
+        foreach ($rows as $row)
             $pastBids[] = HistoryItemCardDTO::fromArray($row, $userId);
 
         return $pastBids;
@@ -126,7 +126,7 @@ class BidRepository
      * Used for the Item Details Page.
      * Returns a list of bids with the User's name, sorted by highest amount.
      */
-    public function getBidsByItemId(int $itemId) : array
+    public function getBidsByItemId(int $itemId): array
     {
         $query = "SELECT 
                     b.bid_amount, 
@@ -153,7 +153,7 @@ class BidRepository
         $statement->close();
 
         $dtos = [];
-        foreach($rows as $row) 
+        foreach ($rows as $row)
             $dtos[] = ItemPageBidDTO::fromArray($row);
 
         return $dtos;
@@ -161,7 +161,7 @@ class BidRepository
 
 
 
-    public function getBidById(int $bidId) : ?Bid
+    public function getBidById(int $bidId): ?Bid
     {
         $query = "SELECT * FROM bid WHERE bid_id = ?";
         $statement = $this->db->prepare($query);
@@ -170,7 +170,7 @@ class BidRepository
             throw new Exception("Failed preparing the query for getBidById: " . $this->db->error);
 
         $statement->bind_param('i', $bidId);
-        
+
         if (!$statement->execute())
             throw new Exception("Failed to get Bid by Id: " . $statement->error);
 
@@ -193,7 +193,7 @@ class BidRepository
         $stmt->execute();
         $res = $stmt->get_result();
         $row = $res->fetch_assoc();
-        return $row ? (int)$row['bidder_id'] : null;
+        return $row ? (int) $row['bidder_id'] : null;
     }
 
     public function getHighestBidAmount(int $itemId): float
@@ -204,13 +204,13 @@ class BidRepository
         $stmt->execute();
         $res = $stmt->get_result();
         $row = $res->fetch_assoc();
-        return $row ? (float)$row['bid_amount'] : 0.0;
+        return $row ? (float) $row['bid_amount'] : 0.0;
     }
 
 
 
 
-    private function retrieveGetBidsByUserIdQuery() : string 
+    private function retrieveGetBidsByUserIdQuery(): string
     {
         return "SELECT 
                     i.item_id,                       -- 2. itemId
@@ -222,8 +222,12 @@ class BidRepository
                         LIMIT 1
                     ) AS image_url,                  -- 4. imageUrl
                     i.auction_end,                   -- 5. auctionEnd
-                    MAX(b.bid_amount) AS my_bid,     -- 6. myBid (Show their HIGHEST offer, not their first)
-                    i.current_bid                    -- 7. currentBid (The actual highest price of the item)
+                    MAX(b.bid_amount) AS my_bid,     -- 6. myBid
+                    i.current_bid,                   -- 7. currentBid
+                    CASE 
+                        WHEN MAX(b.bid_amount) >= i.current_bid THEN 1 
+                        ELSE 0 
+                    END AS is_winning                -- 8. isWinning (Calculated in DB)
                 FROM 
                     bid b
                 JOIN 
@@ -232,13 +236,13 @@ class BidRepository
                     b.bidder_id = ?                  
                     AND i.item_status = 'Active'     -- Only show ongoing auctions
                 GROUP BY 
-                    i.item_id                        -- CRITICAL: Collapses multiple bids into one row
+                    i.item_id                        
                 ORDER BY 
                     i.auction_end ASC;               -- Show items ending soonest first";
     }
 
 
-    private function retrieveGetToClaimBidsByUserId() : string 
+    private function retrieveGetToClaimBidsByUserId(): string
     {
         return "SELECT 
                     i.item_id,
@@ -263,7 +267,7 @@ class BidRepository
 
 
 
-    private function retrieveGetPastBidsByUserId() : string 
+    private function retrieveGetPastBidsByUserId(): string
     {
         return "SELECT 
                     i.item_id,
@@ -303,5 +307,5 @@ class BidRepository
     }
 
 
-    
+
 }

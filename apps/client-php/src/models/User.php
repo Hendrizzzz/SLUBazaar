@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 
 
-class User 
+class User
 {
     private ?int $userId;
     private string $firstName;
@@ -17,12 +17,18 @@ class User
     private AccountStatus $accountStatus;
     private Role $role;
 
-    public function __construct(?int $userId, string $firstName, string $lastName, 
-                                string $email, bool $emailVerified, 
-                                string $passwordHash, ?float $averageRating,
-                                DateTimeImmutable $createdAt, AccountStatus $accountStatus, 
-                                Role $role) 
-    {
+    public function __construct(
+        ?int $userId,
+        string $firstName,
+        string $lastName,
+        string $email,
+        bool $emailVerified,
+        string $passwordHash,
+        ?float $averageRating,
+        DateTimeImmutable $createdAt,
+        AccountStatus $accountStatus,
+        Role $role
+    ) {
         $this->userId = $userId;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
@@ -37,125 +43,125 @@ class User
 
 
 
-    public static function fromArray(array $user) : self
+    public static function fromArray(array $user): self
     {
-        return new self (
-            (int) $user['user_id'], 
-            $user['fname'], 
-            $user['lname'], 
-            $user['email'], 
-            (bool)$user['email_verified'], 
-            $user['password_hash'], 
-            isset($user['average_rating']) ? (float)$user['average_rating'] : null, 
-            new DateTimeImmutable($user['created_at']), 
+        return new self(
+            (int) $user['user_id'],
+            $user['fname'],
+            $user['lname'],
+            $user['email'],
+            (bool) $user['email_verified'],
+            $user['password_hash'],
+            isset($user['average_rating']) ? (float) $user['average_rating'] : null,
+            new DateTimeImmutable($user['created_at']),
             AccountStatus::from($user['account_status']),
             Role::from($user['role'])
         );
     }
 
 
-    public function getUserId() : ?int 
+    public function getUserId(): ?int
     {
         return $this->userId;
     }
 
-    public function setUserId(?int $userId) : self
+    public function setUserId(?int $userId): self
     {
         $this->userId = $userId;
         return $this;
     }
 
 
-    public function getFirstName() : string 
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
 
 
-    public function setFirstName(string $firstName) : self 
+    public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
         return $this;
     }
 
 
-    public function getLastName() : string 
+    public function getLastName(): string
     {
         return $this->lastName;
     }
 
 
-    public function setLastName(string $lastName) : self
+    public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
         return $this;
     }
 
 
-    public function getEmail() : string 
+    public function getEmail(): string
     {
         return $this->email;
     }
 
 
-    public function setEmail(string $email) : self 
+    public function setEmail(string $email): self
     {
         $this->email = $email;
         return $this;
     }
 
 
-    public function getEmailVerified() : bool 
+    public function getEmailVerified(): bool
     {
         return $this->emailVerified;
     }
 
 
-    public function setEmailVerified(bool $emailVerified) : self
+    public function setEmailVerified(bool $emailVerified): self
     {
         $this->emailVerified = $emailVerified;
         return $this;
     }
 
 
-    public function getPasswordHash() : string
+    public function getPasswordHash(): string
     {
         return $this->passwordHash;
     }
 
 
-    public function setPasswordHash(string $passwordHash) : self 
+    public function setPasswordHash(string $passwordHash): self
     {
         $this->passwordHash = $passwordHash;
         return $this;
     }
 
 
-    public function getCreatedAt() : DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
 
-    public function getAverageRating() : ?float
+    public function getAverageRating(): ?float
     {
         return $this->averageRating;
     }
 
 
-    public function setAverageRating(?float $averageRating) : self 
+    public function setAverageRating(?float $averageRating): self
     {
         $this->averageRating = $averageRating;
         return $this;
     }
 
 
-    public function getAccountStatus() : AccountStatus 
+    public function getAccountStatus(): AccountStatus
     {
         return $this->accountStatus;
     }
 
-    public function setAccountStatus(AccountStatus $accountStatus) : self
+    public function setAccountStatus(AccountStatus $accountStatus): self
     {
         $this->accountStatus = $accountStatus;
         return $this;

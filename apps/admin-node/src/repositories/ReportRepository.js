@@ -5,9 +5,20 @@ class ReportRepository {
 
 
 
-    async getReportsByStatus(status) {
+    async getReportsByStatus(filters) {
         try {
-            const query = `
+            // Handle legacy calls or missing filters
+            let status = 'Pending';
+            let type = null;
+
+            if (typeof filters === 'string') {
+                status = filters;
+            } else if (typeof filters === 'object') {
+                status = filters.status || 'Pending';
+                type = filters.type || null;
+            }
+
+            let query = `
                 SELECT 
                     r.report_id,
                     r.report_type as type,
@@ -25,9 +36,18 @@ class ReportRepository {
                 LEFT JOIN \`user\` tu ON r.target_user_id = tu.user_id
                 LEFT JOIN \`item\` ti ON r.target_item_id = ti.item_id
                 WHERE r.report_status = ?
-                ORDER BY r.created_at DESC
             `;
-            const [rows] = await this.db.query(query, [status]);
+
+            const params = [status];
+
+            if (type && type !== 'All') {
+                query += " AND r.report_type = ?";
+                params.push(type);
+            }
+
+            query += " ORDER BY r.created_at DESC";
+
+            const [rows] = await this.db.query(query, params);
             return rows;
         } catch (error) {
             console.error('ReportRepository Error:', error);
@@ -51,22 +71,6 @@ class ReportRepository {
 
     async getReportById(reportId) {
         try {
-            // Basic lookup
-            const query = "SELECT * FROM report WHERE report_id = ?";
-            const [rows] = await this.db.query(query, [reportId]);
-            return rows.length > 0 ? rows[0] : null;
-        } catch (error) {
-            console.error('ReportRepository Error:', error);
-            throw new Error(`Failed to get report: ${error.message}`);
-        }
-    }
-
-    async findByIdWithImages(reportId) {
-        try {
-            // 1. Get Report Info (Reusing the JOIN logic for readability or just raw?)
-            // Let's use raw for the details view, but we need names. 
-            // Better to use the SAME robust query as list but for one ID.
-
             const query = `
                 SELECT 
                     r.report_id,
@@ -77,16 +81,36 @@ class ReportRepository {
                     r.admin_notes,
                     r.target_user_id,
                     r.target_item_id,
-                    CONCAT(rep.fname, ' ', rep.lname) as reporter,
+                    r.reporter_id,
+                    
+                    -- Reporter Info
+                    CONCAT(rep.fname, ' ', rep.lname) as reporter_name,
+                    rep.email as reporter_email,
+
+                    -- Target Info (Polymorphic)
                     CASE 
                         WHEN r.report_type = 'User' THEN CONCAT(tu.fname, ' ', tu.lname)
                         WHEN r.report_type = 'Item' THEN ti.title
                         ELSE 'Unknown'
-                    END as target
+                    END as target_name,
+
+                    -- Extra Item Info
+                    ti.seller_id as item_seller_id,
+                    ti.current_bid as item_price,
+                    ti.item_status,
+                    ti.description as item_description,
+                    ti.auction_end as item_end_date,
+                    (SELECT image_url FROM item_image WHERE item_id = ti.item_id LIMIT 1) as item_image,
+                    
+                    -- Item Seller Info (Explicit)
+                    CONCAT(seller.fname, ' ', seller.lname) as seller_name,
+                    seller.email as seller_email
+
                 FROM report r
                 LEFT JOIN \`user\` rep ON r.reporter_id = rep.user_id
                 LEFT JOIN \`user\` tu ON r.target_user_id = tu.user_id
                 LEFT JOIN \`item\` ti ON r.target_item_id = ti.item_id
+                LEFT JOIN \`user\` seller ON ti.seller_id = seller.user_id
                 WHERE r.report_id = ?
             `;
             const [rows] = await this.db.query(query, [reportId]);
@@ -94,11 +118,13 @@ class ReportRepository {
 
             const report = rows[0];
 
-            // 2. Fetch Evidence Images
-            // Does 'report_image' table exist? Schema says YES.
-            const [images] = await this.db.query("SELECT image_url FROM report_image WHERE report_id = ?", [reportId]);
-
-            report.evidence_images = images.map(img => img.image_url);
+            // Fetch Evidence Images
+            try {
+                const [images] = await this.db.query("SELECT image_url FROM report_image WHERE report_id = ?", [reportId]);
+                report.evidence_images = images.map(img => img.image_url);
+            } catch (imgError) {
+                report.evidence_images = [];
+            }
 
             return report;
         } catch (error) {

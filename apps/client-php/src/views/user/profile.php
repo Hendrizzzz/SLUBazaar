@@ -20,6 +20,7 @@ if (!isset($user)) {
     <link rel="stylesheet" href="/assets/css/user/profile.css">
     <link rel="stylesheet" href="/assets/css/global.css">
     <link rel="stylesheet" href="/assets/css/user/marketplace.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -58,8 +59,15 @@ if (!isset($user)) {
                     <div class="user-text">
                         <h2><?php echo htmlspecialchars($user->getFirstName() . ' ' . $user->getLastName()); ?></h2>
                         <div class="rating">
-                            <i class="fa-solid fa-star"></i>
-                            <?php echo number_format($user->getAverageRating() ?? 0, 1); ?> / 5.0
+                            <?php
+                            $avg = $user->getAverageRating();
+                            if ($avg && $avg > 0):
+                                ?>
+                                <i class="fa-solid fa-star" style="color: #f59e0b;"></i>
+                                <?php echo number_format($avg, 1); ?> / 5.0
+                            <?php else: ?>
+                                <span style="color: #94a3b8; font-size: 0.9rem;">No ratings yet</span>
+                            <?php endif; ?>
                         </div>
                         <span class="user-role"><?php echo htmlspecialchars($user->getRole()->value); ?></span>
                     </div>

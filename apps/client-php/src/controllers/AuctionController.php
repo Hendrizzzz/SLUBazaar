@@ -5,10 +5,12 @@ declare(strict_types=1);
 class AuctionController extends BaseController
 {
     private AuctionService $auctionService;
+    private ModerationService $moderationService;
 
-    public function __construct(AuctionService $auctionService)
+    public function __construct(AuctionService $auctionService, ModerationService $moderationService)
     {
         $this->auctionService = $auctionService;
+        $this->moderationService = $moderationService;
     }
 
 
@@ -22,7 +24,7 @@ class AuctionController extends BaseController
         $input = $this->getInput();
 
         $search = $input['q'] ?? '';
-        
+
         // Handle Category (Can be string 'all' or array of strings)
         $rawCategory = $input['category'] ?? [];
         $categories = [];
@@ -78,15 +80,12 @@ class AuctionController extends BaseController
             }
 
             // 3. Call the Service (ModerationService)
-            
-            $moderationService = $container->get(ModerationService::class);
-
             // Params: reporterId, targetUserId (null), targetItemId, reason, description
-            $moderationService->submitReport(
-                $userId, 
-                null, 
-                $itemId, 
-                $reason, 
+            $this->moderationService->submitReport(
+                $userId,
+                null,
+                $itemId,
+                $reason,
                 $description
             );
 
@@ -197,16 +196,6 @@ class AuctionController extends BaseController
                     (float) $input['starting_bid'],
                     $input['category'],
                     $input['start_time'],
-                    $input['end_time'],
-                    $files
-                );
-
-                $newId = $this->auctionService->createListing(
-                    $userId,
-                    $input['title'],
-                    $input['description'],
-                    (float) $input['starting_bid'],
-                    $input['category'],
                     $input['end_time'],
                     $files
                 );
