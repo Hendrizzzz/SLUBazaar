@@ -25,7 +25,7 @@
         <a href="index.php?action=logout" title="Logout" style="margin-top: 20px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i></a>
     </div>
     <div class="bottom-user">
-        <img src="<?= $_SESSION['user_avatar'] ?? 'https://ui-avatars.com/api/?name=User' ?>" alt="Me">
+        <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['fname'] ?? 'User'); ?>&background=random" alt="Me">
     </div>
 </nav>
 
@@ -50,9 +50,7 @@
             <header class="chat-header" id="chatHeader" style="display:none;">
                 <div class="chat-header-info">
                     <div class="chat-header-title">
-                        <span id="chatTitle">Select a conversation</span>
-                        <i class="fas fa-external-link-alt" title="View Profile" style="cursor: pointer;"></i>
-                    </div>
+                        <span id="chatTitle">Select a conversation</span></div>
                     <div class="chat-header-subtitle" id="chatSubtitle">
                         Item Name
                     </div>

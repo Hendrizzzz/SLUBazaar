@@ -82,7 +82,17 @@ body {
 }
 
 .bottom-user {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     margin-top: auto;
+}
+
+.bottom-user img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 /* --- Toast Notification --- */

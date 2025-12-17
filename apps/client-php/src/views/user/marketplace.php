@@ -25,7 +25,7 @@
             <a href="index.php?action=logout" title="Logout" style="margin-top: 20px; color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i></a>
         </div>
         <div class="bottom-user">
-             <img src="https://ui-avatars.com/api/?name=User&background=random" alt="Me">
+            <img src="https://ui-avatars.com/api/?name=<?php echo urlencode($_SESSION['fname'] ?? 'User'); ?>&background=random" alt="Me">
         </div>
     </nav>
 

@@ -23,9 +23,13 @@
     $baseUrl = rtrim($protocol . $domainName . $path, '/') . '/';
     ?>
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>assets/css/auth-modern.css?v=<?php echo time(); ?>">
+    <link rel="stylesheet" href="assets/css/global.css">
 </head>
 
 <body class="slu-bg">
+
+    <div class="bg-layer-stripes"></div>
+    <div class="bg-layer-building"></div>
 
     <div class="auth-card" style="max-width: 500px;"> <!-- Slightly wider for register form -->
         <!-- Logo Header -->
