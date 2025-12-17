@@ -1,22 +1,18 @@
-# apps/admin-node/Dockerfile
+FROM node:18-alpine
 
-# Use official Node.js LTS image
-FROM node:18
+WORKDIR /app
 
-# Set working directory
-WORKDIR /usr/src/app
-
-# Copy package files first (for better caching)
+# Copy package files first for caching
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the app source code
+# Copy the rest of the application
 COPY . .
 
-# Expose the port defined in your .env
+# Expose the port
 EXPOSE 3000
 
-# Start the server
-CMD ["node", "server.js"]
+# Start the application
+CMD ["npm", "start"]

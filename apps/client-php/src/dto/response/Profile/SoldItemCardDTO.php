@@ -40,8 +40,8 @@ class SoldItemCardDTO implements JsonSerializable
             $data['title'],
             $data['image_url'],
             (float) $data['current_bid'],
-            $data['fname'],
-            $data['lname'],
+            $data['buyer_fname'] ?? 'Unknown',
+            $data['buyer_lname'] ?? 'Buyer',
             new DateTimeImmutable($data['date_sold'])
         );
     }

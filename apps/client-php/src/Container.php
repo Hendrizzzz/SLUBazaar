@@ -118,11 +118,13 @@ class Container
     {
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
         $domainName = $_SERVER['HTTP_HOST'];
-        // Provide a robust base path regardless of where the app is hosted
         $path = dirname($_SERVER['SCRIPT_NAME']);
-
-        // Ensure trailing slash and no backslashes
         $path = str_replace('\\', '/', $path);
+
+        if ($path === '/' || $path === '.') {
+            $path = '';
+        }
+
         return rtrim($protocol . $domainName . $path, '/') . '/';
     }
 

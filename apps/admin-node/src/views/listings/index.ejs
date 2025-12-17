@@ -270,7 +270,12 @@
         document.getElementById('edit-description').value = item.description || '';
 
         // Show Modal
-        document.getElementById('edit-modal').classList.remove('hidden');
+        const modal = document.getElementById('edit-modal');
+        if (modal) {
+            // PORTAL FIX: Move to body to ensure it overlays viewport correctly
+            document.body.appendChild(modal);
+            modal.classList.remove('hidden');
+        }
     }
 
     function closeEditModal() {

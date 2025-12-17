@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # 1. DATABASE SERVICE
+  db:
+    image: mysql:8.0
+    container_name: slubazaar_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: slubazaar
+    ports:
+      - "3307:3306" # Mapped to 3307 to avoid conflict with local XAMPP MySQL
+    volumes:
+      - db_data:/var/lib/mysql
+      # Auto-import any .sql file in the root directory during first startup
+      - ./:/docker-entrypoint-initdb.d/
+
+  # 2. PHP CLIENT SERVICE
+  client:
+    build: ./apps/client-php
+    container_name: slubazaar_client
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: rootpassword
+      DB_NAME: slubazaar
+      DB_PORT: 3306
+    depends_on:
+      - db
+    volumes:
+      - uploads_data:/var/www/html/public/uploads
+
+  # 3. BACKGROUND WORKER (PHP)
+  worker:
+    build: ./apps/client-php
+    container_name: slubazaar_worker
+    restart: always
+    command: php console.php auction:worker
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: rootpassword
+      DB_NAME: slubazaar
+      DB_PORT: 3306
+    depends_on:
+      - db
+    volumes:
+      - uploads_data:/var/www/html/public/uploads
+
+  # 4. NODE.JS ADMIN SERVICE
+  admin:
+    build: ./apps/admin-node
+    container_name: slubazaar_admin
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: rootpassword
+      DB_NAME: slubazaar
+      PORT: 3000
+    depends_on:
+      - db
+    volumes:
+      - uploads_data:/app/public/uploads
+
+volumes:
+  db_data:
+  uploads_data:

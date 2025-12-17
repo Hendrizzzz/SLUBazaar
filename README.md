@@ -1,208 +1,108 @@
-# SLUBazaar
+# SLU Bazaar - Hybrid Micro-service Marketplace
 
-## 📂 New Project Structure
+**Team:** 312Team-DIV-CENTERED 
 
-Everything has moved. Please familiarize yourself with the new layout:
-
-```text
-SLUBazaar/  (Git Root)
-│
-├── apps/
-│   ├── client-php/         <-- OLD ROOT MOVED HERE (Marketplace)
-│   │   ├── public/         <-- Apache DocumentRoot MUST point here
-│   │   ├── src/
-│   │   ├── config/
-│   │   └── composer.json
-│   │
-│   └── admin-node/         <-- NEW APP (Admin Panel)
-│       ├── src/
-│       ├── public/         <-- Admin assets only
-│       ├── package.json
-│       └── .env
-│
-├── storage/                <-- Shared uploads folder
-│   └── uploads/
-│
-├── docker-compose.yml
-└── README.md
-```
+**Submission Date:** December 2025
 
 ---
 
-## ⚠️ ACTION REQUIRED: Update Your Local Environment
+## 1. Executive Summary
 
-Because the files have moved, your local XAMPP/Apache setup **will break** until you update your Virtual Host configuration.
+SLU Bazaar is a distributed web application designed to facilitate secure trading within the SLU community. It employs a **Hybrid Polyglot Architecture**, leveraging the stability of **PHP 8.2** for the customer-facing Marketplace and the asynchronous performance of **Node.js (v18)** for the real-time Administration Panel.
 
-### Step 1: Update Apache VHost
-Open your `httpd-vhosts.conf` file (usually in `C:\xampp\apache\conf\extra\httpd-vhosts.conf`).
+All components are containerized and orchestrated via **Docker Compose** to ensure a consistent, reproducible deployment environment on Ubuntu Server.
 
-Update the `DocumentRoot` path to point to the new location:
-
-```apache
-<VirtualHost *:80>
-    ServerName slubazaar.local
-    
-    # 🛑 OLD PATH: .../htdocs/SLUBazaar/public
-    
-    # ✅ NEW PATH:
-    DocumentRoot "C:/xampp/htdocs/SLUBazaar/apps/client-php/public"
-    
-    <Directory "C:/xampp/htdocs/SLUBazaar/apps/client-php/public">
-        Options Indexes FollowSymLinks
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
-
-### Step 2: Restart Apache
-Stop and Start the Apache module in your XAMPP Control Panel.
-
-### Step 3: Run the Setup Script (Critical!)
-We use a shared folder for uploads so both the PHP and Node.js apps can see the images. You must link these folders.
-
-1.  Open the project folder in File Explorer.
-2.  Right-click `setup_dev.bat` and select **Run as Administrator**.
-3.  This creates the "symlinks" connecting `public/uploads` to `shared/uploads`.
+### Core Services
+1.  **`slubazaar_client` (PHP)**: The student marketplace (Port **8080**).
+2.  **`slubazaar_admin` (Node.js)**: The moderation dashboard (Port **3000**).
+3.  **`slubazaar_worker` (PHP CLI)**: A background daemon that processes expired auctions and cleanup tasks.
+4.  **`slubazaar_db` (MySQL 8)**: The centralized persistent data store (Port **3307**).
 
 ---
 
-## 🛠️ Setting Up the Node.js Admin Panel
+## 2. Deployment Instructions (Ubuntu Server)
 
-The Admin Panel is a separate application running on **Port 3000**.
+**Prerequisites:**
+*   Docker Engine (v20.10+)
+*   Docker Compose (v2.0+)
 
-### 1. Installation
-Navigate to the node folder and install dependencies:
+### Step-by-Step Deployment
+
+1.  **Integrity Check**: Ensure the `312-Team-DIV-CENTERED-fin.zip` is extracted and you are within the root directory containing `docker-compose.yml`.
+
+2.  **Database Seed Verification**:
+    Ensure the file `312-Team-DIV-CENTERED.sql` exists in the root directory. This file is automatically mapped to the database container's entrypoint and will initialize the schema on the *first run only*.
+
+3.  **Launch the Stack**:
+    Execute the orchestration command in detached mode:
+    ```bash
+    sudo docker-compose up --build -d
+    ```
+
+4.  **Verification**:
+    Check the status of the containers:
+    ```bash
+    sudo docker-compose ps
+    ```
+    *All 4 services should display a status of `Up`.*
+
+---
+
+## 3. Access Points
+
+| Service | access URL | Credentials (If Applicable) |
+| :--- | :--- | :--- |
+| **Student Marketplace** | `http://localhost:8080` | Register a new account or Login |
+| **Admin Dashboard** | `http://localhost:3000` | Login with Admin Account |
+| **Database (Direct)** | `localhost:3307` | **User:** `root` / **Pass:** `rootpassword` |
+
+---
+
+## 4. Operational Runbook & Troubleshooting
+
+As per our experience, we have identified potential environmental edge cases and provided their resolutions below.
+
+### ISSUE 1: "Connection Refused" on First Boot
+**Symptom**: The PHP or Node.js app throws a database connection error immediately after starting.
+**Root Cause**: Race Condition. The MySQL container takes 10-30 seconds to initialize its file structure and import the `.sql` dump. The application containers might attempt to connect before the database socket is ready.
+**Solution**:
+The system is designed with **Resilience** in mind (`restart: always`).
+1.  Wait 30-60 seconds.
+2.  The containers will automatically restart and connect successfully once MySQL is ready.
+3.  You can manually force a retry: `sudo docker-compose restart client admin`
+
+### ISSUE 2: Image Uploads Fail (Permission Denied)
+**Symptom**: Users cannot upload profile pictures or item images.
+**Root Cause**: Linux Permission Variance. The Docker volumes map to the host filesystem. If the host folder permissions are owned by `root`, the `www-data` user inside the PHP container may face write restrictions.
+**Solution**:
+Run the following command on the host machine to grant write access to the uploaded content folder:
 ```bash
-cd apps/admin-node
-npm install
+sudo chmod -R 777 apps/client-php/public/uploads
+sudo chmod -R 777 apps/admin-node/public/uploads
 ```
+*(Note: In a production environment, we would use strict chown ownership, but 777 is permissive for this academic demonstration).*
 
-### 2. Configuration
-Create a `.env` file inside `apps/admin-node/` and add your database credentials:
-```ini
-DB_HOST=localhost
-DB_USER=root
-DB_PASS=
-DB_NAME=slubazaar
-PORT=3000
-```
+### ISSUE 3: Port Conflicts (Address already in use)
+**Symptom**: Docker fails to start with error `Bind for 0.0.0.0:3000 failed: port is already allocated`.
+**Root Cause**: Another service (like a local Node process or another web server) is using port 3000, 8080, or 3307.
+**Solution**:
+1.  Identify the blocking process: `sudo lsof -i :3000`
+2.  Kill the process OR modify our `docker-compose.yml` to bind to a different host port (e.g., `"3001:3000"`).
 
-### 3. Running the Server
-To start the Admin Panel:
-```bash
-npm start
-# OR
-node server.js
-```
-Access the admin panel at: `http://localhost:3000/admin`
+### ISSUE 4: Missing "Sold" Items in Profile
+**Symptom**: Items marked as sold do not appear in the "Sold" tab.
+**Context**: This was a known issue related to matching strict bid prices.
+**Status**: **RESOLVED**. We patched the `ItemRepository` logic to track the `buyer_id` directly on the item record upon transaction verification, ensuring 100% data accuracy regardless of bid history quirks.
 
 ---
 
-## 📐 Node.js Developer Guide (Layered Architecture)
+## 5. Architecture Notes
 
-We are using a **Layered Architecture** for the Admin Panel. Do not put logic in the entry files. Follow this strict structure:
+### Shared Persistence Strategy
+To support the Hybrid architecture, we implemented a **Named Docker Volume** (`uploads_data`).
+*   **Mount Point PHP**: `/var/www/html/public/uploads`
+*   **Mount Point Node**: `/app/public/uploads`
+*   **Benefit**: This allows the Admin Panel to instantly render images uploaded by the PHP Client without complex S3 integration or file synchronization scripts.
 
-### Directory Tree
-```text
-admin-node/
-│
-├── server.js             # Entry Point (Starts server)
-├── .env                  # Environment Variables
-│
-└── src/
-    ├── config/           # DB Connection
-    │   └── db.js
-    │
-    ├── controllers/      # Handle Request/Response (Input/Output only)
-    │   ├── authController.js
-    │   └── dashboardController.js
-    │
-    ├── services/         # BUSINESS LOGIC (The "Brain")
-    │   ├── authService.js
-    │   └── statsService.js
-    │
-    ├── repositories/     # RAW SQL Queries (The Data Layer)
-    │   └── userRepository.js
-    │
-    ├── routes/           # URL Definitions
-    │   ├── authRoutes.js
-    │   └── index.js
-    │
-    ├── middleware/       # Security & Validation
-    │   ├── isAuth.js
-    │   └── validate.js
-    │
-    └── views/            # EJS Templates
-        ├── layouts/
-        └── pages/
-```
-
-### Coding Standards
-
-#### 1. The Entry Point (`server.js`)
-Keep this clean. It only starts the server.
-
-```javascript
-require('dotenv').config();
-const app = require('./src/app');
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-    console.log(`🚀 Admin Server running on http://localhost:${PORT}`);
-});
-```
-
-#### 2. The App Setup (`src/app.js`)
-Configuration of Express, Views, and Global Middleware happens here.
-
-```javascript
-const express = require('express');
-const path = require('path');
-const mainRoutes = require('./routes');
-
-const app = express();
-
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.urlencoded({ extended: true }));
-
-// Mount Main Router
-app.use('/', mainRoutes);
-
-module.exports = app;
-```
-
-#### 3. Controller vs. Service vs. Repository
-Follow this flow for all new features:
-
-*   **Controller:** Accepts `req`, asks Service for data, sends `res`.
-*   **Service:** Contains logic, calculations, and rules.
-*   **Repository:** Contains the `db.query`.
-
-**Example Controller (`src/controllers/dashboardController.js`)**
-```javascript
-const statsService = require('../services/statsService');
-
-exports.getDashboard = async (req, res, next) => {
-    try {
-        // Controller calls Service. It does NOT write SQL.
-        const userCount = await statsService.countTotalUsers();
-        
-        res.render('pages/dashboard', { users: userCount });
-    } catch (error) {
-        next(error);
-    }
-};
-```
-
-**Example Service (`src/services/statsService.js`)**
-```javascript
-const db = require('../config/db'); 
-
-exports.countTotalUsers = async () => {
-    const [rows] = await db.query("SELECT COUNT(*) as count FROM user");
-    return rows[0].count;
-};
-```
+### Background Worker Pattern
+We introduced a dedicated `worker` container that executes `php console.php auction:worker`. This decouples heavy background tasks (like checking for thousands of expired auctions) from the request-response cycle of the web server, ensuring the UI remains snappy for end-users.

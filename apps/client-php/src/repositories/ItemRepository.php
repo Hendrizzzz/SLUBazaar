@@ -712,15 +712,15 @@ class ItemRepository
                     i.current_bid, 
                     u.fname as buyer_fname, 
                     u.lname as buyer_lname, 
-                    i.auction_end as date_sold
+                    i.date_sold,
+                    i.auction_end
                 FROM item i
-                JOIN bid b ON i.item_id = b.item_id AND b.bid_amount = i.current_bid
-                JOIN user u ON b.bidder_id = u.user_id
+                LEFT JOIN user u ON i.buyer_id = u.user_id
                 WHERE 
                     i.seller_id = ?     
                     AND i.item_status = 'Sold'
                 ORDER BY 
-                    i.auction_end DESC; ";
+                    i.date_sold DESC; ";
     }
 
 
