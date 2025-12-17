@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 15, 2025 at 04:29 PM
+-- Generation Time: Dec 17, 2025 at 11:12 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,15 @@ INSERT INTO `bid` (`bid_id`, `item_id`, `bidder_id`, `bid_amount`, `bid_timestam
 (19, 22, 4, 250.00, '2025-11-30 05:18:03'),
 (20, 28, 5, 850.00, '2025-11-26 05:28:03'),
 (21, 31, 2, 1800.00, '2025-11-26 05:28:03'),
-(22, 32, 4, 300.00, '2025-11-28 05:28:03');
+(22, 32, 4, 300.00, '2025-11-28 05:28:03'),
+(23, 54, 3, 200.00, '2025-12-17 06:02:18'),
+(24, 56, 3, 1050.00, '2025-12-17 06:37:25'),
+(25, 56, 3, 1200.00, '2025-12-17 06:37:54'),
+(26, 56, 3, 1300.00, '2025-12-17 06:38:04'),
+(27, 56, 4, 1500.00, '2025-12-17 06:52:30'),
+(28, 56, 3, 1600.00, '2025-12-17 06:53:29'),
+(29, 57, 5, 1700.00, '2025-12-17 07:22:49'),
+(30, 56, 3, 1650.00, '2025-12-17 07:42:24');
 
 -- --------------------------------------------------------
 
@@ -94,7 +102,8 @@ INSERT INTO `conversation` (`conversation_id`, `item_id`, `buyer_id`, `seller_id
 (10, 3, 4, 5, 'Active'),
 (11, 4, 3, 4, 'Active'),
 (12, 5, 5, 2, 'Active'),
-(13, 6, 2, 4, 'Active');
+(13, 6, 2, 4, 'Active'),
+(14, 57, 5, 3, 'Active');
 
 -- --------------------------------------------------------
 
@@ -130,11 +139,11 @@ INSERT INTO `item` (`item_id`, `seller_id`, `title`, `description`, `starting_bi
 (4, 4, 'Basketball', 'Molten generic.', 400.00, 420.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-04 13:28:03', 'Awaiting Meetup', '940840', 'Sports Equipment', '2025-12-12 13:40:55', 3),
 (5, 2, 'Umbrella', 'Foldable black.', 150.00, 180.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-01 13:28:03', 'Awaiting Meetup', '628184', 'Accessories', '2025-12-12 13:40:55', 5),
 (6, 4, 'Kpop Photocard', 'Twice.', 100.00, 300.00, '2025-11-30 05:28:03', '2025-11-30 13:28:03', '2025-12-06 13:28:03', 'Awaiting Meetup', '551690', 'Collectibles', '2025-12-12 13:40:55', 2),
-(7, 5, 'Anatomy & Physiology', 'Hardbound.', 1200.00, 1200.00, '2025-11-30 05:28:03', '2025-12-02 13:28:03', '2025-12-09 13:28:03', 'Pending', NULL, 'Textbooks', NULL, NULL),
-(8, 2, 'Lab Gown', 'Canvas material.', 300.00, 300.00, '2025-11-30 05:28:03', '2025-12-01 13:28:03', '2025-12-05 13:28:03', 'Pending', NULL, 'Clothing', NULL, NULL),
-(9, 2, 'Volleyball Knee Pads', 'Asics.', 200.00, 200.00, '2025-11-30 05:28:03', '2025-12-03 13:28:03', '2025-12-10 13:28:03', 'Pending', NULL, 'Sports Equipment', NULL, NULL),
-(10, 4, 'Drafting Table', 'Adjustable height.', 1500.00, 1500.00, '2025-11-30 05:28:03', '2025-12-05 13:28:03', '2025-12-12 13:28:03', 'Pending', NULL, 'Furniture', NULL, NULL),
-(11, 3, 'Gundam Model', 'HG scale built.', 400.00, 400.00, '2025-11-30 05:28:03', '2025-12-04 13:28:03', '2025-12-11 13:28:03', 'Pending', NULL, 'Collectibles', NULL, NULL),
+(7, 5, 'Anatomy & Physiology', 'Hardbound.', 1200.00, 1200.00, '2025-11-30 05:28:03', '2025-12-02 13:28:03', '2025-12-09 13:28:03', 'Expired', NULL, 'Textbooks', NULL, NULL),
+(8, 2, 'Lab Gown', 'Canvas material.', 300.00, 300.00, '2025-11-30 05:28:03', '2025-12-01 13:28:03', '2025-12-05 13:28:03', 'Expired', NULL, 'Clothing', NULL, NULL),
+(9, 2, 'Volleyball Knee Pads', 'Asics.', 200.00, 200.00, '2025-11-30 05:28:03', '2025-12-03 13:28:03', '2025-12-10 13:28:03', 'Expired', NULL, 'Sports Equipment', NULL, NULL),
+(10, 4, 'Drafting Table', 'Adjustable height.', 1500.00, 1500.00, '2025-11-30 05:28:03', '2025-12-05 13:28:03', '2025-12-12 13:28:03', 'Expired', NULL, 'Furniture', NULL, NULL),
+(11, 3, 'Gundam Model', 'HG scale built.', 400.00, 400.00, '2025-11-30 05:28:03', '2025-12-04 13:28:03', '2025-12-11 13:28:03', 'Expired', NULL, 'Collectibles', NULL, NULL),
 (12, 3, 'Accounting 101', 'For BSA students.', 400.00, 400.00, '2025-11-30 05:28:03', '2025-11-20 13:28:03', '2025-11-27 13:28:03', 'Sold', '111111', 'Textbooks', '2025-11-28 05:28:03', 4),
 (13, 2, 'Logitech Mouse', 'Wireless silent.', 500.00, 600.00, '2025-11-30 05:28:03', '2025-11-22 13:28:03', '2025-11-29 13:28:03', 'Sold', '333333', 'Electronics', '2025-11-29 17:28:03', 3),
 (14, 4, 'PE Uniform (S)', 'Top and bottom.', 250.00, 300.00, '2025-11-30 05:28:03', '2025-11-15 13:28:03', '2025-11-25 13:28:03', 'Sold', '555555', 'Clothing', '2025-11-26 05:28:03', 5),
@@ -168,13 +177,32 @@ INSERT INTO `item` (`item_id`, `seller_id`, `title`, `description`, `starting_bi
 (42, 2, 'test11', 'aaaaa', 6868.00, 6868.00, '2025-12-12 18:42:14', '2025-12-13 02:42:14', '2025-12-13 02:43:00', 'Expired', NULL, 'Stationery', NULL, NULL),
 (43, 2, 'test5', 'aaaaaaaaaaaaaaaaaaaaa', 900.00, 900.00, '2025-12-12 18:45:14', '2025-12-13 02:45:14', '2025-12-13 02:46:00', 'Expired', NULL, 'Clothing', NULL, NULL),
 (44, 2, 'test8', '7777', 5555.00, 5555.00, '2025-12-12 18:52:08', '2025-12-13 02:52:08', '2025-12-13 02:53:00', 'Expired', NULL, 'Electronics', NULL, NULL),
-(45, 2, 'test15', 'aaa', 1000.00, 1000.00, '2025-12-12 19:16:28', '2025-12-13 03:16:28', '2025-12-13 03:17:00', 'Active', NULL, 'Clothing', NULL, NULL),
-(46, 2, 'test16', 'aa', 1000.00, 1000.00, '2025-12-12 19:17:39', '2025-12-13 03:17:39', '2025-12-13 03:18:00', 'Active', NULL, 'Stationery', NULL, NULL),
-(47, 2, 'aaa', 'aaa', 1000.00, 1000.00, '2025-12-12 19:23:48', '2025-12-13 03:23:48', '2025-12-13 03:24:00', 'Active', NULL, 'Stationery', NULL, NULL),
-(48, 2, '123123', '1111', 1000.00, 1000.00, '2025-12-12 19:56:44', '2025-12-13 03:56:44', '2025-12-13 03:58:00', 'Active', NULL, 'Clothing', NULL, NULL),
-(49, 2, 'testttt', '12123', 1000.00, 1000.00, '2025-12-12 20:04:13', '2025-12-13 04:04:13', '2025-12-13 04:05:00', 'Active', NULL, 'Electronics', NULL, NULL),
-(50, 2, 'aaa', 'aaa', 1111.00, 1111.00, '2025-12-12 20:31:04', '2025-12-13 04:31:04', '2025-12-13 06:30:00', 'Active', NULL, 'Stationery', NULL, NULL),
-(51, 2, 'aaaa', 'aaaa', 1111.00, 1111.00, '2025-12-12 20:44:15', '2025-12-13 04:44:15', '2025-12-13 04:47:00', 'Active', NULL, 'Electronics', NULL, NULL);
+(45, 2, 'test15', 'aaa', 1000.00, 1000.00, '2025-12-12 19:16:28', '2025-12-13 03:16:28', '2025-12-13 03:17:00', 'Expired', NULL, 'Clothing', NULL, NULL),
+(46, 2, 'test16', 'aa', 1000.00, 1000.00, '2025-12-12 19:17:39', '2025-12-13 03:17:39', '2025-12-13 03:18:00', 'Expired', NULL, 'Stationery', NULL, NULL),
+(47, 2, 'aaa', 'aaa', 1000.00, 1000.00, '2025-12-12 19:23:48', '2025-12-13 03:23:48', '2025-12-13 03:24:00', 'Expired', NULL, 'Stationery', NULL, NULL),
+(48, 2, '123123', '1111', 1000.00, 1000.00, '2025-12-12 19:56:44', '2025-12-13 03:56:44', '2025-12-13 03:58:00', 'Expired', NULL, 'Clothing', NULL, NULL),
+(49, 2, 'testttt', '12123', 1000.00, 1000.00, '2025-12-12 20:04:13', '2025-12-13 04:04:13', '2025-12-13 04:05:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(50, 2, 'aaa', 'aaa', 1111.00, 1111.00, '2025-12-12 20:31:04', '2025-12-13 04:31:04', '2025-12-13 06:30:00', 'Expired', NULL, 'Stationery', NULL, NULL),
+(51, 2, 'hey', 'heyeeee', 1111.00, 1111.00, '2025-12-12 20:44:15', '2025-12-13 04:44:15', '2025-12-13 04:47:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(52, 2, 'Aula F75 Keyboard', 'Condition 10/10\r\nRFS: Upgrade Keyboard', 1500.00, 1500.00, '2025-12-16 15:03:21', '2025-12-16 23:03:21', '2025-12-17 01:10:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(53, 2, 'Aula F75 Keyboard', 'Condition: 10/10', 1500.00, 1500.00, '2025-12-16 15:06:20', '2025-12-16 23:06:20', '2025-12-17 13:10:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(54, 5, 'Id lace', 'Selling it for a low price', 10.00, 200.00, '2025-12-17 05:12:53', '2025-12-19 13:12:00', '2025-12-25 13:12:00', 'Active', NULL, 'Clothing', NULL, NULL),
+(55, 5, 'Id lace', 'Selling it for a low price', 10.00, 10.00, '2025-12-17 05:12:53', '2025-12-19 13:12:00', '2025-12-25 13:12:00', 'Active', NULL, 'Clothing', NULL, NULL),
+(56, 2, 'Calculator', 'I need money', 1000.00, 1650.00, '2025-12-17 06:35:44', '2025-12-17 14:37:00', '2025-12-25 14:36:00', 'Active', NULL, 'Electronics', NULL, NULL),
+(57, 3, 'Jeans', 'Not needed anymore', 1500.00, 1700.00, '2025-12-17 07:21:44', '2025-12-17 15:21:44', '2025-12-17 15:27:49', 'Sold', '695288', 'Clothing', '2025-12-17 07:33:52', 5),
+(58, 5, 'Poco x6 pro', 'Upgrading to a newer phone\r\nCondition: 9/10\r\nAge: 1 year', 7000.00, 7000.00, '2025-12-17 07:25:24', '2025-12-17 15:25:24', '2025-12-17 15:27:00', 'Cancelled By Seller', NULL, 'Electronics', NULL, NULL),
+(59, 5, 'Poco x6 pro', 'Upgrading to a newer phone\r\nCondition: 9/10\r\nAge: 1 year', 7000.00, 7000.00, '2025-12-17 07:25:24', '2025-12-17 15:25:24', '2025-12-17 15:27:00', 'Expired', NULL, 'Electronics', NULL, NULL),
+(60, 3, 'Lacoste Wallet', 'Selling this at a very low price', 1000.00, 1000.00, '2025-12-17 07:45:34', '2025-12-17 15:45:34', '2025-12-26 15:45:00', 'Active', NULL, 'Accessories', NULL, NULL),
+(61, 3, 'test', 'aaa', 1000.00, 1000.00, '2025-12-17 07:47:42', '2025-12-17 15:47:42', '2025-12-27 15:47:00', 'Removed By Admin', NULL, 'Stationery', NULL, NULL),
+(62, 3, 'testinggggggs', 'bbbbbbb', 1111.00, 1111.00, '2025-12-17 07:51:11', '2025-12-17 15:51:11', '2025-12-27 15:51:00', 'Removed By Admin', NULL, 'Electronics', NULL, NULL),
+(63, 3, 'test', 'saaa', 1111.00, 1111.00, '2025-12-17 07:53:56', '2025-12-17 15:53:56', '2025-12-26 15:53:00', 'Cancelled By Seller', NULL, 'Stationery', NULL, NULL),
+(64, 3, 'test', 'aaa', 111.00, 111.00, '2025-12-17 07:54:47', '2025-12-17 15:54:47', '2025-12-19 15:54:00', 'Cancelled By Seller', NULL, 'Stationery', NULL, NULL),
+(65, 3, 'aaaa', 'aaaa', 1111.00, 1111.00, '2025-12-17 07:59:44', '2025-12-17 15:59:44', '2025-12-27 15:59:00', 'Cancelled By Seller', NULL, 'Stationery', NULL, NULL),
+(66, 3, 'aaaa', 'aaaa', 1111.00, 1111.00, '2025-12-17 07:59:44', '2025-12-17 15:59:44', '2025-12-27 15:59:00', 'Cancelled By Seller', NULL, 'Stationery', NULL, NULL),
+(67, 3, 'aaaa', 'aaaa', 1111.00, 1111.00, '2025-12-17 08:05:22', '2025-12-17 16:05:22', '2025-12-20 16:05:00', 'Cancelled By Seller', NULL, 'Electronics', NULL, NULL),
+(68, 3, 'aaa', 'aaaa', 1111.00, 1111.00, '2025-12-17 08:09:35', '2025-12-17 16:09:35', '2025-12-20 16:12:00', 'Cancelled By Seller', NULL, 'Electronics', NULL, NULL),
+(69, 3, 'aaa', 'aaaa', 1111.00, 1111.00, '2025-12-17 08:10:02', '2025-12-17 16:10:02', '2025-12-26 16:09:00', 'Removed By Admin', NULL, 'Clothing', NULL, NULL),
+(70, 3, 'aaaa', 'aaa', 11111.00, 11111.00, '2025-12-17 08:28:17', '2025-12-17 16:28:17', '2025-12-19 16:28:00', 'Removed By Admin', NULL, 'Stationery', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -252,7 +280,30 @@ INSERT INTO `item_image` (`image_id`, `item_id`, `image_url`) VALUES
 (57, 48, 'assets/uploads/items/item_48_693c737c0875e.png'),
 (58, 49, 'assets/uploads/items/item_49_693c753d34891.webp'),
 (59, 50, 'assets/uploads/items/item_50_693c7b88e3123.webp'),
-(60, 51, 'assets/uploads/items/item_51_693c7e9f80b3f.webp');
+(60, 51, 'assets/uploads/items/item_51_693c7e9f80b3f.webp'),
+(61, 52, 'assets/uploads/items/item_52_694174b974e95.jpg'),
+(62, 52, 'assets/uploads/items/item_52_694174b9752e3.jpg'),
+(63, 52, 'assets/uploads/items/item_52_694174b98ff68.webp'),
+(64, 53, 'assets/uploads/items/item_53_6941756c43dc6.jpg'),
+(65, 53, 'assets/uploads/items/item_53_6941756c440fc.jpg'),
+(66, 53, 'assets/uploads/items/item_53_6941756c44618.webp'),
+(67, 54, 'assets/uploads/items/item_54_69423bd5693a5.png'),
+(68, 55, 'assets/uploads/items/item_55_69423bd570287.png'),
+(69, 56, 'assets/uploads/items/item_56_69424f40b3e3c.png'),
+(70, 57, 'assets/uploads/items/item_57_69425a084d41d.jpg'),
+(71, 58, 'assets/uploads/items/item_58_69425ae4a9ca6.jpg'),
+(72, 59, 'assets/uploads/items/item_59_69425ae4b5d9e.jpg'),
+(73, 60, 'assets/uploads/items/item_60_69425f9e8f588.png'),
+(74, 61, 'assets/uploads/items/item_61_6942601e17eb3.png'),
+(75, 62, 'assets/uploads/items/item_62_694260ef0fe44.png'),
+(76, 63, 'assets/uploads/items/item_63_6942619474286.png'),
+(77, 64, 'assets/uploads/items/item_64_694261c7c667a.png'),
+(78, 65, 'assets/uploads/items/item_65_694262f03887d.png'),
+(79, 66, 'assets/uploads/items/item_66_694262f03bb41.png'),
+(80, 67, 'assets/uploads/items/item_67_694264428b768.png'),
+(81, 68, 'assets/uploads/items/item_68_6942653f18583.png'),
+(82, 69, 'assets/uploads/items/item_69_6942655a1ddf0.png'),
+(83, 70, 'assets/uploads/items/item_70_694269a186f54.jpg');
 
 -- --------------------------------------------------------
 
@@ -296,7 +347,19 @@ INSERT INTO `message` (`message_id`, `conversation_id`, `message_text`, `is_sell
 (20, 7, 'Yes, the original black bag.', 1, '2025-11-29 05:35:00', 1),
 (21, 7, 'Are there any scratches on the frame?', 0, '2025-11-29 05:40:00', 0),
 (22, 7, 'Just minor ones on the top, but no cracks.', 1, '2025-11-29 05:45:00', 0),
-(23, 11, 'aaaaaaaa', 0, '2025-12-14 12:54:45', 0);
+(23, 11, 'aaaaaaaa', 0, '2025-12-14 12:54:45', 0),
+(24, 13, 'aaaa', 0, '2025-12-15 18:18:02', 0),
+(25, 11, 'hey where are you?', 0, '2025-12-17 07:06:29', 0),
+(26, 11, 'what do you mean', 1, '2025-12-17 07:07:10', 0),
+(27, 11, 'nothing', 0, '2025-12-17 07:07:23', 0),
+(28, 11, '?', 0, '2025-12-17 07:07:49', 0),
+(29, 11, 'hey', 0, '2025-12-17 07:15:51', 0),
+(30, 11, 'heyy', 0, '2025-12-17 07:16:43', 0),
+(31, 11, 'hello?', 0, '2025-12-17 07:17:17', 0),
+(32, 14, 'Where are you, I\'ll give this to you right now.', 1, '2025-12-17 07:32:11', 0),
+(33, 14, 'Here at the school canteen.', 0, '2025-12-17 07:32:37', 0),
+(34, 14, 'aaa', 1, '2025-12-17 08:27:05', 0),
+(35, 14, 'hello', 1, '2025-12-17 08:31:15', 0);
 
 -- --------------------------------------------------------
 
@@ -342,7 +405,21 @@ INSERT INTO `notification` (`notif_id`, `user_id`, `notif_title`, `content`, `no
 (22, 2, 'Auction Expired', 'Your listing \'test1\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 13:44:00'),
 (23, 2, 'Auction Expired', 'Your listing \'test11\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:43:03'),
 (24, 2, 'Auction Expired', 'Your listing \'test5\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:46:03'),
-(25, 2, 'Auction Expired', 'Your listing \'test8\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:53:00');
+(25, 2, 'Auction Expired', 'Your listing \'test8\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-12 18:53:00'),
+(26, 2, 'Auction Expired', 'Your listing \'test15\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(27, 2, 'Auction Expired', 'Your listing \'test16\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(28, 2, 'Auction Expired', 'Your listing \'aaa\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(29, 2, 'Auction Expired', 'Your listing \'123123\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(30, 2, 'Auction Expired', 'Your listing \'testttt\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(31, 2, 'Auction Expired', 'Your listing \'aaa\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(32, 2, 'Auction Expired', 'Your listing \'aaaa\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-15 18:16:16'),
+(33, 2, 'Auction Expired', 'Your listing \'Aula F75 Keyboard\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-16 17:10:03'),
+(34, 2, 'Auction Expired', 'Your listing \'Aula F75 Keyboard\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-17 06:06:09'),
+(35, 3, 'You\'ve been outbid!', 'Someone placed a bid of ₱1,500.00 on \'Calculator\'. Bid again now!', 'OUTBID', '2025-12-17 06:52:30'),
+(36, 4, 'You\'ve been outbid!', 'Someone placed a bid of ₱1,600.00 on \'Calculator\'. Bid again now!', 'OUTBID', '2025-12-17 06:53:29'),
+(37, 5, 'Auction Expired', 'Your listing \'Poco x6 pro\' ended with no bids. You can relist it from your profile.', 'EXPIRED', '2025-12-17 07:27:01'),
+(38, 3, 'Item Sold! 💰', 'Your item \'Jeans\' sold for ₱1,700.00. Chat with the buyer now.', 'SOLD', '2025-12-17 07:27:52'),
+(39, 5, 'Congratulations! 🎉', 'You won the auction for \'Jeans\'. Check your messages to arrange the meetup.', 'WIN', '2025-12-17 07:27:52');
 
 -- --------------------------------------------------------
 
@@ -366,7 +443,8 @@ CREATE TABLE `rating` (
 
 INSERT INTO `rating` (`rating_id`, `item_id`, `rater_id`, `ratee_id`, `rating_value`, `comment`, `created_at`) VALUES
 (1, 12, 4, 3, 5, 'Great book.', '2025-11-30 05:28:03'),
-(2, 13, 3, 2, 4, 'Works fine.', '2025-11-30 05:28:03');
+(2, 13, 3, 2, 4, 'Works fine.', '2025-11-30 05:28:03'),
+(3, 57, 5, 3, 3, 'The item is overpriced and the seller is rude', '2025-12-17 07:36:27');
 
 -- --------------------------------------------------------
 
@@ -396,7 +474,12 @@ INSERT INTO `report` (`report_id`, `reporter_id`, `target_user_id`, `target_item
 (2, 4, NULL, 29, 'Item', 'Prohibited Item', 'Alcohol is not allowed in SLU Bazaar.', 'Resolved', NULL, '2025-11-29 05:28:03'),
 (3, 5, NULL, 30, 'Item', 'Inappropriate', 'Selling exam leaks is cheating.', 'Resolved', NULL, '2025-11-29 17:28:03'),
 (4, 4, NULL, 1, 'Item', 'Inaccurate Description', 'Says good condition but photo looks old.', 'Dismissed', NULL, '2025-11-30 03:28:03'),
-(5, 5, NULL, 2, 'Item', 'Other', 'Seller is rude.', 'Pending', NULL, '2025-11-30 05:28:03');
+(5, 5, NULL, 2, 'Item', 'Other', 'Seller is rude.', 'Dismissed', '', '2025-11-30 05:28:03'),
+(6, 4, NULL, 56, 'Item', 'Counterfeit', 'This seller is selling a fake calculator', 'Dismissed', '', '2025-12-17 06:44:09'),
+(7, 4, NULL, 62, 'Item', 'Inappropriate Content', 'What in the item is this?', 'Resolved', '', '2025-12-17 08:35:12'),
+(8, 3, NULL, 56, 'Item', 'Counterfeit', 'Fake calculator', 'Resolved', '', '2025-12-17 09:05:45'),
+(9, 3, NULL, 56, 'Item', 'Counterfeit', 'This seller is selling an obvious fake calculator', 'Resolved', '', '2025-12-17 09:15:15'),
+(10, 3, NULL, 56, 'Item', 'Counterfeit', 'This is a fake calculator', 'Pending', NULL, '2025-12-17 09:57:32');
 
 -- --------------------------------------------------------
 
@@ -436,10 +519,11 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`user_id`, `fname`, `lname`, `email`, `email_verified`, `password_hash`, `average_rating`, `created_at`, `account_status`, `role`, `profile_picture_url`) VALUES
 (1, 'Super', 'Admin', 'admin@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 0.00, '2025-11-30 05:28:03', 'active', 'Admin', '/assets/img/default-profile-pic.jpg'),
-(2, 'Juan', 'Dela Cruz', 'juan@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 4.50, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
-(3, 'Maria', 'Santos', 'maria@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 4.80, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
-(4, 'Pedro', 'Penduko', 'pedro@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 3.50, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
-(5, 'Clara', 'Oswald', 'clara@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 5.00, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg');
+(2, 'Juan', 'Dela Cruz', 'juan@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 4.00, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
+(3, 'Maria', 'Santos', 'maria@slu.edu.ph', 1, '$2y$10$63x06uGFXhIi0Ck3e15o9O6CE1CJ5wa1d2.NeWXexSsu6SlX8JQqO', 4.00, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
+(4, 'Pedro', 'Penduko', 'pedro@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 0.00, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
+(5, 'Clara', 'Oswald', 'clara@slu.edu.ph', 1, '$2y$10$faX6.tFlKh5jlPsJcDPxcOPkVMlowJjkXG9l0hi/T.qH8hOd7QR.q', 0.00, '2025-11-30 05:28:03', 'active', 'Member', '/assets/img/default-profile-pic.jpg'),
+(6, 'New', 'Admin', 'newadmin@slu.edu.ph', 1, '$2y$10$lndyI0kzszUOUyHcl4Zc0u/.bVathPGFyH4dhddM4hC8RmFekGosS', 0.00, '2025-12-16 02:31:40', 'active', 'Admin', '/assets/img/default-profile-pic.jpg');
 
 -- --------------------------------------------------------
 
@@ -468,7 +552,10 @@ INSERT INTO `watchlist` (`watchlist_id`, `user_id`, `item_id`, `created_at`) VAL
 (7, 5, 3, '2025-11-30 05:28:03'),
 (8, 5, 1, '2025-11-30 05:28:03'),
 (9, 2, 18, '2025-11-30 05:28:03'),
-(10, 3, 19, '2025-11-30 05:28:03');
+(10, 3, 19, '2025-11-30 05:28:03'),
+(11, 3, 53, '2025-12-17 05:58:40'),
+(12, 3, 54, '2025-12-17 06:33:19'),
+(13, 3, 56, '2025-12-17 06:36:27');
 
 --
 -- Indexes for dumped tables
@@ -570,37 +657,37 @@ ALTER TABLE `watchlist`
 -- AUTO_INCREMENT for table `bid`
 --
 ALTER TABLE `bid`
-  MODIFY `bid_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `bid_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `conversation`
 --
 ALTER TABLE `conversation`
-  MODIFY `conversation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `conversation_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `item`
 --
 ALTER TABLE `item`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `item_image`
 --
 ALTER TABLE `item_image`
-  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `image_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
 
 --
 -- AUTO_INCREMENT for table `message`
 --
 ALTER TABLE `message`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `notif_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `rating`
@@ -612,7 +699,7 @@ ALTER TABLE `rating`
 -- AUTO_INCREMENT for table `report`
 --
 ALTER TABLE `report`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `report_image`
@@ -624,13 +711,13 @@ ALTER TABLE `report_image`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `watchlist`
 --
 ALTER TABLE `watchlist`
-  MODIFY `watchlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `watchlist_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Constraints for dumped tables
