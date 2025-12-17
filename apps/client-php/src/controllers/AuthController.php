@@ -37,7 +37,8 @@ class AuthController extends BaseController
                     'redirect_url' => $redirectUrl
                 ]);
             } catch (Exception $e) {
-                $this->errorResponse($e->getMessage(), 401);
+                // Use 400 (Bad Request) instead of 401 to avoid utils.js global redirect
+                $this->errorResponse($e->getMessage(), 400);
             }
         } else {
             if (isset($_SESSION['user_id'])) {

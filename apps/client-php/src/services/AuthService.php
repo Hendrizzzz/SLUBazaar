@@ -100,8 +100,7 @@ class AuthService
         if (strlen($newPassword) < 6)
             throw new Exception("Password must be at least 6 characters.");
 
-        // === BYPASS DB CHECK ===
-        /*
+
         $user = $this->userRepo->getUserById($userId);
         if (!$user)
             throw new Exception("User not found.");
@@ -111,7 +110,6 @@ class AuthService
 
         $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
         $this->userRepo->updatePassword($userId, $newHash);
-        */
     }
 
     public function startUserSession(array $user): void
@@ -119,7 +117,7 @@ class AuthService
         // Assumes session_start() is called in index.php
         session_regenerate_id(true);
 
-        $_SESSION['user_id'] = (int)$user['user_id'];
+        $_SESSION['user_id'] = (int) $user['user_id'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
         $_SESSION['fname'] = $user['fname'];
@@ -133,9 +131,14 @@ class AuthService
 
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000,
-                $params["path"], $params["domain"],
-                $params["secure"], $params["httponly"]
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
             );
         }
 
@@ -170,7 +173,7 @@ class AuthService
     private function isSluEmail(string $email): bool
     {
         // Optional: you can comment this out too if you want to test with 'admin@test.com'
-        return (bool)preg_match('/^[a-zA-Z0-9._%+-]+@slu\.edu\.ph$/i', $email);
-//        return true;
+        return (bool) preg_match('/^[a-zA-Z0-9._%+-]+@slu\.edu\.ph$/i', $email);
+        //        return true;
     }
 }

@@ -1,0 +1,235 @@
+/* 
+   SLU Bazaar - Modern Auth Styles 
+   Matches Admin Node UI Design 
+*/
+
+:root {
+    --slu-blue: #0056b3;
+    --slu-blue-dark: #004494;
+    --slu-accent: #d4e157;
+    --slu-bg-primary: #2b6cb0;
+    --slu-bg-secondary: #9cbd3c;
+
+    --white: #ffffff;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-500: #6b7280;
+    --gray-800: #1f2937;
+
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --font-main: 'Outfit', sans-serif;
+    --radius-md: 0.5rem;
+    --radius-xl: 0.75rem;
+}
+
+body {
+    font-family: var(--font-main);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Background from Admin Layout using ::before to allow content overlay if needed, 
+   or just directly on body if simple. Admin layout used a class/div. */
+.slu-bg {
+    background: linear-gradient(135deg, var(--slu-bg-primary) 0%, var(--slu-bg-primary) 35%, var(--slu-bg-secondary) 35.1%, var(--slu-bg-secondary) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+/* Glassmorphism Card */
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 400px;
+    padding: 2.5rem;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Logo & Headers */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.auth-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.brand-title {
+    color: var(--slu-blue);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    color: var(--gray-500);
+    font-size: 0.875rem;
+    margin: 0;
+    font-weight: 400;
+}
+
+.page-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.page-desc {
+    font-size: 0.875rem;
+    color: var(--gray-500);
+    margin-bottom: 1.5rem;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.95rem;
+    font-family: var(--font-main);
+    color: var(--gray-800);
+    background-color: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease-in-out;
+    box-sizing: border-box;
+    /* Critical for padding */
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--slu-blue);
+    box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+}
+
+.btn-primary {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--slu-blue);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--slu-blue-dark);
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--gray-500);
+}
+
+.auth-footer a {
+    color: var(--slu-blue);
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Alert Box */
+.alert {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    text-align: left;
+}
+
+
+/* --- Toast Notification (Copied from Global for Auth Pages) --- */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999;
+    transform: translateX(120%);
+    transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    color: #334155;
+    border-left: 5px solid;
+    min-width: 300px;
+}
+
+.toast-notification.show {
+    transform: translateX(0);
+}
+
+.toast-success {
+    border-left-color: #10b981;
+}
+
+.toast-success i {
+    color: #10b981;
+}
+
+.toast-error {
+    border-left-color: #ef4444;
+}
+
+.toast-error i {
+    color: #ef4444;
+}
+
+.toast-info {
+    border-left-color: #0056b3;
+}
+
+.toast-info i {
+    color: #0056b3;
+}
