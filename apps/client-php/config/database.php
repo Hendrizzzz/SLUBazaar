@@ -19,8 +19,8 @@ if (getEnvVar('DB_HOST')) {
     // LOCAL CONFIG (XAMPP defaults)
     return [ #DEFAULTS
         'host' => 'localhost', #PAG NI-UPDATE MO TO, WAG MO NANG IPUSH
-        'user' => 'slu_admin', #PAG NI-UPDATE MO TO, WAG MO NANG IPUSH
-        'pass' => 'password123',    #PAG NI-UPDATE MO TO, WAG MO NANG IPUSH
+        'user' => 'root', #PAG NI-UPDATE MO TO, WAG MO NANG IPUSH
+        'pass' => '',    #PAG NI-UPDATE MO TO, WAG MO NANG IPUSH
         'name' => 'slubazaar',
         'port' => 3306
     ];
