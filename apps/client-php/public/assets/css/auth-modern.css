@@ -36,8 +36,6 @@ body {
 /* Background from Admin Layout using ::before to allow content overlay if needed, 
    or just directly on body if simple. Admin layout used a class/div. */
 .slu-bg {
-    background: linear-gradient(135deg, var(--slu-bg-primary) 0%, var(--slu-bg-primary) 35%, var(--slu-bg-secondary) 35.1%, var(--slu-bg-secondary) 100%);
-    background-attachment: fixed;
     min-height: 100vh;
     width: 100%;
     display: flex;

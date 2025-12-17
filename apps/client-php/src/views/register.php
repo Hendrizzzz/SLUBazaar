@@ -28,6 +28,9 @@
 
 <body class="slu-bg">
 
+    <div class="bg-layer-stripes"></div>
+    <div class="bg-layer-building"></div>
+
     <div class="auth-card" style="max-width: 500px;"> <!-- Slightly wider for register form -->
         <!-- Logo Header -->
         <div class="logo-container">
