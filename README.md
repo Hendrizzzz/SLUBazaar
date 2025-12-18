@@ -24,7 +24,8 @@ All components are containerized and orchestrated via **Docker Compose** to ensu
 
 **Prerequisites:**
 *   **Virtual Machine**: Ubuntu Server (20.04/22.04 LTS) running on VirtualBox.
-*   **Network**: Configured with a 'Bridged Adapter' so it has its own IP address accessible from your Windows Host.
+*   **Network**: Configured with a **Bridged Adapter** (Settings -> Network -> Attached to: Bridged Adapter).
+    *   *To find your IP Address*: Run `ip a` or `hostname -I` in your Ubuntu terminal.
 
 ### Step-by-Step Deployment Guide
 
@@ -36,7 +37,8 @@ Open PowerShell or Command Prompt on Windows:
 # Syntax: scp <path_to_zip> <username>@<ip_address>:~
 scp "C:\Path\To\312-Team-DIV-CENTERED-fin.zip" username@192.168.x.x:~
 ```
-*   Replace `username` and `192.168.x.x` with your Ubuntu user and IP.
+*   Replace `192.168.x.x` with the IP you found earlier.
+*   **Note**: If prompted "Are you sure you want to continue connecting?", type **yes** and press Enter.
 *   Enter your Ubuntu password when prompted.
 
 #### Phase 2: Server Environment Setup
