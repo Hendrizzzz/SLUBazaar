@@ -20,7 +20,25 @@ All components are containerized and orchestrated via **Docker Compose** to ensu
 
 ---
 
-## 2. Deployment Instructions (Ubuntu Server)
+## 2. Deployment Instructions (Windows - Quick Start)
+
+If you simply want to test the application on a local Windows machine, follow these simplified steps.
+
+**Prerequisites:**
+*   **Docker Desktop** for Windows installed and running.
+
+**Steps:**
+1.  **Unzip**: Extract the `312-Team-DIV-CENTERED-fin.zip` file to any folder (e.g., Desktop or Documents).
+2.  **Open Terminal**: Open PowerShell or Command Prompt inside the `SLUBazaar` folder.
+3.  **Launch**:
+    ```powershell
+    docker-compose up --build -d
+    ```
+4.  **Done**: You can now access the app (See Section 4. Access Points).
+
+---
+
+## 3. Deployment Instructions (Ubuntu Server - Production)
 
 **Prerequisites:**
 *   **Virtual Machine**: Ubuntu Server (20.04/22.04 LTS) running on VirtualBox.
@@ -78,18 +96,16 @@ sudo docker-compose ps
 
 ---
 
-## 3. Access Points & Host Configuration
+## 4. Access Points & Host Configuration
 
-### Professional Access (Recommended)
-To access the site via a clean URL like `http://slubazaar.com` instead of an IP address, edit your **Windows Host File**:
+### Professional Access (Applies to both Windows & Ubuntu)
+To access the site via a clean URL like `http://slubazaar.com` instead of `localhost` or an IP address, edit your **Windows Host File**:
 
 1.  Open **Notepad** as Administrator.
 2.  Open file: `C:\Windows\System32\drivers\etc\hosts`
 3.  Add this line at the bottom:
-    ```
-    192.168.x.x  slubazaar.com
-    ```
-    *(Replace `192.168.x.x` with your Ubuntu VM's IP address)*
+    *   **For Windows Docker**: `127.0.0.1  slubazaar.com`
+    *   **For Ubuntu VM**: `192.168.x.x  slubazaar.com` (Replace with actual VM IP)
 
 ### Service URLs
 
@@ -101,7 +117,7 @@ To access the site via a clean URL like `http://slubazaar.com` instead of an IP 
 
 ---
 
-## 4. Operational Runbook & Troubleshooting
+## 5. Operational Runbook & Troubleshooting
 
 As per our experience during development, we have identified potential edge cases and provided their resolutions below.
 
@@ -112,7 +128,7 @@ As per our experience during development, we have identified potential edge case
 The system is resilient. **Wait 30-60 seconds**, and the containers will automatically reconnect.
 You can force a retry manually:
 ```bash
-sudo docker-compose restart client admin
+docker-compose restart client admin
 ```
 
 ### ISSUE 2: Admin Images Not Loading
@@ -121,19 +137,14 @@ sudo docker-compose restart client admin
 **Solution**:
 We have implemented a **Static Asset Bridge** in the Node.js server to map `/admin/uploads` requests directly to the `assets` folder. Ensure you rebuilt the container:
 ```bash
-sudo docker-compose up --build -d admin
+docker-compose up --build -d admin
 ```
 
 ### ISSUE 3: Port Conflicts
 **Symptom**: Error `Bind for 0.0.0.0:80 failed: port is already allocated`.
-**Root Cause**: Another web server (like Apache or Nginx) is already running on the Ubuntu VM.
+**Root Cause**: Another web server (like Apache, Nginx, or IIS) is already running on the host.
 **Solution**:
-Stop the conflicting service:
-```bash
-sudo systemctl stop apache2
-# OR
-sudo systemctl stop nginx
-```
+Stop the conflicting service or stop XAMPP/WAMP if running locally.
 
 ### ISSUE 4: Missing "Sold" Items in Profile
 **Symptom**: Items marked as sold do not appear in the "Sold" tab.
@@ -141,7 +152,7 @@ sudo systemctl stop nginx
 
 ---
 
-## 5. Architecture Notes
+## 6. Architecture Notes
 
 ### Shared Persistence Strategy
 To support the Hybrid architecture, we implemented a **Named Docker Volume** strategy.

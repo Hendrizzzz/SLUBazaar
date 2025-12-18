@@ -37,7 +37,6 @@ class AuthController extends BaseController
                     'redirect_url' => $redirectUrl
                 ]);
             } catch (Exception $e) {
-                // Use 400 (Bad Request) instead of 401 to avoid utils.js global redirect
                 $this->errorResponse($e->getMessage(), 400);
             }
         } else {
@@ -67,10 +66,6 @@ class AuthController extends BaseController
                     $input['password'] ?? '',
                     $input['confirm_password'] ?? ''
                 );
-
-                // Success Response
-                // We typically ask them to login immediately after, or auto-login them.
-                // For this flow, let's redirect them to login page to confirm.
                 $this->jsonResponse([
                     'success' => true,
                     'message' => 'Registration successful! Please log in.',

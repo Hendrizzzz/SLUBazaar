@@ -59,18 +59,6 @@ class AuthService
      */
     public function login(string $email, string $password): array
     {
-        // $mockUser = [
-        //     'user_id' => 1,
-        //     'email' => $email, // Use the email they typed
-        //     'role' => 'Member', // Default to Member
-        //     'fname' => 'TestUser',
-        //     'lname' => 'Lastname',
-        //     'account_status' => 'Active',
-        //     'password_hash' => password_hash($password, PASSWORD_DEFAULT) // Fake hash so verify passes
-        // ];
-
-        // --- DATABASE LOGIC (COMMENTED OUT FOR LATER) ---
-
         $user = $this->userRepo->findByEmail($email);
 
         if (!$user)
@@ -83,10 +71,6 @@ class AuthService
             throw new Exception("This account has been banned. Contact Admin.");
 
         return $user;
-
-
-        // // Return mock data immediately
-        // return $mockUser;
     }
 
     /**
@@ -172,9 +156,7 @@ class AuthService
             session_start();
         }
 
-        // === TEMPORARY: If no session, auto-login as ID 1 ===
         if (!isset($_SESSION['user_id'])) {
-            // throw new Exception("Unauthorized. Please login.");
             return 1;
         }
 

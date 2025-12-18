@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 session_start();
+date_default_timezone_set('Asia/Manila');
 
 // CORS Headers (Crucial for your AJAX fetch calls to work smoothly)
 header("Access-Control-Allow-Origin: *");
@@ -125,27 +126,6 @@ try {
             $container->getChatController()->sendMessage();
             break;
 
-        // =========================================================
-        // ADMIN PANEL (AdminController)
-        // =========================================================
-        case 'admin_dashboard':
-            $container->getAdminController()->dashboard();
-            break;
-        case 'admin_reports':
-            $container->getAdminController()->viewReports();
-            break;
-        case 'resolve_report':
-            $container->getAdminController()->resolveReport();
-            break;
-        case 'ban_user':
-            $container->getAdminController()->banUser();
-            break;
-        case 'unban_user':
-            $container->getAdminController()->unbanUser();
-            break;
-        case 'remove_item':
-            $container->getAdminController()->removeItem();
-            break;
 
         // =========================================================
         // 404 NOT FOUND

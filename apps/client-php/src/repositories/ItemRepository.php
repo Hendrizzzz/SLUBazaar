@@ -149,9 +149,12 @@ class ItemRepository
         $statement = $this->db->prepare($query);
 
         if (!$statement)
-            throw new Exception("There was a problem in preparing the getActiveItemsByUserId query : "
+            throw new Exception("There was a problem in removing preparing the getActiveItemsByUserId query : "
                 . $this->db->error);
-        $statement->bind_param('i', $userId);
+
+        // Fix: Use PHP time to filter out expired items (Timezone Sync)
+        $now = date('Y-m-d H:i:s');
+        $statement->bind_param('is', $userId, $now);
 
         if (!$statement->execute())
             throw new Exception("Failed to getActiveItemsByUserID : " . $statement->error);
@@ -441,12 +444,12 @@ class ItemRepository
     {
         // Base Query: Select items that are Active
         $sql = "SELECT i.*, 
-                (SELECT COUNT(*) FROM bids b WHERE b.item_id = i.item_id) as bid_count 
-                FROM items i 
-                WHERE i.item_status = 'Active'";
+                (SELECT COUNT(*) FROM bid b WHERE b.item_id = i.item_id) as bid_count 
+                FROM item i 
+                WHERE i.item_status = 'Active' AND i.auction_end > ?";
 
-        $params = [];
-        $types = "";
+        $params = [date('Y-m-d H:i:s')];
+        $types = "s";
 
         // --- DYNAMIC FILTERING ---
 
@@ -539,12 +542,13 @@ class ItemRepository
         $query = "SELECT item_id, title, seller_id 
                   FROM item 
                   WHERE item_status = 'Active' 
-                  AND auction_end <= NOW() 
+                  AND auction_end <= ? 
                   LIMIT ? 
                   FOR UPDATE"; // Row Locking "FOR UPDATE"
 
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param('i', $limit);
+        $now = date('Y-m-d H:i:s');
+        $stmt->bind_param('si', $now, $limit);
         $stmt->execute();
 
         $result = $stmt->get_result();
@@ -653,7 +657,11 @@ class ItemRepository
             if ($status === 'Active') {
                 $hasActive = true;
                 // Active means: declared active AND time hasn't run out
-                $statusConditions[] = "(item.item_status = 'Active' AND item.auction_end > NOW())";
+                // We use PHP time to ensure consistency with ItemCardDTO which uses strict PHP time.
+                // This fixes issues if MySQL is UTC but PHP is Asia/Manila.
+                $statusConditions[] = "(item.item_status = 'Active' AND item.auction_end > ?)";
+                $params[] = date('Y-m-d H:i:s');
+                $types .= "s";
             } else {
                 // For Pending, Sold, etc., trust the DB status
                 $statusConditions[] = "item.item_status = ?";
@@ -736,6 +744,7 @@ class ItemRepository
             FROM item i
             WHERE i.seller_id = ? 
             AND i.item_status IN ('Active', 'Pending')
+            AND i.auction_end > ?
             ORDER BY i.auction_end ASC
         ";
     }

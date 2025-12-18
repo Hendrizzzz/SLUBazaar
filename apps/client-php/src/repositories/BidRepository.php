@@ -79,7 +79,9 @@ class BidRepository
             throw new Exception("There was a problem preparing the getActiveBidsByUserId() query: "
                 . $this->db->error);
 
-        $statement->bind_param('i', $userId);
+        // Fix: Use PHP time to filter out expired items (Timezone Sync)
+        $now = date('Y-m-d H:i:s');
+        $statement->bind_param('is', $userId, $now);
 
         if (!$statement->execute())
             throw new Exception("getActiveBidsByUserId has an error: " . $statement->error);
@@ -235,6 +237,7 @@ class BidRepository
                 WHERE 
                     b.bidder_id = ?                  
                     AND i.item_status = 'Active'     -- Only show ongoing auctions
+                    AND i.auction_end > ?            -- Filter out Time-Expired items
                 GROUP BY 
                     i.item_id                        
                 ORDER BY 
