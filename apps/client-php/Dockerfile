@@ -1,10 +1,13 @@
 FROM php:8.2-apache
 
 # Install system dependencies and PHP extensions
-RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+RUN docker-php-ext-install mysqli pdo pdo_mysql && docker-php-ext-enable mysqli
 
-# Enable Apache mod_rewrite
-RUN a2enmod rewrite
+# Enable mod_rewrite and proxy modules
+RUN a2enmod rewrite proxy proxy_http
+
+# Overwrite the default Apache config with the one inside our app
+COPY apache-vhost.conf /etc/apache2/sites-available/000-default.conf
 
 # Set working directory
 WORKDIR /var/www/html

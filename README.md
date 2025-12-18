@@ -23,8 +23,14 @@ All components are containerized and orchestrated via **Docker Compose** to ensu
 ## 2. Deployment Instructions (Ubuntu Server)
 
 **Prerequisites:**
-*   Docker Engine (v20.10+)
-*   Docker Compose (v2.0+)
+*   **Virtual Machine**: Ubuntu Server (LTS) running on VirtualBox.
+*   **Software**:
+    ```bash
+    # Run these commands on your Ubuntu Server to prepare the environment:
+    sudo apt update
+    sudo apt install -y unzip docker.io docker-compose
+    sudo systemctl enable --now docker
+    ```
 
 ### Step-by-Step Deployment
 

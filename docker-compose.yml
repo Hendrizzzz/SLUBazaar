@@ -10,11 +10,10 @@ services:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: slubazaar
     ports:
-      - "3307:3306" # Mapped to 3307 to avoid conflict with local XAMPP MySQL
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-      # Auto-import any .sql file in the root directory during first startup
-      - ./:/docker-entrypoint-initdb.d/
+      - ./312-Team-DIV-CENTERED.sql:/docker-entrypoint-initdb.d/init.sql
 
   # 2. PHP CLIENT SERVICE
   client:
@@ -22,7 +21,7 @@ services:
     container_name: slubazaar_client
     restart: always
     ports:
-      - "8080:80"
+      - "80:80"
     environment:
       DB_HOST: db
       DB_USER: root
@@ -32,7 +31,7 @@ services:
     depends_on:
       - db
     volumes:
-      - uploads_data:/var/www/html/public/uploads
+      - ./shared/uploads:/var/www/html/public/assets/uploads
 
   # 3. BACKGROUND WORKER (PHP)
   worker:
@@ -49,7 +48,7 @@ services:
     depends_on:
       - db
     volumes:
-      - uploads_data:/var/www/html/public/uploads
+      - ./shared/uploads:/var/www/html/public/assets/uploads
 
   # 4. NODE.JS ADMIN SERVICE
   admin:
@@ -67,8 +66,7 @@ services:
     depends_on:
       - db
     volumes:
-      - uploads_data:/app/public/uploads
+      - ./shared/uploads:/app/public/assets/uploads
 
 volumes:
   db_data:
-  uploads_data:

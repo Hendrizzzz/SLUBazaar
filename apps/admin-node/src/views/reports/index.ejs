@@ -316,7 +316,7 @@
                 <div class="space-y-4">
                     <!-- Item Header -->
                     <div class="flex gap-4 items-start">
-                        ${data.item_image ? `<img src="${data.item_image.startsWith('http') ? data.item_image : '/admin/uploads/items/' + data.item_image.split('/').pop()}" class="w-24 h-24 object-cover rounded-lg border border-blue-200">` : ''}
+                        ${data.item_image ? `<img src="${data.item_image.startsWith('http') ? data.item_image : '/admin/' + data.item_image}" class="w-24 h-24 object-cover rounded-lg border border-blue-200">` : ''}
                         <div>
                             <p class="text-gray-900 font-bold text-lg leading-tight transition-colors hover:text-blue-600">
                                 ${escapeHtml(data.target_name)}
