@@ -1,7 +1,7 @@
+
 # SLU Bazaar - Hybrid Micro-service Marketplace
 
 **Team:** 312Team-DIV-CENTERED 
-
 **Submission Date:** December 2025
 
 ---
@@ -131,13 +131,32 @@ You can force a retry manually:
 docker-compose restart client admin
 ```
 
-### ISSUE 2: Admin Images Not Loading
-**Symptom**: Images appear broken in the Admin Panel but work in the Client.
-**Root Cause**: Path mismatch between frontend code and backend storage.
+### ISSUE 2: "ModuleNotFoundError: No module named 'distutils'"
+**Symptom**: When running `sudo docker-compose up`, the process crashes with a Python traceback error mentioning `distutils`.
+**Root Cause**: The default `docker-compose` package on some Ubuntu LTS versions is outdated and relies on a Python library that has been removed.
 **Solution**:
-We have implemented a **Static Asset Bridge** in the Node.js server to map `/admin/uploads` requests directly to the `assets` folder. Ensure you rebuilt the container:
+You must install the official **Docker Compose Plugin** by adding the Docker repository. Run these commands:
+
 ```bash
-docker-compose up --build -d admin
+# 1. Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# 2. Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+
+# 3. Install the plugin:
+sudo apt-get install docker-compose-plugin
+
+# 4. Run using the new command (note the space instead of hyphen):
+sudo docker compose up --build -d
 ```
 
 ### ISSUE 3: Port Conflicts
@@ -145,10 +164,6 @@ docker-compose up --build -d admin
 **Root Cause**: Another web server (like Apache, Nginx, or IIS) is already running on the host.
 **Solution**:
 Stop the conflicting service or stop XAMPP/WAMP if running locally.
-
-### ISSUE 4: Missing "Sold" Items in Profile
-**Symptom**: Items marked as sold do not appear in the "Sold" tab.
-**Status**: **RESOLVED**. We successfully patched the `ItemRepository` logic and DTO mappers to track `buyer_id` accurately, ensuring data integrity regardless of transaction complexity.
 
 ---
 
@@ -160,3 +175,4 @@ To support the Hybrid architecture, we implemented a **Named Docker Volume** str
 *   **Mapping**: Both PHP and Node.js containers mount this exact path.
 *   **Database**: Stores paths as `assets/uploads/items/...`.
 *   **Result**: Zero latency sharing of assets between the separate microservices.
+```
